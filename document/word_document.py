@@ -377,6 +377,27 @@ class WordDocument:
 
         return None
     
+    def _resolve_page_break_before(self, style) -> bool:
+        visited = set()
+        while style is not None and id(style) not in visited:
+            visited.add(id(style))
+
+            ppr = style.find("w:pPr", self.NS)
+            if ppr is not None:
+                if ppr.find("w:pageBreakBefore", self.NS) is not None:
+                    return True
+
+            # linked / basedOn
+            linked = self._get_linked_style(style)
+            if linked is not None and id(linked) not in visited:
+                style = linked
+                continue
+
+            based = style.find("w:basedOn", self.NS)
+            style = self._find_style_by_id(based.attrib.get(f"{{{self.NS['w']}}}val")) if based is not None else None
+
+        return False
+    
     def get_doc_default_font_size(self) -> int | None:
         dd = self._styles_xml.find(".//w:docDefaults/w:rPrDefault/w:rPr", self.NS)
         if dd is None:
@@ -436,7 +457,7 @@ class WordDocument:
         
         all_caps = self._resolve_bool(style, "caps")
         alignment = default_alignment
-        page_break = False
+        page_break = self._resolve_page_break_before(style)
         num_level = None
         is_numbered = None
         line_height = None
@@ -454,15 +475,13 @@ class WordDocument:
             if jc is not None:
                 alignment = jc.attrib.get(f"{{{self.NS['w']}}}val") or alignment
 
-            page_break = ppr.find("w:pageBreakBefore", self.NS) is not None
-
             spacing = ppr.find("w:spacing", self.NS)
             if spacing is not None:
                 line = spacing.attrib.get(f"{{{self.NS['w']}}}line")
                 if line:
                     line_height = int(line) / 240
 
-            ppr = style.find("w:pPr", self.NS)
+            # ppr = style.find("w:pPr", self.NS)
             if ppr is not None:
                 numpr = ppr.find("w:numPr", NS)
                 if numpr is not None:
@@ -718,3 +737,22 @@ class WordDocument:
 
         val = int(num_id.attrib.get(f"{{{self.NS['w']}}}val", "0"))
         return val > 0
+
+
+    # Kontrola, zda hůavní kapitola začíná na nové straně
+    def paragraph_has_page_break(self, p):
+        ppr = p.find("w:pPr", self.NS)
+        if ppr is None:
+            return False
+        return ppr.find("w:pageBreakBefore", self.NS) is not None
+    
+    def style_has_page_break(self, style_id):
+        style = self._find_style_by_id(style_id)
+        if style is None:
+            return False
+
+        ppr = style.find("w:pPr", self.NS)
+        if ppr is None:
+            return False
+
+        return ppr.find("w:pageBreakBefore", self.NS) is not None
