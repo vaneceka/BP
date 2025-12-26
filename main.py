@@ -10,6 +10,7 @@ from checks.formatting.heading_hierarchical_numbering_check import HeadingHierar
 from checks.formatting.heading_style_check import HeadingStyleCheck
 from checks.formatting.headings_used_corretcly_check import HeadingsUsedCorrectlyCheck
 from checks.formatting.main_chapter_starts_on_new_page_check import MainChapterStartsOnNewPageCheck
+from checks.formatting.manual_horizontal_formatting_check import ManualHorizontalSpacingCheck
 from checks.formatting.original_formatting_check import OriginalFormattingCheck
 from checks.formatting.toc_heading_numbering_check import TocHeadingNumberingCheck
 from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecialHeadingsCheck
@@ -66,7 +67,8 @@ def main():
         # CustomStyleInheritanceCheck(),
         # RequiredCustomStylesUsageCheck(),
         # CustomStyleWithTabsCheck(),
-        MainChapterStartsOnNewPageCheck(),
+        # MainChapterStartsOnNewPageCheck(),
+        ManualHorizontalSpacingCheck(),
 
         
     ]

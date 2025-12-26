@@ -756,3 +756,18 @@ class WordDocument:
             return False
 
         return ppr.find("w:pageBreakBefore", self.NS) is not None
+    
+    # Horizontální ruční formátování
+    def paragraph_text_raw(self, p: ET.Element) -> str:
+        parts = []
+
+        # texty
+        for t in p.findall(".//w:t", self.NS):
+            if t.text is not None:
+                parts.append(t.text)
+
+        # tabulátory z xml (jsou to reálné „zarovnávací“ taby)
+        for tab in p.findall(".//w:tab", self.NS):
+            parts.append("\t")
+
+        return "".join(parts)
