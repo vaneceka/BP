@@ -1,3 +1,4 @@
+from assignment.incosistent_formatting_check import InconsistentFormattingCheck
 from checks.formatting.bibliography_style_check import BibliographyStyleCheck
 from checks.formatting.caption_style_check import CaptionStyleCheck
 from checks.formatting.content_style_check import ContentHeadingStyleCheck
@@ -72,7 +73,10 @@ def main():
         # MainChapterStartsOnNewPageCheck(),
         # ManualHorizontalSpacingCheck(),
         # ManualVerticalSpacingCheck(),
-        ListLevel2UsedCheck()
+        # ListLevel2UsedCheck(),
+        # InconsistentFormattingCheck()
+        # -------Obsah a struktura-----
+        
 
         
     ]

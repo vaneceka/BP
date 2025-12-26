@@ -4,7 +4,7 @@ from checks.base_check import BaseCheck, CheckResult
 class ListLevel2UsedCheck(BaseCheck):
     name = "Použití seznamu 2. úrovně"
     penalty = -1  # násobí se
-
+    # NOTE mozna, kdyz bude word v anglictine, bude problem. -> Zjistit!
     # sem si dej všechny varianty, které v praxi v docx vídáš
     LEVEL2_STYLE_IDS = {
         "slovanseznam2",        # číslovaný seznam 2
