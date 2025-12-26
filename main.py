@@ -9,6 +9,7 @@ from checks.formatting.frontpage_styles_check import FrontpageStylesCheck
 from checks.formatting.heading_hierarchical_numbering_check import HeadingHierarchicalNumberingCheck
 from checks.formatting.heading_style_check import HeadingStyleCheck
 from checks.formatting.headings_used_corretcly_check import HeadingsUsedCorrectlyCheck
+from checks.formatting.list_level_2_used_check import ListLevel2UsedCheck
 from checks.formatting.main_chapter_starts_on_new_page_check import MainChapterStartsOnNewPageCheck
 from checks.formatting.manual_horizontal_formatting_check import ManualHorizontalSpacingCheck
 from checks.formatting.manual_vertical_formatting_check import ManualVerticalSpacingCheck
@@ -69,8 +70,9 @@ def main():
         # RequiredCustomStylesUsageCheck(),
         # CustomStyleWithTabsCheck(),
         # MainChapterStartsOnNewPageCheck(),
-        ManualHorizontalSpacingCheck(),
-        ManualVerticalSpacingCheck()
+        # ManualHorizontalSpacingCheck(),
+        # ManualVerticalSpacingCheck(),
+        ListLevel2UsedCheck()
 
         
     ]
