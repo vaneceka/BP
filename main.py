@@ -19,6 +19,7 @@ from checks.formatting.toc_heading_numbering_check import TocHeadingNumberingChe
 from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecialHeadingsCheck
 from checks.structure.document_structure_check import DocumentStructureCheck
 from checks.structure.toc_exists_check import TOCExistsCheck
+from checks.structure.toc_heading_levels_check import TOCHeadingLevelsCheck
 from checks.structure.toc_up_to_date_check import TOCUpToDateCheck
 from document.word_document import WordDocument
 from core.runner import Runner
@@ -81,7 +82,8 @@ def main():
         # -------Obsah a struktura-----
         # TOCExistsCheck(),
         # TOCUpToDateCheck(),
-        DocumentStructureCheck(),
+        # DocumentStructureCheck(),
+        TOCHeadingLevelsCheck()
         
 
         
