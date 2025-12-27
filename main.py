@@ -19,8 +19,9 @@ from checks.formatting.toc_heading_numbering_check import TocHeadingNumberingChe
 from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecialHeadingsCheck
 from checks.structure.document_structure_check import DocumentStructureCheck
 from checks.structure.toc_exists_check import TOCExistsCheck
-from checks.structure.toc_first_section_check import TOCIllegalContentCheck
+from checks.structure.toc_first_section_check import TOCFirstSectionContentCheck
 from checks.structure.toc_heading_levels_check import TOCHeadingLevelsCheck
+from checks.structure.toc_illegal_content_check import TOCIllegalContentCheck
 from checks.structure.toc_up_to_date_check import TOCUpToDateCheck
 from document.word_document import WordDocument
 from core.runner import Runner
@@ -85,11 +86,8 @@ def main():
         # TOCUpToDateCheck(),
         # DocumentStructureCheck(),
         # TOCHeadingLevelsCheck(),
+        # TOCFirstSectionContentCheck(),
         TOCIllegalContentCheck()
-
-        
-
-        
     ]
 
     # 3) Spuštění kontrol

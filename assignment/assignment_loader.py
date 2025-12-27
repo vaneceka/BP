@@ -26,7 +26,14 @@ def load_assignment(path: str) -> Assignment:
             basedOn=spec.get("basedOn"),
             tabs=[(t[0], int(t[1])) for t in spec.get("tabs", [])] or None
         )
+    
     headlines = data.get("headlines", [])
+    objects = data.get("objects", [])
+    bibliography = data.get("bibliography", [])
 
-
-    return Assignment(styles=styles, headlines=headlines)
+    return Assignment(
+        styles=styles,
+        headlines=headlines,
+        objects=objects,
+        bibliography=bibliography,
+    )

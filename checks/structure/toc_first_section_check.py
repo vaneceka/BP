@@ -1,7 +1,7 @@
 from checks.base_check import BaseCheck, CheckResult
 
 
-class TOCIllegalContentCheck(BaseCheck):
+class TOCFirstSectionContentCheck(BaseCheck):
     name = "Obsah obsahuje text z prvního oddílu"
     penalty = -10  # násobí se
 

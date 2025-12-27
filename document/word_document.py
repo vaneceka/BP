@@ -7,7 +7,10 @@ from assignment.assignment_model import StyleSpec
 from pathlib import Path
 import xml.dom.minidom as minidom
 
-NS = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+NS = {
+    "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+    "m": "http://schemas.openxmlformats.org/officeDocument/2006/math"
+    }
 
 BUILTIN_STYLE_NAMES = {
     "normal",
@@ -807,3 +810,15 @@ class WordDocument:
             parts.append("\t")
 
         return "".join(parts)
+    
+    # Kontrola veci co do obsahu nepatri
+    def paragraph_has_fld_char(self, p: ET.Element, kind: str) -> bool:
+        """
+        kind = "begin" | "end"
+        """
+        for fc in p.findall(".//w:fldChar", self.NS):
+            if fc.attrib.get(f"{{{self.NS['w']}}}fldCharType") == kind:
+                return True
+        return False
+    
+    
