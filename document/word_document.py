@@ -600,33 +600,69 @@ class WordDocument:
             return None
         return ps.attrib.get(f"{{{self.NS['w']}}}val")
 
+    # def _style_level_from_styles_xml(self, style_id: str) -> int | None:
+    #     """
+    #     Zkusí odvodit level nadpisu ze styles.xml:
+    #     - podle w:name (Heading 1 / heading 1 / Nadpis 1 / Nadpis1…)
+    #     - nebo podle w:outlineLvl (0 -> H1, 1 -> H2, 2 -> H3…)
+    #     """
+    #     style = self._find_style_by_id(style_id)
+    #     if style is None:
+    #         return None
+
+    #     # 1) podle názvu stylu
+    #     name_el = style.find("w:name", self.NS)
+    #     if name_el is not None:
+    #         nm = (name_el.attrib.get(f"{{{self.NS['w']}}}val") or "").strip().lower()
+    #         # typicky: "heading 2", "nadpis 3", "nadpis3"
+    #         m = re.search(r"(heading|nadpis)\s*([0-9]+)", nm)
+    #         if m:
+    #             return int(m.group(2))
+
+    #     # 2) podle outlineLvl (0=H1, 1=H2, 2=H3...)
+    #     ppr = style.find("w:pPr", self.NS)
+    #     if ppr is not None:
+    #         out = ppr.find("w:outlineLvl", self.NS)
+    #         if out is not None:
+    #             v = out.attrib.get(f"{{{self.NS['w']}}}val")
+    #             if v is not None:
+    #                 return int(v) + 1
+
+    #     return None
+
     def _style_level_from_styles_xml(self, style_id: str) -> int | None:
-        """
-        Zkusí odvodit level nadpisu ze styles.xml:
-        - podle w:name (Heading 1 / heading 1 / Nadpis 1 / Nadpis1…)
-        - nebo podle w:outlineLvl (0 -> H1, 1 -> H2, 2 -> H3…)
-        """
         style = self._find_style_by_id(style_id)
         if style is None:
             return None
 
-        # 1) podle názvu stylu
-        name_el = style.find("w:name", self.NS)
-        if name_el is not None:
-            nm = (name_el.attrib.get(f"{{{self.NS['w']}}}val") or "").strip().lower()
-            # typicky: "heading 2", "nadpis 3", "nadpis3"
-            m = re.search(r"(heading|nadpis)\s*([0-9]+)", nm)
-            if m:
-                return int(m.group(2))
+        visited = set()
 
-        # 2) podle outlineLvl (0=H1, 1=H2, 2=H3...)
-        ppr = style.find("w:pPr", self.NS)
-        if ppr is not None:
-            out = ppr.find("w:outlineLvl", self.NS)
-            if out is not None:
-                v = out.attrib.get(f"{{{self.NS['w']}}}val")
-                if v is not None:
-                    return int(v) + 1
+        while style is not None and id(style) not in visited:
+            visited.add(id(style))
+
+            # 1️⃣ zkus název stylu (nejspolehlivější)
+            name_el = style.find("w:name", self.NS)
+            if name_el is not None:
+                name = (name_el.attrib.get(f"{{{self.NS['w']}}}val") or "").lower()
+                m = re.search(r"(heading|nadpis)\s*([0-9]+)", name)
+                if m:
+                    return int(m.group(2))
+
+            # 2️⃣ outlineLvl
+            ppr = style.find("w:pPr", self.NS)
+            if ppr is not None:
+                out = ppr.find("w:outlineLvl", self.NS)
+                if out is not None:
+                    return int(out.attrib.get(f"{{{self.NS['w']}}}val")) + 1
+
+            # 3️⃣ basedOn → jdi výš
+            based = style.find("w:basedOn", self.NS)
+            if based is None:
+                break
+
+            style = self._find_style_by_id(
+                based.attrib.get(f"{{{self.NS['w']}}}val")
+            )
 
         return None
 
