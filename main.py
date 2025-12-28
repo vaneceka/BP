@@ -23,6 +23,7 @@ from checks.header_footer.first_section_emty_footer_check import FirstSectionFoo
 from checks.header_footer.first_section_emty_header_check import FirstSectionHeaderEmptyCheck
 from checks.header_footer.header_footer_missing_check import HeaderFooterMissingCheck
 from checks.header_footer.second_section_footer_linked_check import SecondSectionFooterLinkedCheck
+from checks.header_footer.second_section_footer_page_number_check import SecondSectionFooterHasPageNumberCheck
 from checks.header_footer.second_section_header_linked_check import SecondSectionHeaderLinkedCheck
 from checks.header_footer.second_section_header_text_check import SecondSectionHeaderHasTextCheck
 from checks.objects.image_low_quality_check import ImageLowQualityCheck
@@ -127,7 +128,8 @@ def main():
         # FirstSectionFooterEmptyCheck(),
         # SecondSectionHeaderLinkedCheck(),
         # SecondSectionFooterLinkedCheck(),
-        SecondSectionHeaderHasTextCheck()
+        # SecondSectionHeaderHasTextCheck(),
+        SecondSectionFooterHasPageNumberCheck()
 
     ]
 
