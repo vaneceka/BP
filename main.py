@@ -19,6 +19,7 @@ from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecia
 from checks.objects.image_low_quality_check import ImageLowQualityCheck
 from checks.objects.list_of_figures_not_up_to_date_check import ListOfFiguresNotUpdatedCheck
 from checks.objects.missing_list_of_fugures_check import MissingListOfFiguresCheck
+from checks.objects.object_caption_bindings_check import ObjectCaptionBindingCheck
 from checks.objects.object_caption_check import ObjectCaptionCheck
 from checks.objects.object_caption_description_check import ObjectCaptionDescriptionCheck
 from checks.objects.object_cross_reference_check import ObjectCrossReferenceCheck
@@ -103,7 +104,8 @@ def main():
         # ImageLowQualityCheck(),
         # ObjectCaptionCheck(),
         # ObjectCaptionDescriptionCheck(),
-        ObjectCrossReferenceCheck()
+        # ObjectCrossReferenceCheck(),
+        ObjectCaptionBindingCheck()
     ]
 
     # 3) Spuštění kontrol
