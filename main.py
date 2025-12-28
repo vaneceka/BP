@@ -20,6 +20,7 @@ from checks.objects.image_low_quality_check import ImageLowQualityCheck
 from checks.objects.list_of_figures_not_up_to_date_check import ListOfFiguresNotUpdatedCheck
 from checks.objects.missing_list_of_fugures_check import MissingListOfFiguresCheck
 from checks.objects.object_caption_check import ObjectCaptionCheck
+from checks.objects.object_caption_description_check import ObjectCaptionDescriptionCheck
 from checks.structure.chapter_numbering_continuity_check import ChapterNumberingContinuityCheck
 from checks.structure.document_structure_check import DocumentStructureCheck
 from checks.structure.first_chapter_page1_check import FirstChapterStartsOnPageOneCheck
@@ -99,7 +100,8 @@ def main():
         # MissingListOfFiguresCheck(),
         # ListOfFiguresNotUpdatedCheck(),
         # ImageLowQualityCheck(),
-        ObjectCaptionCheck()
+        # ObjectCaptionCheck(),
+        ObjectCaptionDescriptionCheck()
     ]
 
     # 3) Spuštění kontrol
