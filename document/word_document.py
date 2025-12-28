@@ -194,10 +194,6 @@ class WordDocument:
             print(f"SECTION {i+1}: {len(texts)} text nodes")
             print("  sample:", texts[:10])
 
-
-
-        import re
-
     def get_field_instructions(self, section):
         instrs = []
 
@@ -862,7 +858,6 @@ class WordDocument:
             sect_pr.findall("w:footerReference", self.NS)
 
         for ref in refs:
-            r_type = ref.attrib.get(f"{{{self.NS['w']}}}type")
             r_id = ref.attrib.get(f"{{{self.NS['w']}}}id")
             if not r_id:
                 continue

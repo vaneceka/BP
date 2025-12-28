@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Any
+from typing import Dict, List
 from .assignment_model import StyleSpec
 
 

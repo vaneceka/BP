@@ -1,5 +1,4 @@
 import json
-from typing import List
 from .assignment import Assignment
 from .assignment_model import StyleSpec
 
