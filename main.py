@@ -16,6 +16,7 @@ from checks.formatting.manual_vertical_formatting_check import ManualVerticalSpa
 from checks.formatting.original_formatting_check import OriginalFormattingCheck
 from checks.formatting.toc_heading_numbering_check import TocHeadingNumberingCheck
 from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecialHeadingsCheck
+from checks.objects.image_low_quality_check import ImageLowQualityCheck
 from checks.objects.list_of_figures_not_up_to_date_check import ListOfFiguresNotUpdatedCheck
 from checks.objects.missing_list_of_fugures_check import MissingListOfFiguresCheck
 from checks.structure.chapter_numbering_continuity_check import ChapterNumberingContinuityCheck
@@ -95,7 +96,8 @@ def main():
         # ChapterNumberingContinuityCheck(),
         #--------Objekty-----------------
         # MissingListOfFiguresCheck(),
-        ListOfFiguresNotUpdatedCheck()
+        # ListOfFiguresNotUpdatedCheck(),
+        ImageLowQualityCheck()
     ]
 
     # 3) Spuštění kontrol

@@ -1,3 +1,6 @@
+import io
+from PIL import Image
+from pyzbar.pyzbar import decode
 from typing import Iterable
 import zipfile
 import xml.etree.ElementTree as ET
@@ -1009,3 +1012,66 @@ class WordDocument:
                 count += 1
 
         return count
+    
+    def iter_images(self):
+        """
+        Iteruje přes všechny vložené obrázky v dokumentu.
+        Vrací dict s informacemi o obrázku.
+        """
+        for drawing in self._xml.findall(".//w:drawing", self.NS):
+            blip = drawing.find(".//a:blip", {
+                **self.NS,
+                "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
+            })
+            if blip is None:
+                continue
+
+            r_id = blip.attrib.get(
+                "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed"
+            )
+            if not r_id:
+                continue
+
+            yield {
+                "type": "image",
+                "rId": r_id,
+            }
+    def image_has_readable_qr(self, image_bytes: bytes) -> bool:
+        """
+        Vrátí True, pokud je v obrázku čitelný QR kód.
+        """
+        try:
+            img = Image.open(io.BytesIO(image_bytes))
+        except Exception:
+            return False
+
+        decoded = decode(img)
+        return len(decoded) > 0
+    
+    def get_image_bytes(self, r_id: str) -> bytes | None:
+        """
+        Vrátí bajty obrázku podle relationship ID (rId).
+        """
+        # načti document.xml.rels
+        try:
+            rels = self._load("word/_rels/document.xml.rels")
+        except KeyError:
+            return None
+
+        for rel in rels.findall(".//{http://schemas.openxmlformats.org/package/2006/relationships}Relationship"):
+            if rel.attrib.get("Id") == r_id:
+                target = rel.attrib.get("Target")
+
+                # obrázky jsou typicky v word/media/
+                if not target.startswith("media/"):
+                    return None
+
+                media_path = f"word/{target}"
+
+                try:
+                    with self._zip.open(media_path) as f:
+                        return f.read()
+                except KeyError:
+                    return None
+
+        return None
