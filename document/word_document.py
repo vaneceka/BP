@@ -1270,58 +1270,11 @@ class WordDocument:
         return anchors
     
     # Liteatura
-    # def bibliography_is_dirty(self, section_index: int) -> bool:
-    #     """
-    #     Vrátí True, pokud je bibliografie neaktuální (dirty field).
-    #     """
-    #     for el in self.section(section_index):
-    #         for fld in el.findall(".//w:fldChar", self.NS):
-    #             if fld.attrib.get(f"{{{self.NS['w']}}}fldCharType") == "begin":
-    #                 if fld.attrib.get(f"{{{self.NS['w']}}}dirty") == "true":
-    #                     return True
-    #     return False
-    
-
     def has_word_bibliography(self) -> bool:
         for sdt in self._xml.findall(".//w:sdt", self.NS):
             sdt_pr = sdt.find("w:sdtPr", self.NS)
             if sdt_pr is not None and sdt_pr.find("w:bibliography", self.NS) is not None:
                 return True
-        return False
-
-    def bibliography_entry_count(self) -> int:
-        """
-        Heuristika: spočítá odstavce stylu Bibliografie uvnitř SDT bibliography.
-        """
-        count = 0
-        for sdt in self._xml.findall(".//w:sdt", self.NS):
-            sdt_pr = sdt.find("w:sdtPr", self.NS)
-            if sdt_pr is None or sdt_pr.find("w:bibliography", self.NS) is None:
-                continue
-
-            for p in sdt.findall(".//w:p", self.NS):
-                sid = self._paragraph_style_id(p)
-                if not sid:
-                    continue
-                if sid.lower() in ("bibliografie", "bibliography"):
-                    txt = self._paragraph_text(p)
-                    if txt:
-                        count += 1
-        return count
-
-
-    def has_bibliography_field(self) -> bool:
-        """
-        Najde, jestli se uvnitř bibliography SDT vyskytuje field instrukce BIBLIOGRAPHY.
-        """
-        for sdt in self._xml.findall(".//w:sdt", self.NS):
-            sdt_pr = sdt.find("w:sdtPr", self.NS)
-            if sdt_pr is None or sdt_pr.find("w:bibliography", self.NS) is None:
-                continue
-
-            for instr in sdt.findall(".//w:instrText", self.NS):
-                if instr.text and "BIBLIOGRAPHY" in instr.text.upper():
-                    return True
         return False
     
     def count_word_citations(self) -> int:

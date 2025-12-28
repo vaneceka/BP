@@ -109,7 +109,7 @@ def main():
         # ObjectCrossReferenceCheck(),
         # ObjectCaptionBindingCheck(),
         #-------Liteatura---------
-        # MissingBibliographyCheck(),
+        MissingBibliographyCheck(),
         BibliographyNotUpdatedCheck()
     ]
 
