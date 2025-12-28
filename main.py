@@ -22,9 +22,9 @@ from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecia
 from checks.header_footer.first_section_emty_footer_check import FirstSectionFooterEmptyCheck
 from checks.header_footer.first_section_emty_header_check import FirstSectionHeaderEmptyCheck
 from checks.header_footer.header_footer_missing_check import HeaderFooterMissingCheck
-from checks.header_footer.second_section_footer_linked_check import SecondSectionFooterLinkedCheck
+from checks.header_footer.section_footer_linked_check import FooterLinkedToPreviousCheck
 from checks.header_footer.second_section_footer_page_number_check import SecondSectionFooterHasPageNumberCheck
-from checks.header_footer.second_section_header_linked_check import SecondSectionHeaderLinkedCheck
+from checks.header_footer.section_header_linked_check import HeaderNotLinkedToPreviousCheck
 from checks.header_footer.second_section_header_text_check import SecondSectionHeaderHasTextCheck
 from checks.header_footer.second_section_page_num_start_at_one_check import SecondSectionPageNumberStartsAtOneCheck
 from checks.objects.image_low_quality_check import ImageLowQualityCheck
@@ -127,11 +127,14 @@ def main():
         # HeaderFooterMissingCheck(),
         # FirstSectionHeaderEmptyCheck(),
         # FirstSectionFooterEmptyCheck(),
-        # SecondSectionHeaderLinkedCheck(),
-        # SecondSectionFooterLinkedCheck(),
         # SecondSectionHeaderHasTextCheck(),
         # SecondSectionFooterHasPageNumberCheck(),
-        SecondSectionPageNumberStartsAtOneCheck()
+        # SecondSectionPageNumberStartsAtOneCheck(),
+        HeaderNotLinkedToPreviousCheck(2),
+        HeaderNotLinkedToPreviousCheck(3),
+        FooterLinkedToPreviousCheck(2),
+        FooterLinkedToPreviousCheck(3),
+
 
     ]
 
