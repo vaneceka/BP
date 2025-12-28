@@ -22,6 +22,8 @@ from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecia
 from checks.header_footer.first_section_emty_footer_check import FirstSectionFooterEmptyCheck
 from checks.header_footer.first_section_emty_header_check import FirstSectionHeaderEmptyCheck
 from checks.header_footer.header_footer_missing_check import HeaderFooterMissingCheck
+from checks.header_footer.second_section_footer_linked_check import SecondSectionFooterLinkedCheck
+from checks.header_footer.second_section_header_linked_check import SecondSectionHeaderLinkedCheck
 from checks.objects.image_low_quality_check import ImageLowQualityCheck
 from checks.objects.list_of_figures_not_up_to_date_check import ListOfFiguresNotUpdatedCheck
 from checks.objects.missing_list_of_fugures_check import MissingListOfFiguresCheck
@@ -54,6 +56,7 @@ from assignment.assignment_loader import load_assignment
 
 # --- formatting (assignment-based) ---
 from checks.formatting.normal_style_check import NormalStyleCheck
+
 
 
 def main():
@@ -119,8 +122,10 @@ def main():
         # BibliographyISO690Check()
         #--------Header-Foooter------
         # HeaderFooterMissingCheck(),
-        FirstSectionHeaderEmptyCheck(),
-        FirstSectionFooterEmptyCheck()
+        # FirstSectionHeaderEmptyCheck(),
+        # FirstSectionFooterEmptyCheck(),
+        # SecondSectionHeaderLinkedCheck(),
+        SecondSectionFooterLinkedCheck(),
 
     ]
 
