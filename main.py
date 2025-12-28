@@ -19,8 +19,8 @@ from checks.formatting.manual_vertical_formatting_check import ManualVerticalSpa
 from checks.formatting.original_formatting_check import OriginalFormattingCheck
 from checks.formatting.toc_heading_numbering_check import TocHeadingNumberingCheck
 from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecialHeadingsCheck
-from checks.header_footer.first_section_emty_footer_check import FirstSectionFooterEmptyCheck
-from checks.header_footer.first_section_emty_header_check import FirstSectionHeaderEmptyCheck
+from checks.header_footer.section_emty_footer_check import SectionFooterEmptyCheck
+from checks.header_footer.section_emty_header_check import SectionHeaderEmptyCheck
 from checks.header_footer.header_footer_missing_check import HeaderFooterMissingCheck
 from checks.header_footer.section_footer_linked_check import FooterLinkedToPreviousCheck
 from checks.header_footer.second_section_footer_page_number_check import SecondSectionFooterHasPageNumberCheck
@@ -125,15 +125,17 @@ def main():
         # BibliographyISO690Check()
         #--------Header-Foooter------
         # HeaderFooterMissingCheck(),
-        # FirstSectionHeaderEmptyCheck(),
-        # FirstSectionFooterEmptyCheck(),
         # SecondSectionHeaderHasTextCheck(),
         # SecondSectionFooterHasPageNumberCheck(),
         # SecondSectionPageNumberStartsAtOneCheck(),
-        HeaderNotLinkedToPreviousCheck(2),
-        HeaderNotLinkedToPreviousCheck(3),
-        FooterLinkedToPreviousCheck(2),
-        FooterLinkedToPreviousCheck(3),
+        # HeaderNotLinkedToPreviousCheck(2),
+        # HeaderNotLinkedToPreviousCheck(3),
+        # FooterLinkedToPreviousCheck(2),
+        # FooterLinkedToPreviousCheck(3),
+        SectionHeaderEmptyCheck(1),
+        SectionHeaderEmptyCheck(3),
+        SectionFooterEmptyCheck(1),
+        SectionFooterEmptyCheck(3),
 
 
     ]
