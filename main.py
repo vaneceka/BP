@@ -24,6 +24,7 @@ from checks.header_footer.first_section_emty_header_check import FirstSectionHea
 from checks.header_footer.header_footer_missing_check import HeaderFooterMissingCheck
 from checks.header_footer.second_section_footer_linked_check import SecondSectionFooterLinkedCheck
 from checks.header_footer.second_section_header_linked_check import SecondSectionHeaderLinkedCheck
+from checks.header_footer.second_section_header_text_check import SecondSectionHeaderHasTextCheck
 from checks.objects.image_low_quality_check import ImageLowQualityCheck
 from checks.objects.list_of_figures_not_up_to_date_check import ListOfFiguresNotUpdatedCheck
 from checks.objects.missing_list_of_fugures_check import MissingListOfFiguresCheck
@@ -125,7 +126,8 @@ def main():
         # FirstSectionHeaderEmptyCheck(),
         # FirstSectionFooterEmptyCheck(),
         # SecondSectionHeaderLinkedCheck(),
-        SecondSectionFooterLinkedCheck(),
+        # SecondSectionFooterLinkedCheck(),
+        SecondSectionHeaderHasTextCheck()
 
     ]
 
