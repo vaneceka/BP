@@ -1,4 +1,3 @@
-from assignment.incosistent_formatting_check import InconsistentFormattingCheck
 from checks.formatting.bibliography_style_check import BibliographyStyleCheck
 from checks.formatting.caption_style_check import CaptionStyleCheck
 from checks.formatting.content_style_check import ContentHeadingStyleCheck
@@ -18,6 +17,7 @@ from checks.formatting.original_formatting_check import OriginalFormattingCheck
 from checks.formatting.toc_heading_numbering_check import TocHeadingNumberingCheck
 from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecialHeadingsCheck
 from checks.structure.document_structure_check import DocumentStructureCheck
+from checks.structure.first_chapter_page1_check import FirstChapterStartsOnPageOneCheck
 from checks.structure.toc_exists_check import TOCExistsCheck
 from checks.structure.toc_first_section_check import TOCFirstSectionContentCheck
 from checks.structure.toc_heading_levels_check import TOCHeadingLevelsCheck
@@ -87,7 +87,8 @@ def main():
         # DocumentStructureCheck(),
         # TOCHeadingLevelsCheck(),
         # TOCFirstSectionContentCheck(),
-        TOCIllegalContentCheck()
+        # TOCIllegalContentCheck(),
+        FirstChapterStartsOnPageOneCheck()
     ]
 
     # 3) Spuštění kontrol

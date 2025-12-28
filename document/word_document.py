@@ -821,4 +821,61 @@ class WordDocument:
                 return True
         return False
     
+    # Kontrola, zda 2. sekce ma cislovani od 1
+    def section_properties(self, index: int) -> ET.Element | None:
+        """
+        Vrátí <w:sectPr> pro daný oddíl.
+        V tvém splitu může být sectPr:
+        - jako samostatný element v body
+        - nebo uvnitř posledního odstavce přes w:pPr/w:sectPr
+        """
+        sec = self.section(index)
+        if not sec:
+            return None
+
+        # projdi odzadu, většinou je sectPr na konci oddílu
+        for el in reversed(sec):
+            # 1) sectPr jako přímý element
+            if el.tag.endswith("}sectPr"):
+                return el
+
+            # 2) sectPr uvnitř odstavce
+            if el.tag.endswith("}p"):
+                ppr = el.find("w:pPr", self.NS)
+                if ppr is not None:
+                    sect = ppr.find("w:sectPr", self.NS)
+                    if sect is not None:
+                        return sect
+
+        return None
     
+    def section_has_page_number_field(self, section_index: int) -> bool:
+        """
+        Vrátí True, pokud má oddíl v hlavičce nebo zápatí pole PAGE.
+        """
+        sect_pr = self.section_properties(section_index)
+        if sect_pr is None:
+            return False
+
+        # header / footer reference
+        refs = sect_pr.findall("w:headerReference", self.NS) + \
+            sect_pr.findall("w:footerReference", self.NS)
+
+        for ref in refs:
+            r_type = ref.attrib.get(f"{{{self.NS['w']}}}type")
+            r_id = ref.attrib.get(f"{{{self.NS['w']}}}id")
+            if not r_id:
+                continue
+
+            part_name = f"word/{'header' if 'header' in ref.tag else 'footer'}{r_id}.xml"
+            try:
+                xml = self._load(part_name)
+            except KeyError:
+                continue
+
+            # hledáme PAGE field
+            for instr in xml.findall(".//w:instrText", self.NS):
+                if instr.text and "PAGE" in instr.text.upper():
+                    return True
+
+        return False
