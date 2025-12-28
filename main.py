@@ -1,3 +1,4 @@
+from checks.bibliography.bibliography_exist_check import MissingBibliographyCheck
 from checks.formatting.bibliography_style_check import BibliographyStyleCheck
 from checks.formatting.caption_style_check import CaptionStyleCheck
 from checks.formatting.content_style_check import ContentHeadingStyleCheck
@@ -105,7 +106,9 @@ def main():
         # ObjectCaptionCheck(),
         # ObjectCaptionDescriptionCheck(),
         # ObjectCrossReferenceCheck(),
-        ObjectCaptionBindingCheck()
+        # ObjectCaptionBindingCheck(),
+        #-------Liteatura---------
+        MissingBibliographyCheck()
     ]
 
     # 3) Spuštění kontrol
