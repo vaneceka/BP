@@ -26,6 +26,7 @@ from checks.header_footer.second_section_footer_linked_check import SecondSectio
 from checks.header_footer.second_section_footer_page_number_check import SecondSectionFooterHasPageNumberCheck
 from checks.header_footer.second_section_header_linked_check import SecondSectionHeaderLinkedCheck
 from checks.header_footer.second_section_header_text_check import SecondSectionHeaderHasTextCheck
+from checks.header_footer.second_section_page_num_start_at_one_check import SecondSectionPageNumberStartsAtOneCheck
 from checks.objects.image_low_quality_check import ImageLowQualityCheck
 from checks.objects.list_of_figures_not_up_to_date_check import ListOfFiguresNotUpdatedCheck
 from checks.objects.missing_list_of_fugures_check import MissingListOfFiguresCheck
@@ -129,7 +130,8 @@ def main():
         # SecondSectionHeaderLinkedCheck(),
         # SecondSectionFooterLinkedCheck(),
         # SecondSectionHeaderHasTextCheck(),
-        SecondSectionFooterHasPageNumberCheck()
+        # SecondSectionFooterHasPageNumberCheck(),
+        SecondSectionPageNumberStartsAtOneCheck()
 
     ]
 
