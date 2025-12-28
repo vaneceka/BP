@@ -1179,20 +1179,6 @@ class WordDocument:
                 return el
         return None
     
-    # def paragraph_after(self, p):
-    #     body = self._xml.find("w:body", self.NS)
-    #     elems = list(body)
-
-    #     try:
-    #         idx = elems.index(p)
-    #     except ValueError:
-    #         return None
-
-    #     for nxt in elems[idx + 1:]:
-    #         if nxt.tag.endswith("}p"):
-    #             return nxt
-    #     return None
-    
     def paragraph_has_seq_caption(self, p):
         for instr in p.findall(".//w:instrText", self.NS):
             if instr.text:
@@ -1202,3 +1188,83 @@ class WordDocument:
                     if len(parts) >= 2:
                         return parts[1]   # Obrázek / Tabulka / Graf
         return None
+    
+    def iter_ref_targets(self) -> set[str]:
+        """
+        Vrátí bookmarky, na které existuje REF v běžném textu (ne v TOC).
+        """
+        targets = set()
+
+        for p in self._xml.findall(".//w:p", self.NS):
+            # ❌ ignoruj obsah / seznamy
+            if self.paragraph_is_toc_or_object_list(p):
+                continue
+
+            for instr in p.findall(".//w:instrText", self.NS):
+                if instr.text and instr.text.upper().startswith("REF"):
+                    parts = instr.text.strip().split()
+                    if len(parts) >= 2:
+                        targets.add(parts[1])
+
+        return targets
+    
+    def paragraph_is_toc_or_object_list(self, p: ET.Element) -> bool:
+        """
+        Vrátí True, pokud je odstavec součástí obsahu nebo seznamu objektů.
+        """
+        for instr in p.findall(".//w:instrText", self.NS):
+            if instr.text:
+                txt = instr.text.upper()
+                if txt.startswith("TOC") or "PAGEREF" in txt:
+                    return True
+        return False
+    
+    def paragraph_is_caption(self, p: ET.Element) -> bool:
+        if p is None:
+            return False
+        for instr in p.findall(".//w:instrText", self.NS):
+            if instr.text and instr.text.strip().upper().startswith("SEQ"):
+                return True
+        return False
+    
+    def paragraph_is_toc_like(self, p: ET.Element) -> bool:
+        if p is None:
+            return False
+        for instr in p.findall(".//w:instrText", self.NS):
+            if not instr.text:
+                continue
+            txt = instr.text.upper()
+            if txt.strip().startswith("TOC") or "PAGEREF" in txt:
+                return True
+        return False
+    
+    def iter_crossref_anchors_in_body_text(self) -> set[str]:
+        """
+        Vrátí anchor názvy, na které vede křížový odkaz v BĚŽNÉM TEXTU.
+        Ignoruje obsah / seznam obrázků a ignoruje titulky.
+        """
+        anchors = set()
+
+        for p in self._xml.findall(".//w:body/w:p", self.NS):
+            if self.paragraph_is_toc_like(p):
+                continue
+            if self.paragraph_is_caption(p):
+                continue
+
+            # 1) hyperlink anchor (nejčastější)
+            for hl in p.findall(".//w:hyperlink", self.NS):
+                a = hl.attrib.get(f"{{{self.NS['w']}}}anchor")
+                if a:
+                    anchors.add(a)
+
+            # 2) REF pole (někdy bez hyperlink tagu)
+            for instr in p.findall(".//w:instrText", self.NS):
+                if not instr.text:
+                    continue
+                txt = instr.text.strip()
+                if txt.upper().startswith("REF "):
+                    parts = txt.split()
+                    if len(parts) >= 2:
+                        anchors.add(parts[1])
+
+        return anchors
