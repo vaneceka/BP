@@ -946,30 +946,78 @@ class WordDocument:
         return None
     
     # Objekty
+    # def iter_objects(self):
+    #     objects = []
+
+    #     for p in self._xml.findall(".//w:p", self.NS):
+
+    #         if p.findall(".//w:drawing", self.NS):
+    #             objects.append({
+    #                 "type": "image",
+    #                 "element": p,
+    #                 "paragraph": p
+    #             })
+
+    #         if p.findall(".//m:oMath", self.NS) or p.findall(".//m:oMathPara", self.NS):
+    #             objects.append({
+    #                 "type": "equation",
+    #                 "element": p,
+    #                 "paragraph": p
+    #             })
+
+    #     for tbl in self._xml.findall(".//w:tbl", self.NS):
+    #         objects.append({
+    #             "type": "table",
+    #             "element": tbl,
+    #             "paragraph": None
+    #         })
+
+    #     for obj in self._xml.findall(".//w:object", self.NS):
+    #         objects.append({
+    #             "type": "ole",
+    #             "element": obj,
+    #             "paragraph": None
+    #         })
+
+    #     return objects
     def iter_objects(self):
-        """
-        Vrátí seznam objektů v dokumentu:
-        {
-            "type": "image" | "table" | "equation" | "ole",
-            "element": ET.Element,
-            "paragraph": ET.Element | None
-        }
-        """
         objects = []
 
         for p in self._xml.findall(".//w:p", self.NS):
+            for drawing in p.findall(".//w:drawing", self.NS):
+                gd = drawing.find(".//a:graphicData", {
+                    **self.NS,
+                    "a": "http://schemas.openxmlformats.org/drawingml/2006/main"
+                })
 
-            if p.findall(".//w:drawing", self.NS):
-                objects.append({"type": "image", "paragraph": p})
+                if gd is None:
+                    continue
+
+                uri = gd.attrib.get("uri", "")
+
+                if "picture" in uri:
+                    obj_type = "image"
+                elif "chart" in uri:
+                    obj_type = "chart"
+                else:
+                    continue
+
+                objects.append({
+                    "type": obj_type,
+                    "element": p
+                })
 
             if p.findall(".//m:oMath", self.NS) or p.findall(".//m:oMathPara", self.NS):
-                objects.append({"type": "equation", "paragraph": p})
+                objects.append({
+                    "type": "equation",
+                    "element": p
+                })
 
         for tbl in self._xml.findall(".//w:tbl", self.NS):
-            objects.append({"type": "table", "paragraph": None})
-
-        for obj in self._xml.findall(".//w:object", self.NS):
-            objects.append({"type": "ole", "paragraph": None})
+            objects.append({
+                "type": "table",
+                "element": tbl
+            })
 
         return objects
     
@@ -1074,4 +1122,83 @@ class WordDocument:
                 except KeyError:
                     return None
 
+        return None
+    
+    def paragraph_has_seq_caption(self, p):
+        """
+        Vrátí text návěští (např. 'Obrázek', 'Tabulka'), nebo None
+        """
+        for instr in p.findall(".//w:instrText", self.NS):
+            txt = instr.text or ""
+            if "SEQ" in txt:
+                # SEQ Obrázek \* ARABIC
+                parts = txt.strip().split()
+                if len(parts) >= 2:
+                    return parts[1]
+        return None
+
+    def paragraph_after_element(self, element):
+        body = self._xml.find("w:body", self.NS)
+        if body is None:
+            return None
+
+        elems = list(body)
+
+        try:
+            idx = elems.index(element)
+        except ValueError:
+            return None
+
+        for el in elems[idx + 1:]:
+            # přeskoč prázdné odstavce
+            if el.tag.endswith("}p"):
+                text = self._paragraph_text(el)
+                if text:
+                    return el
+
+            # pokud narazíme na jiný objekt, konec
+            if el.tag.endswith("}tbl"):
+                break
+
+        return None
+
+    def paragraph_before(self, element):
+        body = list(self._xml.find("w:body", self.NS))
+        idx = body.index(element)
+        for el in reversed(body[:idx]):
+            if el.tag.endswith("}p"):
+                return el
+        return None
+
+
+    def paragraph_after(self, element):
+        body = list(self._xml.find("w:body", self.NS))
+        idx = body.index(element)
+        for el in body[idx + 1:]:
+            if el.tag.endswith("}p"):
+                return el
+        return None
+    
+    # def paragraph_after(self, p):
+    #     body = self._xml.find("w:body", self.NS)
+    #     elems = list(body)
+
+    #     try:
+    #         idx = elems.index(p)
+    #     except ValueError:
+    #         return None
+
+    #     for nxt in elems[idx + 1:]:
+    #         if nxt.tag.endswith("}p"):
+    #             return nxt
+    #     return None
+    
+    def paragraph_has_seq_caption(self, p):
+        for instr in p.findall(".//w:instrText", self.NS):
+            if instr.text:
+                txt = instr.text.strip()
+                if txt.startswith("SEQ"):
+                    parts = txt.split()
+                    if len(parts) >= 2:
+                        return parts[1]   # Obrázek / Tabulka / Graf
         return None
