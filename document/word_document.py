@@ -1312,3 +1312,21 @@ class WordDocument:
                         count += 1
 
         return count
+    
+    # Header/Footer
+    def load_part_by_rid(self, r_id: str):
+        try:
+            rels = self._load("word/_rels/document.xml.rels")
+        except KeyError:
+            return None
+
+        for rel in rels.findall(
+            ".//{http://schemas.openxmlformats.org/package/2006/relationships}Relationship"
+        ):
+            if rel.attrib.get("Id") == r_id:
+                target = rel.attrib.get("Target")
+                if not target:
+                    return None
+                return self._load(f"word/{target}")
+
+        return None

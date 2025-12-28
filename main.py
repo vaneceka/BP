@@ -1,4 +1,5 @@
 from checks.bibliography.bibliography_exist_check import MissingBibliographyCheck
+from checks.bibliography.bibliography_iso690_check import BibliographyISO690Check
 from checks.bibliography.bibliography_up_to_date_check import BibliographyNotUpdatedCheck
 from checks.formatting.bibliography_style_check import BibliographyStyleCheck
 from checks.formatting.caption_style_check import CaptionStyleCheck
@@ -18,6 +19,7 @@ from checks.formatting.manual_vertical_formatting_check import ManualVerticalSpa
 from checks.formatting.original_formatting_check import OriginalFormattingCheck
 from checks.formatting.toc_heading_numbering_check import TocHeadingNumberingCheck
 from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecialHeadingsCheck
+from checks.header_footer.header_footer_missing_check import HeaderFooterMissingCheck
 from checks.objects.image_low_quality_check import ImageLowQualityCheck
 from checks.objects.list_of_figures_not_up_to_date_check import ListOfFiguresNotUpdatedCheck
 from checks.objects.missing_list_of_fugures_check import MissingListOfFiguresCheck
@@ -109,8 +111,12 @@ def main():
         # ObjectCrossReferenceCheck(),
         # ObjectCaptionBindingCheck(),
         #-------Liteatura---------
-        MissingBibliographyCheck(),
-        BibliographyNotUpdatedCheck()
+        #NOTE stale chybi dost na dodelani
+        # MissingBibliographyCheck(),
+        # BibliographyNotUpdatedCheck(),
+        # BibliographyISO690Check()
+        #--------Header-Foooter------
+        HeaderFooterMissingCheck()
     ]
 
     # 3) Spuštění kontrol
