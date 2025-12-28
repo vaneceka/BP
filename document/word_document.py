@@ -941,3 +941,71 @@ class WordDocument:
                 return num_id.attrib.get(f"{{{self.NS['w']}}}val")
 
         return None
+    
+    # Objekty
+    def iter_objects(self):
+        """
+        Vrátí seznam objektů v dokumentu:
+        {
+            "type": "image" | "table" | "equation" | "ole",
+            "element": ET.Element,
+            "paragraph": ET.Element | None
+        }
+        """
+        objects = []
+
+        for p in self._xml.findall(".//w:p", self.NS):
+
+            if p.findall(".//w:drawing", self.NS):
+                objects.append({"type": "image", "paragraph": p})
+
+            if p.findall(".//m:oMath", self.NS) or p.findall(".//m:oMathPara", self.NS):
+                objects.append({"type": "equation", "paragraph": p})
+
+        for tbl in self._xml.findall(".//w:tbl", self.NS):
+            objects.append({"type": "table", "paragraph": None})
+
+        for obj in self._xml.findall(".//w:object", self.NS):
+            objects.append({"type": "ole", "paragraph": None})
+
+        return objects
+    
+    def count_figure_captions(self) -> int:
+        count = 0
+
+        for p in self._xml.findall(".//w:p", self.NS):
+            ppr = p.find("w:pPr", self.NS)
+            if ppr is None:
+                continue
+
+            style = ppr.find("w:pStyle", self.NS)
+            if style is None:
+                continue
+
+            style_val = style.attrib.get(f"{{{self.NS['w']}}}val", "").lower()
+            if "titulek" not in style_val:
+                continue
+
+            # musí obsahovat SEQ Obrázek
+            for instr in p.findall(".//w:instrText", self.NS):
+                if instr.text and "SEQ" in instr.text.upper() and "OBRÁZEK" in instr.text.upper():
+                    count += 1
+                    break
+
+        return count
+
+    def count_list_of_figures_items(self) -> int:
+        count = 0
+
+        for instr in self._xml.findall(".//w:instrText", self.NS):
+            if instr.text and instr.text.strip().upper().startswith("TOC") and "\\C" in instr.text.upper():
+                if "OBRÁZEK" in instr.text.upper():
+                    # spočítej PAGEREF v tomto TOC
+                    toc_p = instr.getparent() if hasattr(instr, "getparent") else None
+
+        # jednodušší varianta – počítej PAGEREF s anchor _Toc
+        for instr in self._xml.findall(".//w:instrText", self.NS):
+            if instr.text and "PAGEREF" in instr.text.upper():
+                count += 1
+
+        return count

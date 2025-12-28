@@ -16,6 +16,8 @@ from checks.formatting.manual_vertical_formatting_check import ManualVerticalSpa
 from checks.formatting.original_formatting_check import OriginalFormattingCheck
 from checks.formatting.toc_heading_numbering_check import TocHeadingNumberingCheck
 from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecialHeadingsCheck
+from checks.objects.list_of_figures_not_up_to_date_check import ListOfFiguresNotUpdatedCheck
+from checks.objects.missing_list_of_fugures_check import MissingListOfFiguresCheck
 from checks.structure.chapter_numbering_continuity_check import ChapterNumberingContinuityCheck
 from checks.structure.document_structure_check import DocumentStructureCheck
 from checks.structure.first_chapter_page1_check import FirstChapterStartsOnPageOneCheck
@@ -90,7 +92,10 @@ def main():
         # TOCFirstSectionContentCheck(),
         # TOCIllegalContentCheck(),
         # FirstChapterStartsOnPageOneCheck(),
-        ChapterNumberingContinuityCheck()
+        # ChapterNumberingContinuityCheck(),
+        #--------Objekty-----------------
+        # MissingListOfFiguresCheck(),
+        ListOfFiguresNotUpdatedCheck()
     ]
 
     # 3) Spuštění kontrol
