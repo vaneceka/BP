@@ -12,7 +12,8 @@ import xml.dom.minidom as minidom
 
 NS = {
     "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
-    "m": "http://schemas.openxmlformats.org/officeDocument/2006/math"
+    "m": "http://schemas.openxmlformats.org/officeDocument/2006/math",
+    "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
     }
 
 BUILTIN_STYLE_NAMES = {
@@ -1328,5 +1329,30 @@ class WordDocument:
                 if not target:
                     return None
                 return self._load(f"word/{target}")
+
+        return None
+
+    def resolve_part_target(self, r_id: str) -> str | None:
+        """
+        Přeloží rId z headerReference/footerReference na reálný soubor,
+        např. rId9 -> word/header1.xml
+        """
+        try:
+            rels = self._load("word/_rels/document.xml.rels")
+        except KeyError:
+            return None
+
+        rel_ns = {"rel": "http://schemas.openxmlformats.org/package/2006/relationships"}
+
+        for rel in rels.findall(".//rel:Relationship", rel_ns):
+            if rel.attrib.get("Id") == r_id:
+                target = rel.attrib.get("Target")  # např. "header1.xml"
+                if not target:
+                    return None
+
+                # Word target je relativně k word/
+                if not target.startswith("word/"):
+                    return f"word/{target}"
+                return target
 
         return None

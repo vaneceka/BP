@@ -19,6 +19,7 @@ from checks.formatting.manual_vertical_formatting_check import ManualVerticalSpa
 from checks.formatting.original_formatting_check import OriginalFormattingCheck
 from checks.formatting.toc_heading_numbering_check import TocHeadingNumberingCheck
 from checks.formatting.unnumbered_special_headings_check import UnnumberedSpecialHeadingsCheck
+from checks.header_footer.firsts_section_emty_header_check import FirstSectionHeaderEmptyCheck
 from checks.header_footer.header_footer_missing_check import HeaderFooterMissingCheck
 from checks.objects.image_low_quality_check import ImageLowQualityCheck
 from checks.objects.list_of_figures_not_up_to_date_check import ListOfFiguresNotUpdatedCheck
@@ -116,7 +117,8 @@ def main():
         # BibliographyNotUpdatedCheck(),
         # BibliographyISO690Check()
         #--------Header-Foooter------
-        HeaderFooterMissingCheck()
+        # HeaderFooterMissingCheck(),
+        FirstSectionHeaderEmptyCheck()
     ]
 
     # 3) Spuštění kontrol
