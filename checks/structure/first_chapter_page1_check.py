@@ -139,3 +139,5 @@ class FirstChapterStartsOnPageOneCheck(BaseCheck):
             "První kapitola ve druhém oddílu začíná na straně 1.",
             0,
         )
+    
+    

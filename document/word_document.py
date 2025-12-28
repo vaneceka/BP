@@ -879,3 +879,70 @@ class WordDocument:
                     return True
 
         return False
+    
+    # Kontrola zda první kapitola ve 3. oddilu pokracuje v cislovani z predchoziho oddilu
+    def paragraph_heading_numbering_id(self, p):
+        """
+        Vrátí numId pro číslovaný nadpis, nebo None.
+        """
+        ppr = p.find("w:pPr", self.NS)
+        if ppr is None:
+            return None
+
+        numpr = ppr.find("w:numPr", self.NS)
+        if numpr is None:
+            return None
+
+        ilvl = numpr.find("w:ilvl", self.NS)
+        if ilvl is None or ilvl.attrib.get(f"{{{self.NS['w']}}}val") != "0":
+            return None  # zajímá nás jen Heading 1
+
+        num_id = numpr.find("w:numId", self.NS)
+        if num_id is None:
+            return None
+
+        return num_id.attrib.get(f"{{{self.NS['w']}}}val")
+
+    # Kontinualni cislovani sekce 2 na sekci 3
+    def get_heading_num_id(self, p: ET.Element) -> str | None:
+        """
+        Vrátí numId pro Heading 1.
+        Priorita:
+        1) numPr přímo na odstavci
+        2) numPr ve stylu (Heading 1)
+        """
+        # 1️⃣ přímo na odstavci
+        ppr = p.find("w:pPr", self.NS)
+        if ppr is not None:
+            numpr = ppr.find("w:numPr", self.NS)
+            if numpr is not None:
+                ilvl = numpr.find("w:ilvl", self.NS)
+                if ilvl is None or ilvl.attrib.get(f"{{{self.NS['w']}}}val") == "0":
+                    num_id = numpr.find("w:numId", self.NS)
+                    if num_id is not None:
+                        return num_id.attrib.get(f"{{{self.NS['w']}}}val")
+
+        # 2️⃣ fallback – ze stylu
+        style_id = self._paragraph_style_id(p)
+        if not style_id:
+            return None
+
+        style = self._find_style_by_id(style_id)
+        if style is None:
+            return None
+
+        ppr = style.find("w:pPr", self.NS)
+        if ppr is None:
+            return None
+
+        numpr = ppr.find("w:numPr", self.NS)
+        if numpr is None:
+            return None
+
+        ilvl = numpr.find("w:ilvl", self.NS)
+        if ilvl is None or ilvl.attrib.get(f"{{{self.NS['w']}}}val") == "0":
+            num_id = numpr.find("w:numId", self.NS)
+            if num_id is not None:
+                return num_id.attrib.get(f"{{{self.NS['w']}}}val")
+
+        return None
