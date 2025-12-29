@@ -35,8 +35,17 @@ class ManualVerticalSpacingCheck(BaseCheck):
                 continue
 
             next_p = paragraphs[i + 1]
-            # ⛔ ignoruj, pokud následující odstavec patří obsahu / seznamům
-            if document._paragraph_is_toc_or_object_list(next_p):
+
+            # ⛔ ignoruj, pokud:
+            # - prázdný řádek je součástí TOC / seznamu
+            # - nebo sousedí s TOC / seznamem
+            # - nebo je generovaný polem
+            if (
+                document._paragraph_is_toc_or_object_list(p)
+                or document._paragraph_is_toc_or_object_list(next_p)
+                or document.paragraph_is_generated_by_field(p)
+                or document.paragraph_is_generated_by_field(next_p)
+            ):
                 continue
 
             # 4️⃣ page break

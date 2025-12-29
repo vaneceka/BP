@@ -1287,3 +1287,13 @@ class WordDocument:
             if self._paragraph_text(p):
                 return True
         return False
+    
+    def paragraph_is_generated_by_field(self, p) -> bool:
+        """
+        True pokud je odstavec součástí Word pole (TOC, PAGEREF, SEQ…)
+        """
+        if p.findall(".//w:fldChar", self.NS):
+            return True
+        if p.findall(".//w:instrText", self.NS):
+            return True
+        return False

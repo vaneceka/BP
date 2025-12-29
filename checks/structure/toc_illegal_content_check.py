@@ -132,11 +132,18 @@ class TOCIllegalContentCheck(BaseCheck):
                 errors.append(f"Položka obsahu bez anchor odkazu: „{text}“")
                 continue
 
-            # ❌ anchor neodpovídá žádnému nadpisu
-            if anchor not in heading_bookmarks:
-                errors.append(
-                    f"Položka obsahu bez odpovídajícího nadpisu: „{text}“"
-                )
+            # ⛔ POVOLENÁ VÝJIMKA – Bibliografie
+            clean_text = self._clean_text(text).lower()
+
+            if clean_text in {"bibliografie", "literatura", "references"}:
+                # ověř, že v dokumentu skutečně existuje Word bibliografie
+                if document.has_word_bibliography():
+                    continue  # OK – Wordem generovaná bibliografie
+
+                if anchor not in heading_bookmarks:
+                    errors.append(
+                        f"Položka obsahu bez odpovídajícího nadpisu: „{text}“"
+                    )
 
         # 5️⃣ Výsledek
         if errors:

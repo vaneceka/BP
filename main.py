@@ -70,12 +70,12 @@ def main():
 
     checks = [
         # --- Části / oddíly dokumentu ---
-        # SectionCountCheck(),
-        # Section1TOCCheck(),
-        # Section2TextCheck(),
-        # Section3FigureListCheck(),
-        # Section3TableListCheck(),
-        # Section3BibliographyCheck(),
+        SectionCountCheck(),
+        Section1TOCCheck(),
+        Section2TextCheck(),
+        Section3FigureListCheck(),
+        Section3TableListCheck(),
+        Section3BibliographyCheck(),
 
         # --- Formátování dle zadání ---
         NormalStyleCheck(),
