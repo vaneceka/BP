@@ -9,41 +9,40 @@ class ObjectCrossReferenceCheck(BaseCheck):
         errors = []
 
         anchors_in_text = document.iter_crossref_anchors_in_body_text()
-        print("ANCHORS IN TEXT:", anchors_in_text)
         for obj in document.iter_objects():
             if obj["type"] not in ("image", "chart", "table"):
                 continue
 
             element = obj["element"]
 
-            # titulek může být před nebo za (podle tvých pravidel)
+            # titulek může být před nebo za
             caption_p = (
                 document.paragraph_after(element)
                 or document.paragraph_before(element)
             )
 
-            # když není titulek → ten řeší jiný check, tady přeskoč
+            # pokud to není titulek pokračuj
             if caption_p is None or not document.paragraph_is_caption(caption_p):
                 continue
 
-            # najdi bookmarky v titulku (Word je často dává sem)
+            # najdi bookmarky v titulku 
             caption_bookmarks = []
             for bm in caption_p.findall(".//w:bookmarkStart", document.NS):
                 name = bm.attrib.get(f"{{{document.NS['w']}}}name")
                 if name:
                     caption_bookmarks.append(name)
 
-            # ✅ pokud titulky nemají bookmark, NESKÁKEJ continue → je to chyba
+            # pokud titulky nemají bookmark -> chyba
             if not caption_bookmarks:
                 errors.append(f"{obj['type']} není v textu zmíněn křížovým odkazem.")
                 continue
 
-            # ❌ žádný křížový odkaz v textu vůbec neexistuje
+            # žádný křížový odkaz v textu vůbec neexistuje
             if not anchors_in_text:
                 errors.append(f"{obj['type']} není v textu zmíněn křížovým odkazem.")
                 continue
 
-            # pokud žádný bookmark z titulku není v odkazech v textu → chyba
+            # pokud žádný bookmark z titulku není v odkazech v textu -> chyba
             if not any(bm in anchors_in_text for bm in caption_bookmarks):
                 errors.append(f"{obj['type']} není v textu zmíněn křížovým odkazem.")
 

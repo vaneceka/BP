@@ -14,6 +14,7 @@ NS = {
     "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
     "m": "http://schemas.openxmlformats.org/officeDocument/2006/math",
     "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+    "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
     }
 
 BUILTIN_STYLE_NAMES = {
@@ -914,18 +915,14 @@ class WordDocument:
                 return num_id.attrib.get(f"{{{self.NS['w']}}}val")
 
         return None
-    
+    #-------------------------------
     # Objekty
     def iter_objects(self):
         objects = []
 
         for p in self._xml.findall(".//w:p", self.NS):
             for drawing in p.findall(".//w:drawing", self.NS):
-                gd = drawing.find(".//a:graphicData", {
-                    **self.NS,
-                    "a": "http://schemas.openxmlformats.org/drawingml/2006/main"
-                })
-
+                gd = drawing.find(".//a:graphicData", self.NS)
                 if gd is None:
                     continue
 
@@ -956,30 +953,7 @@ class WordDocument:
             })
 
         return objects
-    
-    def count_figure_captions(self) -> int:
-        count = 0
-
-        for p in self._xml.findall(".//w:p", self.NS):
-
-            # 1️⃣ fldSimple (to máš ty!)
-            for fld in p.findall(".//w:fldSimple", self.NS):
-                instr = fld.attrib.get(f"{{{self.NS['w']}}}instr", "")
-                if "SEQ" in instr.upper() and "OBRÁZEK" in instr.upper():
-                    count += 1
-                    break
-
-            else:
-                # 2️⃣ fallback – instrText
-                for instr in p.findall(".//w:instrText", self.NS):
-                    if instr.text:
-                        txt = instr.text.upper()
-                        if txt.startswith("SEQ") and "OBRÁZEK" in txt:
-                            count += 1
-                            break
-
-        return count
-    
+        
     def iter_figure_caption_texts(self) -> list[str]:
         captions = []
 
@@ -998,7 +972,7 @@ class WordDocument:
         items = []
 
         for p in self._xml.findall(".//w:p", self.NS):
-            if not self.paragraph_is_toc_like(p):
+            if not self._paragraph_is_toc_or_object_list(p):
                 continue
 
             text = self._paragraph_text(p)
@@ -1006,58 +980,20 @@ class WordDocument:
                 items.append(text.strip())
 
         return items
-    
-    def count_list_of_figures_items(self) -> int:
+         
+    def object_image_rids(self, element) -> list[str]:
         """
-        Spočítá počet položek v seznamu obrázků (List of Figures).
-
-        Princip:
-        - každá položka seznamu obrázků je reprezentována polem PAGEREF
-        - počítáme všechny výskyty PAGEREF v dokumentu
+        Vrátí seznam rId (relationship Id) všech obrázků v daném elementu (typicky <w:p>).
         """
+        rids = []
 
-        count = 0
+        # v obrázku je <a:blip r:embed="rIdX">
+        for blip in element.findall(".//a:blip", self.NS):
+            rid = blip.attrib.get(f"{{{self.NS['r']}}}embed")
+            if rid:
+                rids.append(rid)
 
-        for instr in self._xml.findall(".//w:instrText", self.NS):
-            if instr.text and "PAGEREF" in instr.text.upper():
-                count += 1
-
-        return count
-        
-    def iter_images(self):
-        """
-        Iteruje přes všechny vložené obrázky v dokumentu.
-        Vrací dict s informacemi o obrázku.
-        """
-        for drawing in self._xml.findall(".//w:drawing", self.NS):
-            blip = drawing.find(".//a:blip", {
-                **self.NS,
-                "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
-            })
-            if blip is None:
-                continue
-
-            r_id = blip.attrib.get(
-                "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed"
-            )
-            if not r_id:
-                continue
-
-            yield {
-                "type": "image",
-                "rId": r_id,
-            }
-    def image_has_readable_qr(self, image_bytes: bytes) -> bool:
-        """
-        Vrátí True, pokud je v obrázku čitelný QR kód.
-        """
-        try:
-            img = Image.open(io.BytesIO(image_bytes))
-        except Exception:
-            return False
-
-        decoded = decode(img)
-        return len(decoded) > 0
+        return rids
     
     def get_image_bytes(self, r_id: str) -> bytes | None:
         """
@@ -1087,8 +1023,6 @@ class WordDocument:
 
         return None
     
-    import re
-
     def paragraph_has_seq_caption(self, p: ET.Element) -> str | None:
         """
         Vrátí návěští titulku z pole SEQ (např. 'Obrázek', 'Tabulka', 'Graf'), nebo None.
@@ -1121,28 +1055,12 @@ class WordDocument:
         return None
 
     def paragraph_before(self, element):
-        body = self._xml.find("w:body", self.NS)
-        if body is None:
-            return None
+        elems = list(self._xml.find("w:body", self.NS))
+        idx = elems.index(element)
 
-        elems = list(body)
-
-        try:
-            idx = elems.index(element)
-        except ValueError:
-            return None
-
-        for el in elems[idx + 1:]:
-            # přeskoč prázdné odstavce
-            if el.tag.endswith("}p"):
-                text = self._paragraph_text(el)
-                if text:
-                    return el
-
-            # pokud narazíme na jiný objekt, konec
-            if el.tag.endswith("}tbl"):
-                break
-
+        for el in reversed(elems[:idx]):
+            if el.tag.endswith("}p") and self._paragraph_text(el):
+                return el
         return None
 
 
@@ -1154,36 +1072,7 @@ class WordDocument:
                 return el
         return None
     
-    def iter_ref_targets(self) -> set[str]:
-        """
-        Vrátí bookmarky, na které existuje REF v běžném textu (ne v TOC).
-        """
-        targets = set()
 
-        for p in self._xml.findall(".//w:p", self.NS):
-            # ❌ ignoruj obsah / seznamy
-            if self.paragraph_is_toc_or_object_list(p):
-                continue
-
-            for instr in p.findall(".//w:instrText", self.NS):
-                if instr.text and instr.text.upper().startswith("REF"):
-                    parts = instr.text.strip().split()
-                    if len(parts) >= 2:
-                        targets.add(parts[1])
-
-        return targets
-    
-    def paragraph_is_toc_or_object_list(self, p: ET.Element) -> bool:
-        """
-        Vrátí True, pokud je odstavec součástí obsahu nebo seznamu objektů.
-        """
-        for instr in p.findall(".//w:instrText", self.NS):
-            if instr.text:
-                txt = instr.text.upper()
-                if txt.startswith("TOC") or "PAGEREF" in txt:
-                    return True
-        return False
-    
     def paragraph_is_caption(self, p: ET.Element) -> bool:
         """
         Vrátí True, pokud odstavec obsahuje pole SEQ (titulky obrázků/tabulek/grafů).
@@ -1191,7 +1080,7 @@ class WordDocument:
         return self.paragraph_has_seq_caption(p) is not None
 
     
-    def paragraph_is_toc_like(self, p):
+    def _paragraph_is_toc_or_object_list(self, p):
         # 1️⃣ podle stylu (nejspolehlivější)
         ppr = p.find("w:pPr", self.NS)
         if ppr is not None:
@@ -1218,7 +1107,7 @@ class WordDocument:
         anchors = set()
 
         for p in self._xml.findall(".//w:body/w:p", self.NS):
-            if self.paragraph_is_toc_like(p):
+            if self._paragraph_is_toc_or_object_list(p):
                 continue
             if self.paragraph_is_caption(p):
                 continue
@@ -1240,7 +1129,7 @@ class WordDocument:
                         anchors.add(parts[1])
 
         return anchors
-    
+    #-------------------------------------
     # Liteatura
     def has_word_bibliography(self) -> bool:
         for sdt in self._xml.findall(".//w:sdt", self.NS):

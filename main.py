@@ -110,11 +110,11 @@ def main():
         # FirstChapterStartsOnPageOneCheck(),
         # ChapterNumberingContinuityCheck(),
         # --------Objekty-----------------
-        # MissingListOfFiguresCheck(),
-        # ListOfFiguresNotUpdatedCheck(),
-        # ImageLowQualityCheck(),
-        # ObjectCaptionCheck(),
-        # ObjectCaptionDescriptionCheck(),
+        MissingListOfFiguresCheck(),
+        ListOfFiguresNotUpdatedCheck(),
+        ImageLowQualityCheck(),
+        ObjectCaptionCheck(),
+        ObjectCaptionDescriptionCheck(),
         ObjectCrossReferenceCheck(),
         # ObjectCaptionBindingCheck(),
         # -------Liteatura---------

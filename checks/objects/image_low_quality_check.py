@@ -11,35 +11,31 @@ class ImageLowQualityCheck(BaseCheck):
     MIN_HEIGHT = 300
 
     def run(self, document, assignment=None):
-        images = list(document.iter_images())
+        image_objects = [o for o in document.iter_objects() if o["type"] == "image"]
 
-        if not images:
-            return CheckResult(
-                False,
-                "Není vložen žádný obrázek.",
-                self.penalty,
-            )
+        if not image_objects:
+            return CheckResult(False, "Není vložen žádný obrázek.", self.penalty)
 
-        for img in images:
-            img_bytes = document.get_image_bytes(img["rId"])
-            if not img_bytes:
-                continue
+        for obj in image_objects:
+            element = obj["element"]
 
-            try:
-                image = Image.open(io.BytesIO(img_bytes))
-                width, height = image.size
-            except Exception:
-                continue
+            # v jednom odstavci může být i víc obrázků
+            for rid in document.object_image_rids(element):
+                img_bytes = document.get_image_bytes(rid)
+                if not img_bytes:
+                    continue
 
-            if width < self.MIN_WIDTH or height < self.MIN_HEIGHT:
-                return CheckResult(
-                    False,
-                    f"Obrázek má nízké rozlišení ({width}×{height} px).",
-                    self.penalty,
-                )
+                try:
+                    image = Image.open(io.BytesIO(img_bytes))
+                    width, height = image.size
+                except Exception:
+                    continue
 
-        return CheckResult(
-            True,
-            "Všechny obrázky mají dostatečné rozlišení.",
-            0,
-        )
+                if width < self.MIN_WIDTH or height < self.MIN_HEIGHT:
+                    return CheckResult(
+                        False,
+                        f"Obrázek má nízké rozlišení ({width}×{height} px).",
+                        self.penalty,
+                    )
+
+        return CheckResult(True, "Všechny obrázky mají dostatečné rozlišení.", 0)

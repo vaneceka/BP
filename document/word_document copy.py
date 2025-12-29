@@ -1216,17 +1216,7 @@ class WordDocument:
 
         return targets
     
-    def paragraph_is_toc_or_object_list(self, p: ET.Element) -> bool:
-        """
-        Vrátí True, pokud je odstavec součástí obsahu nebo seznamu objektů.
-        """
-        for instr in p.findall(".//w:instrText", self.NS):
-            if instr.text:
-                txt = instr.text.upper()
-                if txt.startswith("TOC") or "PAGEREF" in txt:
-                    return True
-        return False
-    
+
     def paragraph_is_caption(self, p: ET.Element) -> bool:
         if p is None:
             return False
