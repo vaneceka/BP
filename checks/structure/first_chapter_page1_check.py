@@ -74,14 +74,6 @@ class FirstChapterStartsOnPageOneCheck(BaseCheck):
                 self.penalty,
             )
         
-        # 0️⃣ MUSÍ existovat číslování stránek
-        if not document.section_has_page_number_field(1):
-            return CheckResult(
-                False,
-                "Ve druhém oddílu není zapnuté číslování stránek.",
-                self.penalty,
-            )
-
         pg_num = sect_pr.find("w:pgNumType", document.NS)
         if pg_num is None:
             return CheckResult(

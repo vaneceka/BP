@@ -1,6 +1,3 @@
-import io
-from PIL import Image
-from pyzbar.pyzbar import decode
 from typing import Iterable
 import zipfile
 import xml.etree.ElementTree as ET
@@ -66,14 +63,11 @@ class WordDocument:
     def iter_paragraphs(self) -> Iterable[ET.Element]:
         return self._xml.findall(".//w:p", self.NS)
 
-    def iter_runs(self) -> Iterable[ET.Element]:
-        return self._xml.findall(".//w:r", self.NS)
-
-    def iter_texts(self) -> Iterable[str]:
+    def _iter_texts(self) -> Iterable[str]:
         for t in self._xml.findall(".//w:t", self.NS):
             if t.text:
                 yield t.text
-    def is_builtin_style_name(self, name: str) -> bool:
+    def _is_builtin_style_name(self, name: str) -> bool:
         return name.strip().lower() in BUILTIN_STYLE_NAMES
     
     def split_assignment_styles(self, assignment):
@@ -86,7 +80,7 @@ class WordDocument:
         builtin = {}
 
         for name, spec in assignment.styles.items():
-            if self.is_builtin_style_name(name):
+            if self._is_builtin_style_name(name):
                 builtin[name] = spec
             else:
                 custom[name] = spec
@@ -160,12 +154,6 @@ class WordDocument:
                 return True
         return False
 
-    def has_object_list_in_section(self, section_index: int) -> bool:
-        for instr in self._find_instr_texts(self.section(section_index)):
-            if instr.startswith("TOC") and "\\t" in instr:
-                return True
-        return False
-
     # ==========================================================
     # TEXT
     # ==========================================================
@@ -189,16 +177,6 @@ class WordDocument:
                     return True
         return False
     
-    def debug_sections(self):
-        for i in range(self.section_count()):
-            texts = []
-            for el in self.section(i):
-                for t in el.findall(".//w:t", self.NS):
-                    if t.text and t.text.strip():
-                        texts.append(t.text.strip())
-            print(f"SECTION {i+1}: {len(texts)} text nodes")
-            print("  sample:", texts[:10])
-
     def get_field_instructions(self, section):
         instrs = []
 
@@ -216,29 +194,6 @@ class WordDocument:
                     instrs.append(instr.text.strip())
 
         return instrs
-
-
-    def _extract_toc_labels(self, instr: str) -> list[str]:
-        labels = []
-
-        if "\\t" not in instr:
-            return labels
-
-        # rozděl podle \t
-        parts = instr.split("\\t")
-
-        for part in parts[1:]:
-            part = part.strip()
-
-            # očekáváme něco jako: "Obrázek,1"
-            if part.startswith('"') and '"' in part[1:]:
-                value = part.split('"', 2)[1]  # obsah mezi uvozovkami
-                label = value.split(",")[0].strip()
-                if label:
-                    labels.append(label)
-
-        return labels
-    
 
     def has_list_of_figures_in_section(self, section_index: int) -> bool:
         section = self.section(section_index)
@@ -324,6 +279,7 @@ class WordDocument:
 
         return None
     
+    #NOTE mozna predela, pouziva se localne v souboru word a jeste jinde
     def _find_style_by_id(self, style_id: str):
         if not style_id:
             return None
@@ -531,6 +487,7 @@ class WordDocument:
             indentHanging=int(indent_hanging) if indent_hanging else None,
         )
     
+    #NOTE tady se taky pouziva ve vice vecech
     def _find_style(self, *, name: str | None = None, default: bool = False):
         for style in self._styles_xml.findall(".//w:style", self.NS):
             if default:
@@ -561,7 +518,7 @@ class WordDocument:
         if style is None:
             return None
         return self._build_style_spec(style, default_alignment="both")
-
+    
     def get_heading_style(self, level: int) -> StyleSpec | None:
         style = self._find_style(name=f"heading {level}")
         if style is None:
@@ -689,7 +646,7 @@ class WordDocument:
         return False
     
     def has_html_artifacts(self) -> bool:
-        for t in self.iter_texts():
+        for t in self._iter_texts():
             if any(x in t for x in ["&nbsp;", "&#160;", "<", ">"]):
                 return True
         return False
@@ -708,46 +665,6 @@ class WordDocument:
                 return "\\n" not in txt
         return None
     
-    # číslovaní kapitol, které nemají
-    def _paragraph_is_numbered(self, p: ET.Element) -> bool:
-        # 1️⃣ nejdřív zkus přímé číslování odstavce
-        ppr = p.find("w:pPr", self.NS)
-        if ppr is not None:
-            numpr = ppr.find("w:numPr", self.NS)
-            if numpr is not None:
-                num_id = numpr.find("w:numId", self.NS)
-                if num_id is not None:
-                    val = int(num_id.attrib.get(f"{{{self.NS['w']}}}val", "0"))
-                    if val > 0:
-                        return True
-                    # numId=0 → výslovně vypnuté → dál NEHLEDEJ
-                    return False
-
-        # 2️⃣ pokud odstavec nemá vlastní numPr, zkus styl
-        style_id = self._paragraph_style_id(p)
-        if not style_id:
-            return False
-
-        style = self._find_style_by_id(style_id)
-        if style is None:
-            return False
-
-        ppr = style.find("w:pPr", self.NS)
-        if ppr is None:
-            return False
-
-        numpr = ppr.find("w:numPr", self.NS)
-        if numpr is None:
-            return False
-
-        num_id = numpr.find("w:numId", self.NS)
-        if num_id is None:
-            return False
-
-        val = int(num_id.attrib.get(f"{{{self.NS['w']}}}val", "0"))
-        return val > 0
-
-
     # Kontrola, zda hůavní kapitola začíná na nové straně
     def paragraph_has_page_break(self, p):
         ppr = p.find("w:pPr", self.NS)
@@ -780,17 +697,7 @@ class WordDocument:
             parts.append("\t")
 
         return "".join(parts)
-    
-    # Kontrola veci co do obsahu nepatri
-    def paragraph_has_fld_char(self, p: ET.Element, kind: str) -> bool:
-        """
-        kind = "begin" | "end"
-        """
-        for fc in p.findall(".//w:fldChar", self.NS):
-            if fc.attrib.get(f"{{{self.NS['w']}}}fldCharType") == kind:
-                return True
-        return False
-    
+        
     # Kontrola, zda 2. sekce ma cislovani od 1
     def section_properties(self, index: int) -> ET.Element | None:
         """
@@ -848,30 +755,38 @@ class WordDocument:
                     return True
 
         return False
-    
-    # Kontrola zda první kapitola ve 3. oddilu pokracuje v cislovani z predchoziho oddilu
-    def paragraph_heading_numbering_id(self, p):
-        """
-        Vrátí numId pro číslovaný nadpis, nebo None.
-        """
-        ppr = p.find("w:pPr", self.NS)
-        if ppr is None:
-            return None
 
-        numpr = ppr.find("w:numPr", self.NS)
-        if numpr is None:
-            return None
+    # def section_has_page_number_field(self, section_index: int) -> bool:
+    #     sect_pr = self.section_properties(section_index)
+    #     if sect_pr is None:
+    #         return False
 
-        ilvl = numpr.find("w:ilvl", self.NS)
-        if ilvl is None or ilvl.attrib.get(f"{{{self.NS['w']}}}val") != "0":
-            return None  # zajímá nás jen Heading 1
+    #     refs = (
+    #         sect_pr.findall("w:headerReference", self.NS)
+    #         + sect_pr.findall("w:footerReference", self.NS)
+    #     )
 
-        num_id = numpr.find("w:numId", self.NS)
-        if num_id is None:
-            return None
+    #     for ref in refs:
+    #         r_id = ref.attrib.get(f"{{{self.NS['w']}}}id")
+    #         if not r_id:
+    #             continue
 
-        return num_id.attrib.get(f"{{{self.NS['w']}}}val")
+    #         part_path = self.resolve_part_target(r_id)
+    #         if not part_path:
+    #             continue
 
+    #         try:
+    #             xml = self._load(part_path)
+    #         except KeyError:
+    #             continue
+
+    #         # hledáme PAGE field
+    #         for instr in xml.findall(".//w:instrText", self.NS):
+    #             if instr.text and "PAGE" in instr.text.upper():
+    #                 return True
+
+    #     return False
+        
     # Kontinualni cislovani sekce 2 na sekci 3
     def get_heading_num_id(self, p: ET.Element) -> str | None:
         """
@@ -1173,7 +1088,7 @@ class WordDocument:
                         count += 1
 
         return count
-    
+    #----------------------------------
     # Header/Footer
     def load_part_by_rid(self, r_id: str):
         try:

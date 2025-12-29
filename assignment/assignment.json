@@ -101,123 +101,55 @@
             "level": 1
         },
         {
-            "text": "Role vzd\u011bl\u00e1v\u00e1n\u00ed zdravotnick\u00e9ho person\u00e1lu v oblasti paliativn\u00ed p\u00e9\u010de",
+            "text": "Efektivn\u00ed \u0159\u00edzen\u00ed hospitaliza\u010dn\u00edch proces\u016f a optimalizace l\u016f\u017ekov\u00fdch kapacit",
             "level": 1
         },
         {
-            "text": "Role telemedic\u00edny v zaji\u0161t\u011bn\u00ed p\u00e9\u010de o pacienty s chronick\u00fdmi nemocemi",
+            "text": "Ekonomick\u00e9 a klinick\u00e9 v\u00fdhody pro pacienty",
             "level": 2
         },
         {
-            "text": "Inovace v chirurgick\u00fdch p\u0159\u00edstroj\u00edch",
+            "text": "Inovativn\u00ed p\u0159\u00edstupy k \u0159\u00edzen\u00ed chronick\u00fdch onemocn\u011bn\u00ed v praxi",
             "level": 3
         },
         {
-            "text": "D\u016fle\u017eitost multidisciplin\u00e1rn\u00ed spolupr\u00e1ce v komplexn\u00ed p\u00e9\u010di",
+            "text": "V\u00fdznam v\u010dasn\u00e9 diagnostiky v prevenci onkologick\u00fdch onemocn\u011bn\u00ed",
             "level": 3
         },
         {
-            "text": "Genomika a jej\u00ed medic\u00ednsk\u00e9 aplikace",
-            "level": 3
-        },
-        {
-            "text": "Psychosoci\u00e1ln\u00ed podpora pacient\u016f",
-            "level": 3
-        },
-        {
-            "text": "Anal\u00fdza n\u00e1klad\u016f a p\u0159\u00ednos\u016f farmakogenetick\u00e9ho testov\u00e1n\u00ed",
+            "text": "Neurov\u011bdy a l\u00e9\u010dba neurodegenerativn\u00edch onemocn\u011bn\u00ed",
             "level": 2
         },
         {
-            "text": "Chirurgick\u00e9 inovace v oblasti minim\u00e1ln\u011b invazivn\u00edch z\u00e1krok\u016f",
+            "text": "Metodika klinick\u00fdch studi\u00ed pro hodnocen\u00ed nov\u00fdch l\u00e9\u010div",
+            "level": 1
+        },
+        {
+            "text": "Prevence a l\u00e9\u010dba civiliza\u010dn\u00edch nemoc\u00ed ve st\u00e1rnouc\u00ed populaci",
+            "level": 2
+        },
+        {
+            "text": "Monitorov\u00e1n\u00ed pacient\u016f s vysok\u00fdm rizikem pomoc\u00ed AI",
             "level": 3
         },
         {
-            "text": "Um\u011bl\u00e1 inteligence v medic\u00edn\u011b",
-            "level": 3
-        },
-        {
-            "text": "V\u00fdznam efektivn\u00edho zdravotnick\u00e9ho syst\u00e9mu pro zaji\u0161t\u011bn\u00ed prim\u00e1rn\u00ed p\u00e9\u010de",
-            "level": 3
-        },
-        {
-            "text": "D\u016fle\u017eitost multidisciplin\u00e1rn\u00ed spolupr\u00e1ce v komplexn\u00ed p\u00e9\u010di",
+            "text": "Etick\u00e9 aspekty vyu\u017e\u00edv\u00e1n\u00ed pokro\u010dil\u00fdch technologi\u00ed ve zdravotnictv\u00ed",
             "level": 3
         },
         {
             "text": "Psychosoci\u00e1ln\u00ed podpora jako kl\u00ed\u010dov\u00fd faktor v p\u00e9\u010di o pacienty",
-            "level": 1
-        },
-        {
-            "text": "Psychosoci\u00e1ln\u00ed podpora pacient\u016f",
             "level": 2
         },
         {
-            "text": "V\u00fdznam personalizovan\u00e9 medic\u00edny v modern\u00ed zdravotn\u00ed p\u00e9\u010di",
+            "text": "Pokroky ve v\u00fdzkumu genetick\u00fdch biomarker\u016f",
             "level": 3
-        },
-        {
-            "text": "Optimalizace prim\u00e1rn\u00ed p\u00e9\u010de a zv\u00fd\u0161en\u00ed jej\u00ed efektivity",
-            "level": 3
-        },
-        {
-            "text": "V\u00fdvoj nov\u00fdch diagnostick\u00fdch metod v oblasti infek\u010dn\u00edch nemoc\u00ed",
-            "level": 3
-        },
-        {
-            "text": "Robotick\u00e1 chirurgie v klinick\u00e9 praxi",
-            "level": 2
         },
         {
             "text": "Personalizovan\u00e9 p\u0159\u00edstupy k l\u00e9\u010db\u011b neurodegenerativn\u00edch onemocn\u011bn\u00ed",
-            "level": 1
-        },
-        {
-            "text": "Metodika klinick\u00fdch studi\u00ed pro hodnocen\u00ed nov\u00fdch l\u00e9\u010div",
-            "level": 2
-        },
-        {
-            "text": "Nov\u00e9 techniky ve v\u00fdzkumu bun\u011b\u010dn\u00e9 regenerace",
             "level": 3
         },
         {
-            "text": "Strategie pro efektivn\u00ed \u0159\u00edzen\u00ed chronick\u00fdch onemocn\u011bn\u00ed",
-            "level": 3
-        },
-        {
-            "text": "Zdravotnick\u00e9 inovace a technologie",
-            "level": 3
-        },
-        {
-            "text": "Biomarkery v diagnostice nemoc\u00ed",
-            "level": 3
-        },
-        {
-            "text": "Strategie pro zvy\u0161ov\u00e1n\u00ed efektivity prim\u00e1rn\u00ed p\u00e9\u010de",
-            "level": 2
-        },
-        {
-            "text": "V\u00fdznam v\u010dasn\u00e9 diagnostiky",
-            "level": 3
-        },
-        {
-            "text": "Inovace v oblasti robotick\u00e9 chirurgie a jejich klinick\u00e9 vyu\u017eit\u00ed",
-            "level": 3
-        },
-        {
-            "text": "Interdisciplin\u00e1rn\u00ed p\u0159\u00edstup v onkologick\u00e9 p\u00e9\u010di",
-            "level": 2
-        },
-        {
-            "text": "Prevence a l\u00e9\u010dba civiliza\u010dn\u00edch nemoc\u00ed ve st\u00e1rnouc\u00ed populaci",
-            "level": 3
-        },
-        {
-            "text": "Strategie pro efektivn\u00ed \u0159\u00edzen\u00ed chronick\u00fdch onemocn\u011bn\u00ed",
-            "level": 3
-        },
-        {
-            "text": "Pokroky v genetick\u00e9 diagnostice",
+            "text": "Ochrana dat a bezpe\u010dnostn\u00ed protokoly v digit\u00e1ln\u00edm zdravotnictv\u00ed",
             "level": 3
         },
         {
@@ -228,24 +160,25 @@
     "objects": [
         {
             "type": "image",
-            "caption": "Skupina pacient\u016f b\u011bhem fyzioterapeutick\u00e9ho cvi\u010den\u00ed.",
-            "data": "23_4e5c5_01"
+            "caption": "V\u00fdzkumn\u00fd t\u00fdm vyhodnocuj\u00edc\u00ed data z klinick\u00e9ho pokusu.",
+            "data": "24_f3ea2_01"
         },
         {
             "type": "image",
-            "caption": "P\u0159ehled technologick\u00fdch inovac\u00ed v oblasti zdravotnick\u00fdch za\u0159\u00edzen\u00ed.",
-            "data": "23_4e5c5_02"
+            "caption": "R\u016fzn\u00e9 diagnostick\u00e9 p\u0159\u00edstroje p\u0159ipraven\u00e9 k vy\u0161et\u0159en\u00ed pacienta.",
+            "data": "24_f3ea2_02"
         }
     ],
     "bibliography": [
         {
-            "type": "online",
+            "type": "book",
             "data": {
-                "author": "R\u016f\u017ei\u010dka, Daniel",
-                "title": "Bezpe\u010dnost a ochrana dat v nemocnic\u00edch: V\u00fdzvy digit\u00e1ln\u00edho v\u011bku",
+                "author": "Nov\u00e1k, Petr",
+                "title": "Modern\u00ed metody prevence ve zdravotnictv\u00ed",
                 "year": "2023",
-                "url": "https:\/\/www.zdravotnabezpecnost.cz\/ochranadat",
-                "note": "[cit. 2023-07-05]"
+                "publisher": "Nakladatelstv\u00ed Zdrav\u00ed",
+                "address": "Praha",
+                "isbn": "978-1-234-56789-0"
             }
         },
         {
@@ -260,13 +193,16 @@
             }
         },
         {
-            "type": "online",
+            "type": "article",
             "data": {
-                "author": "Havelka, Ond\u0159ej",
-                "title": "Epidemiologick\u00e9 v\u00fdzvy 21. stolet\u00ed",
-                "year": "2020",
-                "url": "https:\/\/www.epidemiologieonline.cz\/vyzvy21stoleti",
-                "note": "[cit. 2021-02-15]"
+                "author": "Jel\u00ednek, V\u00e1clav",
+                "title": "Robotick\u00e1 chirurgie a jej\u00ed p\u0159\u00ednos pro pacienty",
+                "journal": "Technologie ve zdravotnictv\u00ed",
+                "year": "2021",
+                "volume": "15",
+                "number": "2",
+                "pages": "10--19",
+                "issn": "4567-1234"
             }
         }
     ]
