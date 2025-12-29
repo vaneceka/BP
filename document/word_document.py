@@ -1116,21 +1116,32 @@ class WordDocument:
         return None
 
     def paragraph_before(self, element):
-        elems = list(self._xml.find("w:body", self.NS))
-        idx = elems.index(element)
+        paragraphs = self._xml.findall(".//w:p", self.NS)
 
-        for el in reversed(elems[:idx]):
-            if el.tag.endswith("}p") and self._paragraph_text(el):
-                return el
+        try:
+            idx = paragraphs.index(element)
+        except ValueError:
+            return None  # element není v hlavním seznamu – bezpečný fallback
+
+        for p in reversed(paragraphs[:idx]):
+            if self._paragraph_text(p):
+                return p
+
         return None
 
 
     def paragraph_after(self, element):
-        body = list(self._xml.find("w:body", self.NS))
-        idx = body.index(element)
-        for el in body[idx + 1:]:
-            if el.tag.endswith("}p"):
-                return el
+        paragraphs = self._xml.findall(".//w:p", self.NS)
+
+        try:
+            idx = paragraphs.index(element)
+        except ValueError:
+            return None
+
+        for p in paragraphs[idx + 1:]:
+            if self._paragraph_text(p):
+                return p
+
         return None
     
 
