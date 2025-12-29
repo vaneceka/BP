@@ -71,9 +71,8 @@ class StyleSpec:
                 act = getattr(self, field, None)
 
                 # pokud expected nic neříká, bereme "nemá být zapnuto"
-                if exp is None:
-                    if act is True:
-                        diffs.append(f"{field}: nemá být zapnuto, ale je True")
+                if exp is None and act is True:
+                    diffs.append(f"{field}: nemá být zapnuto, ale je True")
             
             indent_fields = [
                 "indentLeft",

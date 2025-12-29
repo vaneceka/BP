@@ -109,11 +109,10 @@ class FirstChapterStartsOnPageOneCheck(BaseCheck):
                 continue
 
             lvl = document._style_level_from_styles_xml(sid)
-            if lvl == 1:
+            if lvl == 1 and self._paragraph_visible_text(el, document):
                 # ignoruj prázdné nadpisy
-                if self._paragraph_visible_text(el, document):
-                    first_h1 = el
-                    break
+                first_h1 = el
+                break
 
         if first_h1 is None:
             return CheckResult(

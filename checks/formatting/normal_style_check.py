@@ -20,7 +20,7 @@ class NormalStyleCheck(BaseCheck):
         if diffs:
             # složíme čitelnou zprávu
             message = (
-                f"Styl Normal neodpovídá zadání:\n"
+                "Styl Normal neodpovídá zadání:\n"
                 + "\n".join(f"- {d}" for d in diffs)
             )
 

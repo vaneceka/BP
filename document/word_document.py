@@ -1046,22 +1046,39 @@ class WordDocument:
 
         return count
 
+    # def count_list_of_figures_items(self) -> int:
+    #     count = 0
+
+    #     for instr in self._xml.findall(".//w:instrText", self.NS):
+    #         if instr.text and instr.text.strip().upper().startswith("TOC") and "\\C" in instr.text.upper():
+    #             if "OBRÁZEK" in instr.text.upper():
+    #                 # spočítej PAGEREF v tomto TOC
+    #                 toc_p = instr.getparent() if hasattr(instr, "getparent") else None
+
+    #     # jednodušší varianta – počítej PAGEREF s anchor _Toc
+    #     for instr in self._xml.findall(".//w:instrText", self.NS):
+    #         if instr.text and "PAGEREF" in instr.text.upper():
+    #             count += 1
+
+    #     return count
+
     def count_list_of_figures_items(self) -> int:
+        """
+        Spočítá počet položek v seznamu obrázků (List of Figures).
+
+        Princip:
+        - každá položka seznamu obrázků je reprezentována polem PAGEREF
+        - počítáme všechny výskyty PAGEREF v dokumentu
+        """
+
         count = 0
 
-        for instr in self._xml.findall(".//w:instrText", self.NS):
-            if instr.text and instr.text.strip().upper().startswith("TOC") and "\\C" in instr.text.upper():
-                if "OBRÁZEK" in instr.text.upper():
-                    # spočítej PAGEREF v tomto TOC
-                    toc_p = instr.getparent() if hasattr(instr, "getparent") else None
-
-        # jednodušší varianta – počítej PAGEREF s anchor _Toc
         for instr in self._xml.findall(".//w:instrText", self.NS):
             if instr.text and "PAGEREF" in instr.text.upper():
                 count += 1
 
         return count
-    
+        
     def iter_images(self):
         """
         Iteruje přes všechny vložené obrázky v dokumentu.
@@ -1178,16 +1195,6 @@ class WordDocument:
         for el in body[idx + 1:]:
             if el.tag.endswith("}p"):
                 return el
-        return None
-    
-    def paragraph_has_seq_caption(self, p):
-        for instr in p.findall(".//w:instrText", self.NS):
-            if instr.text:
-                txt = instr.text.strip()
-                if txt.startswith("SEQ"):
-                    parts = txt.split()
-                    if len(parts) >= 2:
-                        return parts[1]   # Obrázek / Tabulka / Graf
         return None
     
     def iter_ref_targets(self) -> set[str]:

@@ -12,6 +12,7 @@ from checks.formatting.frontpage_styles_check import FrontpageStylesCheck
 from checks.formatting.heading_hierarchical_numbering_check import HeadingHierarchicalNumberingCheck
 from checks.formatting.heading_style_check import HeadingStyleCheck
 from checks.formatting.headings_used_corretcly_check import HeadingsUsedCorrectlyCheck
+from checks.formatting.incosistent_formatting_check import InconsistentFormattingCheck
 from checks.formatting.list_level_2_used_check import ListLevel2UsedCheck
 from checks.formatting.main_chapter_starts_on_new_page_check import MainChapterStartsOnNewPageCheck
 from checks.formatting.manual_horizontal_formatting_check import ManualHorizontalSpacingCheck
@@ -63,101 +64,92 @@ from checks.formatting.normal_style_check import NormalStyleCheck
 
 
 def main():
-    # 1) Načtení dokumentu a zadání
     doc = WordDocument("student.docx")
     assignment = load_assignment("assignment/assignment.json")
     doc.save_xml()
 
-    # 2) Seznam kontrol (pořadí odpovídá tabulce hodnocení)
     checks = [
         # --- Části / oddíly dokumentu ---
-        # SectionCountCheck(),
-        # Section1TOCCheck(),
-        # Section2TextCheck(),
-        # Section3FigureListCheck(),
-        # Section3TableListCheck(),
-        # Section3BibliographyCheck(),
+        SectionCountCheck(),
+        Section1TOCCheck(),
+        Section2TextCheck(),
+        Section3FigureListCheck(),
+        Section3TableListCheck(),
+        Section3BibliographyCheck(),
 
         # --- Formátování dle zadání ---
-        # NormalStyleCheck(),
-        # HeadingStyleCheck(1),
-        # HeadingStyleCheck(2),
-        # HeadingStyleCheck(3),
-        # HeadingHierarchicalNumberingCheck(),
-        # TocHeadingNumberingCheck()
-        # UnnumberedSpecialHeadingsCheck(),
-        # CoverStylesCheck(),
-        # FrontpageStylesCheck(),
-        # BibliographyStyleCheck(),
-        # CaptionStyleCheck(),
-        # ContentHeadingStyleCheck()
-        #HeadingsUsedCorrectlyCheck()
-        #OriginalFormattingCheck()
-        # CustomStyleInheritanceCheck(),
-        # RequiredCustomStylesUsageCheck(),
-        # CustomStyleWithTabsCheck(),
-        # MainChapterStartsOnNewPageCheck(),
-        # ManualHorizontalSpacingCheck(),
-        # ManualVerticalSpacingCheck(),
-        # ListLevel2UsedCheck(),
-        # InconsistentFormattingCheck()
+        NormalStyleCheck(),
+        HeadingStyleCheck(1),
+        HeadingStyleCheck(2),
+        HeadingStyleCheck(3),
+        HeadingHierarchicalNumberingCheck(),
+        TocHeadingNumberingCheck(),
+        UnnumberedSpecialHeadingsCheck(),
+        CoverStylesCheck(),
+        FrontpageStylesCheck(),
+        BibliographyStyleCheck(),
+        CaptionStyleCheck(),
+        ContentHeadingStyleCheck(),
+        HeadingsUsedCorrectlyCheck(),
+        OriginalFormattingCheck(),
+        CustomStyleInheritanceCheck(),
+        RequiredCustomStylesUsageCheck(),
+        CustomStyleWithTabsCheck(),
+        MainChapterStartsOnNewPageCheck(),
+        ManualHorizontalSpacingCheck(),
+        ManualVerticalSpacingCheck(),
+        ListLevel2UsedCheck(),
+        InconsistentFormattingCheck(),
         # -------Obsah a struktura-----
-        # TOCExistsCheck(),
-        # TOCUpToDateCheck(),
-        # DocumentStructureCheck(),
-        # TOCHeadingLevelsCheck(),
-        # TOCFirstSectionContentCheck(),
-        # TOCIllegalContentCheck(),
-        # FirstChapterStartsOnPageOneCheck(),
-        # ChapterNumberingContinuityCheck(),
-        #--------Objekty-----------------
-        # MissingListOfFiguresCheck(),
-        # ListOfFiguresNotUpdatedCheck(),
-        # ImageLowQualityCheck(),
-        # ObjectCaptionCheck(),
-        # ObjectCaptionDescriptionCheck(),
-        # ObjectCrossReferenceCheck(),
-        # ObjectCaptionBindingCheck(),
-        #-------Liteatura---------
-        #NOTE stale chybi dost na dodelani
-        # MissingBibliographyCheck(),
-        # BibliographyNotUpdatedCheck(),
-        # BibliographyISO690Check()
-        #--------Header-Foooter------
-        # HeaderFooterMissingCheck(),
-        # SecondSectionHeaderHasTextCheck(),
-        # SecondSectionFooterHasPageNumberCheck(),
-        # SecondSectionPageNumberStartsAtOneCheck(),
-        # HeaderNotLinkedToPreviousCheck(2),
-        # HeaderNotLinkedToPreviousCheck(3),
-        # FooterLinkedToPreviousCheck(2),
-        # FooterLinkedToPreviousCheck(3),
-        # SectionHeaderEmptyCheck(1),
-        # SectionHeaderEmptyCheck(3),
-        # SectionFooterEmptyCheck(1),
-        # SectionFooterEmptyCheck(3),
+        TOCExistsCheck(),
+        TOCUpToDateCheck(),
+        DocumentStructureCheck(),
+        TOCHeadingLevelsCheck(),
+        TOCFirstSectionContentCheck(),
+        TOCIllegalContentCheck(),
+        FirstChapterStartsOnPageOneCheck(),
+        ChapterNumberingContinuityCheck(),
+        # --------Objekty-----------------
+        MissingListOfFiguresCheck(),
+        ListOfFiguresNotUpdatedCheck(),
+        ImageLowQualityCheck(),
+        ObjectCaptionCheck(),
+        ObjectCaptionDescriptionCheck(),
+        ObjectCrossReferenceCheck(),
+        ObjectCaptionBindingCheck(),
+        # -------Liteatura---------
+        # NOTE stale chybi dost na dodelani
+        MissingBibliographyCheck(),
+        BibliographyNotUpdatedCheck(),
+        BibliographyISO690Check(),
+        # --------Header-Foooter------
+        HeaderFooterMissingCheck(),
+        SecondSectionHeaderHasTextCheck(),
+        SecondSectionPageNumberStartsAtOneCheck(),
+        HeaderNotLinkedToPreviousCheck(2),
+        HeaderNotLinkedToPreviousCheck(3),
+        FooterLinkedToPreviousCheck(2),
+        FooterLinkedToPreviousCheck(3),
+        SectionHeaderEmptyCheck(1),
+        SectionHeaderEmptyCheck(3),
+        SectionFooterEmptyCheck(1),
+        SectionFooterEmptyCheck(3),
         SectionFooterHasPageNumberCheck(2),
         SectionFooterHasPageNumberCheck(3),
 
 
     ]
 
-    # 3) Spuštění kontrol
     runner = Runner(checks)
     report = Report()
 
     results = runner.run(doc, assignment)
 
-    # 4) Výpis výsledků
+    # Výpis výsledků
     for check, result in results:
         report.add(check.name, result)
 
     report.print()
-
-    # 5) Debug (volitelné)
-    # print("\nFIELD INSTRUCTIONS IN SECTION 3:")
-    # print(doc.get_field_instructions(doc.section(2)))
-
 
 if __name__ == "__main__":
     main()
