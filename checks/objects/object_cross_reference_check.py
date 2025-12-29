@@ -9,7 +9,7 @@ class ObjectCrossReferenceCheck(BaseCheck):
         errors = []
 
         anchors_in_text = document.iter_crossref_anchors_in_body_text()
-
+        print("ANCHORS IN TEXT:", anchors_in_text)
         for obj in document.iter_objects():
             if obj["type"] not in ("image", "chart", "table"):
                 continue
@@ -35,6 +35,11 @@ class ObjectCrossReferenceCheck(BaseCheck):
 
             # ✅ pokud titulky nemají bookmark, NESKÁKEJ continue → je to chyba
             if not caption_bookmarks:
+                errors.append(f"{obj['type']} není v textu zmíněn křížovým odkazem.")
+                continue
+
+            # ❌ žádný křížový odkaz v textu vůbec neexistuje
+            if not anchors_in_text:
                 errors.append(f"{obj['type']} není v textu zmíněn křížovým odkazem.")
                 continue
 

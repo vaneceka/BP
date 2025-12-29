@@ -7,19 +7,31 @@ class ListOfFiguresNotUpdatedCheck(BaseCheck):
 
     def run(self, document, assignment=None):
 
-        captions = document.count_figure_captions()
-        if captions == 0:
-            return CheckResult(True, "Dokument neobsahuje obrázky.", 0)
+        captions = document.iter_figure_caption_texts()
+        toc_items = document.iter_list_of_figures_texts()
 
-        toc_items = document.count_list_of_figures_items()
-        if toc_items == 0:
-            return CheckResult(True, "Seznam obrázků neexistuje.", 0)
+        missing = [
+            c for c in captions
+            if not any(c in t for t in toc_items)
+        ]
 
-        if captions != toc_items:
+        extra = [
+            t for t in toc_items
+            if not any(c in t for c in captions)
+        ]
+
+        if missing or extra:
+            msg = []
+
+            if missing:
+                msg.append(f"V seznamu obrázků chybí {len(missing)} položek.")
+
+            if extra:
+                msg.append(f"Seznam obrázků obsahuje {len(extra)} neplatných položek.")
+
             return CheckResult(
                 False,
-                f"Seznam obrázků není aktuální "
-                f"(titulky: {captions}, položky v seznamu: {toc_items}).",
+                "Seznam obrázků není aktuální:\n" + "\n".join(msg),
                 self.penalty,
             )
 

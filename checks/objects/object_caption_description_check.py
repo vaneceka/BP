@@ -50,7 +50,7 @@ class ObjectCaptionDescriptionCheck(BaseCheck):
                 continue
 
             # ❌ příliš krátký popis (heuristika)
-            if len(description) < 15 or len(description.split()) < 3:
+            if len(description) < 5 or len(description.split()) < 1:
                 errors.append(
                     f"Popis v titulku je příliš stručný („{description}“)."
                 )

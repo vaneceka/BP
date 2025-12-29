@@ -106,7 +106,7 @@ class WordDocument:
         sections = []
         current = []
 
-        body = self._xml.find("w:body", self.NS)
+        body = self._xml.find("w:body", NS)
 
         for el in body:
             current.append(el)
@@ -119,8 +119,8 @@ class WordDocument:
 
             # 2) sectPr uvnitř odstavce
             if el.tag.endswith("}p"):
-                ppr = el.find("w:pPr", self.NS)
-                if ppr is not None and ppr.find("w:sectPr", self.NS) is not None:
+                ppr = el.find("w:pPr", NS)
+                if ppr is not None and ppr.find("w:sectPr", NS) is not None:
                     sections.append(current)
                     current = []
 
@@ -144,7 +144,7 @@ class WordDocument:
     def _find_instr_texts(self, section):
         texts = []
         for el in section:
-            for instr in el.findall(".//w:instrText", self.NS):
+            for instr in el.findall(".//w:instrText", NS):
                 if instr.text:
                     texts.append(instr.text.strip())
         return texts
@@ -171,7 +171,7 @@ class WordDocument:
 
     def has_text_in_section(self, section_index: int) -> bool:
         for el in self.section(section_index):
-            for t in el.findall(".//w:t", self.NS):
+            for t in el.findall(".//w:t", NS):
                 if t.text and t.text.strip():
                     return True
         return False
@@ -182,9 +182,9 @@ class WordDocument:
 
     def has_bibliography_in_section(self, section_index: int) -> bool:
         for el in self.section(section_index):
-            for sdt in el.findall(".//w:sdt", self.NS):
-                sdt_pr = sdt.find("w:sdtPr", self.NS)
-                if sdt_pr is not None and sdt_pr.find("w:bibliography", self.NS) is not None:
+            for sdt in el.findall(".//w:sdt", NS):
+                sdt_pr = sdt.find("w:sdtPr", NS)
+                if sdt_pr is not None and sdt_pr.find("w:bibliography", NS) is not None:
                     return True
         return False
     
@@ -192,7 +192,7 @@ class WordDocument:
         for i in range(self.section_count()):
             texts = []
             for el in self.section(i):
-                for t in el.findall(".//w:t", self.NS):
+                for t in el.findall(".//w:t", NS):
                     if t.text and t.text.strip():
                         texts.append(t.text.strip())
             print(f"SECTION {i+1}: {len(texts)} text nodes")
@@ -484,8 +484,9 @@ class WordDocument:
                 if line:
                     line_height = int(line) / 240
 
+            # ppr = style.find("w:pPr", self.NS)
             if ppr is not None:
-                numpr = ppr.find("w:numPr", self.NS)
+                numpr = ppr.find("w:numPr", NS)
                 if numpr is not None:
                     num_id = numpr.find("w:numId", self.NS)
                     if num_id is not None:
@@ -601,6 +602,36 @@ class WordDocument:
         if ps is None:
             return None
         return ps.attrib.get(f"{{{self.NS['w']}}}val")
+
+    # def _style_level_from_styles_xml(self, style_id: str) -> int | None:
+    #     """
+    #     Zkusí odvodit level nadpisu ze styles.xml:
+    #     - podle w:name (Heading 1 / heading 1 / Nadpis 1 / Nadpis1…)
+    #     - nebo podle w:outlineLvl (0 -> H1, 1 -> H2, 2 -> H3…)
+    #     """
+    #     style = self._find_style_by_id(style_id)
+    #     if style is None:
+    #         return None
+
+    #     # 1) podle názvu stylu
+    #     name_el = style.find("w:name", self.NS)
+    #     if name_el is not None:
+    #         nm = (name_el.attrib.get(f"{{{self.NS['w']}}}val") or "").strip().lower()
+    #         # typicky: "heading 2", "nadpis 3", "nadpis3"
+    #         m = re.search(r"(heading|nadpis)\s*([0-9]+)", nm)
+    #         if m:
+    #             return int(m.group(2))
+
+    #     # 2) podle outlineLvl (0=H1, 1=H2, 2=H3...)
+    #     ppr = style.find("w:pPr", self.NS)
+    #     if ppr is not None:
+    #         out = ppr.find("w:outlineLvl", self.NS)
+    #         if out is not None:
+    #             v = out.attrib.get(f"{{{self.NS['w']}}}val")
+    #             if v is not None:
+    #                 return int(v) + 1
+
+    #     return None
 
     def _style_level_from_styles_xml(self, style_id: str) -> int | None:
         style = self._find_style_by_id(style_id)
@@ -916,6 +947,40 @@ class WordDocument:
         return None
     
     # Objekty
+    # def iter_objects(self):
+    #     objects = []
+
+    #     for p in self._xml.findall(".//w:p", self.NS):
+
+    #         if p.findall(".//w:drawing", self.NS):
+    #             objects.append({
+    #                 "type": "image",
+    #                 "element": p,
+    #                 "paragraph": p
+    #             })
+
+    #         if p.findall(".//m:oMath", self.NS) or p.findall(".//m:oMathPara", self.NS):
+    #             objects.append({
+    #                 "type": "equation",
+    #                 "element": p,
+    #                 "paragraph": p
+    #             })
+
+    #     for tbl in self._xml.findall(".//w:tbl", self.NS):
+    #         objects.append({
+    #             "type": "table",
+    #             "element": tbl,
+    #             "paragraph": None
+    #         })
+
+    #     for obj in self._xml.findall(".//w:object", self.NS):
+    #         objects.append({
+    #             "type": "ole",
+    #             "element": obj,
+    #             "paragraph": None
+    #         })
+
+    #     return objects
     def iter_objects(self):
         objects = []
 
@@ -961,52 +1026,42 @@ class WordDocument:
         count = 0
 
         for p in self._xml.findall(".//w:p", self.NS):
+            ppr = p.find("w:pPr", self.NS)
+            if ppr is None:
+                continue
 
-            # 1️⃣ fldSimple (to máš ty!)
-            for fld in p.findall(".//w:fldSimple", self.NS):
-                instr = fld.attrib.get(f"{{{self.NS['w']}}}instr", "")
-                if "SEQ" in instr.upper() and "OBRÁZEK" in instr.upper():
+            style = ppr.find("w:pStyle", self.NS)
+            if style is None:
+                continue
+
+            style_val = style.attrib.get(f"{{{self.NS['w']}}}val", "").lower()
+            if "titulek" not in style_val:
+                continue
+
+            # musí obsahovat SEQ Obrázek
+            for instr in p.findall(".//w:instrText", self.NS):
+                if instr.text and "SEQ" in instr.text.upper() and "OBRÁZEK" in instr.text.upper():
                     count += 1
                     break
 
-            else:
-                # 2️⃣ fallback – instrText
-                for instr in p.findall(".//w:instrText", self.NS):
-                    if instr.text:
-                        txt = instr.text.upper()
-                        if txt.startswith("SEQ") and "OBRÁZEK" in txt:
-                            count += 1
-                            break
-
         return count
-    
-    def iter_figure_caption_texts(self) -> list[str]:
-        captions = []
 
-        for p in self._xml.findall(".//w:p", self.NS):
-            if self.paragraph_has_seq_caption(p) != "Obrázek":
-                continue
+    # def count_list_of_figures_items(self) -> int:
+    #     count = 0
 
-            text = self._paragraph_text(p)
-            if text:
-                captions.append(text.strip())
+    #     for instr in self._xml.findall(".//w:instrText", self.NS):
+    #         if instr.text and instr.text.strip().upper().startswith("TOC") and "\\C" in instr.text.upper():
+    #             if "OBRÁZEK" in instr.text.upper():
+    #                 # spočítej PAGEREF v tomto TOC
+    #                 toc_p = instr.getparent() if hasattr(instr, "getparent") else None
 
-        return captions
+    #     # jednodušší varianta – počítej PAGEREF s anchor _Toc
+    #     for instr in self._xml.findall(".//w:instrText", self.NS):
+    #         if instr.text and "PAGEREF" in instr.text.upper():
+    #             count += 1
 
+    #     return count
 
-    def iter_list_of_figures_texts(self) -> list[str]:
-        items = []
-
-        for p in self._xml.findall(".//w:p", self.NS):
-            if not self.paragraph_is_toc_like(p):
-                continue
-
-            text = self._paragraph_text(p)
-            if text:
-                items.append(text.strip())
-
-        return items
-    
     def count_list_of_figures_items(self) -> int:
         """
         Spočítá počet položek v seznamu obrázků (List of Figures).
@@ -1087,40 +1142,20 @@ class WordDocument:
 
         return None
     
-    import re
-
-    def paragraph_has_seq_caption(self, p: ET.Element) -> str | None:
+    def paragraph_has_seq_caption(self, p):
         """
-        Vrátí návěští titulku z pole SEQ (např. 'Obrázek', 'Tabulka', 'Graf'), nebo None.
-        Podporuje:
-        - w:fldSimple (instr atribut)
-        - w:instrText (rozsekané)
+        Vrátí text návěští (např. 'Obrázek', 'Tabulka'), nebo None
         """
-        if p is None:
-            return None
-
-        # 1️⃣ fldSimple
-        for fld in p.findall(".//w:fldSimple", self.NS):
-            instr = fld.attrib.get(f"{{{self.NS['w']}}}instr") or ""
-            m = re.search(r"\bSEQ\s+([^\s\\]+)", instr, re.IGNORECASE)
-            if m:
-                return m.group(1)
-
-        # 2️⃣ instrText (pospojované)
-        instr_parts = [
-            instr.text for instr in p.findall(".//w:instrText", self.NS)
-            if instr.text
-        ]
-
-        if instr_parts:
-            joined = " ".join(instr_parts)
-            m = re.search(r"\bSEQ\s+([^\s\\]+)", joined, re.IGNORECASE)
-            if m:
-                return m.group(1)
-
+        for instr in p.findall(".//w:instrText", self.NS):
+            txt = instr.text or ""
+            if "SEQ" in txt:
+                # SEQ Obrázek \* ARABIC
+                parts = txt.strip().split()
+                if len(parts) >= 2:
+                    return parts[1]
         return None
 
-    def paragraph_before(self, element):
+    def paragraph_after_element(self, element):
         body = self._xml.find("w:body", self.NS)
         if body is None:
             return None
@@ -1143,6 +1178,14 @@ class WordDocument:
             if el.tag.endswith("}tbl"):
                 break
 
+        return None
+
+    def paragraph_before(self, element):
+        body = list(self._xml.find("w:body", self.NS))
+        idx = body.index(element)
+        for el in reversed(body[:idx]):
+            if el.tag.endswith("}p"):
+                return el
         return None
 
 
@@ -1185,29 +1228,22 @@ class WordDocument:
         return False
     
     def paragraph_is_caption(self, p: ET.Element) -> bool:
-        """
-        Vrátí True, pokud odstavec obsahuje pole SEQ (titulky obrázků/tabulek/grafů).
-        """
-        return self.paragraph_has_seq_caption(p) is not None
-
-    
-    def paragraph_is_toc_like(self, p):
-        # 1️⃣ podle stylu (nejspolehlivější)
-        ppr = p.find("w:pPr", self.NS)
-        if ppr is not None:
-            ps = ppr.find("w:pStyle", self.NS)
-            if ps is not None:
-                style = (ps.attrib.get(f"{{{self.NS['w']}}}val") or "").lower()
-                if any(x in style for x in ("toc", "obsah", "seznam")):
-                    return True
-
-        # 2️⃣ fallback – podle polí
+        if p is None:
+            return False
         for instr in p.findall(".//w:instrText", self.NS):
-            if instr.text:
-                txt = instr.text.upper()
-                if txt.startswith("TOC") or "PAGEREF" in txt:
-                    return True
-
+            if instr.text and instr.text.strip().upper().startswith("SEQ"):
+                return True
+        return False
+    
+    def paragraph_is_toc_like(self, p: ET.Element) -> bool:
+        if p is None:
+            return False
+        for instr in p.findall(".//w:instrText", self.NS):
+            if not instr.text:
+                continue
+            txt = instr.text.upper()
+            if txt.strip().startswith("TOC") or "PAGEREF" in txt:
+                return True
         return False
     
     def iter_crossref_anchors_in_body_text(self) -> set[str]:
