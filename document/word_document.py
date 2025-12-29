@@ -1308,3 +1308,20 @@ class WordDocument:
         if p.findall(".//w:instrText", self.NS):
             return True
         return False
+    
+    def _visible_text(self, element) -> str:
+        parts = []
+        for r in element.findall(".//w:r", self.NS):
+            rpr = r.find("w:rPr", self.NS)
+            if rpr is not None and rpr.find("w:webHidden", self.NS) is not None:
+                continue
+
+            for t in r.findall("w:t", self.NS):
+                if t.text:
+                    parts.append(t.text)
+
+        txt = "".join(parts)
+        txt = re.sub(r"\s+", " ", txt).strip()
+        return txt
+    
+  
