@@ -1,33 +1,46 @@
 from checks.base_check import BaseCheck, CheckResult
-import re
-
 
 class InconsistentFormattingCheck(BaseCheck):
     name = "Nekonzistentní formátování textu"
-    penalty = -5  # násobí se
+    penalty = -5
 
     def run(self, document, assignment=None):
         errors = []
 
         for p in document.iter_paragraphs():
+
+            # 1️⃣ ignoruj obsah / seznamy
+            if document._paragraph_is_toc_or_object_list(p):
+                continue
+
             ppr = p.find("w:pPr", document.NS)
             if ppr is None:
                 continue
 
             pstyle = ppr.find("w:pStyle", document.NS)
             if pstyle is None:
-                continue  # bez stylu → neřešíme tady
+                continue
 
             style_name = pstyle.attrib.get(f"{{{document.NS['w']}}}val")
 
-            # text odstavce (zkrácený)
-            texts = []
-            for t in p.findall(".//w:t", document.NS):
-                if t.text:
-                    texts.append(t.text)
-            preview = re.sub(r"\s+", " ", "".join(texts)).strip()[:60]
+            preview = document._paragraph_text(p)[:60]
 
             for r in p.findall(".//w:r", document.NS):
+
+                # 2️⃣ ignoruj technické běhy
+                if r.find("w:instrText", document.NS) is not None:
+                    continue
+                if r.find("w:fldChar", document.NS) is not None:
+                    continue
+
+                # 3️⃣ musí mít skutečný text
+                has_text = any(
+                    t.text and t.text.strip()
+                    for t in r.findall(".//w:t", document.NS)
+                )
+                if not has_text:
+                    continue
+
                 rpr = r.find("w:rPr", document.NS)
                 if rpr is None:
                     continue
@@ -50,7 +63,7 @@ class InconsistentFormattingCheck(BaseCheck):
                         f"- Styl „{style_name}“, ruční zásah: {', '.join(problems)}"
                         f"\n  Text: „{preview}“"
                     )
-                    break  # jeden odstavec = jedna chyba
+                    break
 
         if errors:
             return CheckResult(
@@ -60,8 +73,4 @@ class InconsistentFormattingCheck(BaseCheck):
                 self.penalty * len(errors),
             )
 
-        return CheckResult(
-            True,
-            "Nenalezeno nekonzistentní formátování.",
-            0,
-        )
+        return CheckResult(True, "Nenalezeno nekonzistentní formátování.", 0)

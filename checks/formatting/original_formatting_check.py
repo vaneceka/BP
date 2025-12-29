@@ -8,8 +8,15 @@ class OriginalFormattingCheck(BaseCheck):
     def run(self, document, assignment=None):
         problems = []
 
-        if document.has_manual_formatting():
-            problems.append("Text obsahuje ruční formátování místo stylů.")
+        manual = document.find_manual_formatting()
+        if manual:
+            lines = [
+                f"- ruční formátování v odstavci {idx}: „{txt[:80]}…“"
+                for idx, txt in manual[:5]
+            ]
+            problems.append(
+                "Ruční formátování místo stylů:\n" + "\n".join(lines)
+            )
 
         if document.has_inline_font_changes():
             problems.append("Text obsahuje inline změny fontu/velikosti.")

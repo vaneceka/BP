@@ -110,6 +110,20 @@ class StyleSpec:
                     diffs.append(f"size: očekáváno {expected_value}, nalezeno {actual_value}")
                 continue
 
+            if field == "alignment":
+                norm = {
+                    "left": "start",
+                    "right": "end",
+                }
+                act = norm.get(actual_value, actual_value)
+                exp = norm.get(expected_value, expected_value)
+
+                if act != exp:
+                    diffs.append(
+                        f"alignment: očekáváno {expected_value}, nalezeno {actual_value}"
+                    )
+                continue
+
             if actual_value != expected_value:
                 diffs.append(f"{field}: očekáváno {expected_value}, nalezeno {actual_value}")
 

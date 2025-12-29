@@ -134,7 +134,6 @@ def main():
         SectionHeaderEmptyCheck(1),
         SectionHeaderEmptyCheck(3),
         SectionFooterEmptyCheck(1),
-        SectionFooterEmptyCheck(3),
         SectionFooterHasPageNumberCheck(2),
         SectionFooterHasPageNumberCheck(3),
 

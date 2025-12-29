@@ -420,6 +420,27 @@ class WordDocument:
 
         return None
     
+    def _resolve_line_height(self, style) -> float | None:
+        while style is not None:
+            ppr = style.find("w:pPr", self.NS)
+            if ppr is not None:
+                spacing = ppr.find("w:spacing", self.NS)
+                if spacing is not None:
+                    line = spacing.attrib.get(f"{{{self.NS['w']}}}line")
+                    rule = spacing.attrib.get(f"{{{self.NS['w']}}}lineRule", "auto")
+
+                    if line and rule == "auto":
+                        return int(line) / 240
+
+            based = style.find("w:basedOn", self.NS)
+            style = (
+                self._find_style_by_id(based.attrib.get(f"{{{self.NS['w']}}}val"))
+                if based is not None
+                else None
+            )
+
+        return None
+    
     def get_doc_default_font_size(self) -> int | None:
         dd = self._styles_xml.find(".//w:docDefaults/w:rPrDefault/w:rPr", self.NS)
         if dd is None:
@@ -479,6 +500,7 @@ class WordDocument:
         
         all_caps = self._resolve_bool(style, "caps")
         alignment = self._resolve_alignment(style) or default_alignment
+        line_height = self._resolve_line_height(style)
         page_break = self._resolve_page_break_before(style)
         num_level = None
         is_numbered = None
@@ -533,6 +555,7 @@ class WordDocument:
             allCaps=all_caps,
             color=color,
             alignment=alignment,
+            lineHeight=line_height,
             pageBreakBefore=page_break,
             isNumbered=is_numbered,
             numLevel=num_level,
@@ -676,39 +699,108 @@ class WordDocument:
             items.append((txt, lvl))
 
         return items
-    
-    # kontrola původního formátování
+        
     def has_manual_formatting(self) -> bool:
-        for p in self._xml.findall(".//w:p", self.NS):
-            ppr = p.find("w:pPr", self.NS)
-            style = ppr.find("w:pStyle", self.NS) if ppr is not None else None
+        return bool(self.find_manual_formatting())
 
-            # žádný styl → podezření
-            if style is None:
-                for r in p.findall(".//w:r", self.NS):
-                    rpr = r.find("w:rPr", self.NS)
-                    if rpr is not None:
-                        return True
-        return False
-    
     def has_inline_font_changes(self) -> bool:
-        for r in self._xml.findall(".//w:r", self.NS):
-            rpr = r.find("w:rPr", self.NS)
-            if rpr is not None:
+        for p in self._xml.findall(".//w:p", self.NS):
+
+            # ⛔ ignoruj obsah a captiony
+            if self._paragraph_is_toc_or_object_list(p):
+                continue
+            if self.paragraph_is_caption(p):
+                continue
+
+            # ⛔ ignoruj odstavce s objekty
+            if (
+                p.findall(".//w:drawing", self.NS) or
+                p.findall(".//m:oMath", self.NS)
+            ):
+                continue
+
+            for r in p.findall(".//w:r", self.NS):
+                rpr = r.find("w:rPr", self.NS)
+                if rpr is None:
+                    continue
+
                 if (
                     rpr.find("w:sz", self.NS) is not None or
                     rpr.find("w:rFonts", self.NS) is not None or
                     rpr.find("w:color", self.NS) is not None
                 ):
                     return True
+
         return False
     
     def has_html_artifacts(self) -> bool:
-        for t in self._iter_texts():
-            if any(x in t for x in ["&nbsp;", "&#160;", "<", ">"]):
+        for p in self._xml.findall(".//w:p", self.NS):
+
+            if self._paragraph_is_toc_or_object_list(p):
+                continue
+
+            text = self._paragraph_text(p)
+            if not text:
+                continue
+
+            if any(x in text for x in ["&nbsp;", "&#160;", "<", ">"]):
                 return True
+
         return False
     
+
+    def find_manual_formatting(self) -> list[tuple[int, str]]:
+        results = []
+
+        paragraphs = list(self._xml.findall(".//w:body/w:p", self.NS))
+
+        for i, p in enumerate(paragraphs, start=1):
+
+            # ⛔ ignoruj TOC, seznamy, captiony
+            if self._paragraph_is_toc_or_object_list(p):
+                continue
+            if self.paragraph_is_caption(p):
+                continue
+
+            # ⛔ ignoruj objekty
+            if (
+                p.findall(".//w:drawing", self.NS) or
+                p.findall(".//m:oMath", self.NS) or
+                p.findall(".//m:oMathPara", self.NS)
+            ):
+                continue
+
+            text = self._paragraph_text(p)
+            if not text:
+                continue
+
+            # ⛔ pokud odstavec obsahuje REF pole → ignoruj celý odstavec
+            if any(
+                (instr.text or "").strip().upper().startswith("REF ")
+                for instr in p.findall(".//w:instrText", self.NS)
+            ):
+                continue
+
+            # ⛔ pokud obsahuje hyperlink → ignoruj celý odstavec
+            if p.findall(".//w:hyperlink", self.NS):
+                continue
+
+            # ⛔ pokud má znakový styl (např. Hyperlink)
+            for r in p.findall(".//w:r", self.NS):
+                rpr = r.find("w:rPr", self.NS)
+                if rpr is None:
+                    continue
+
+                rs = rpr.find("w:rStyle", self.NS)
+                if rs is not None:
+                    continue
+
+                # ❌ skutečné ruční formátování
+                results.append((i, text))
+                break
+
+        return results
+
     # číslování položek v obsahu
     def toc_shows_numbers(self) -> bool | None:
         """
@@ -813,37 +905,6 @@ class WordDocument:
                     return True
 
         return False
-
-    # def section_has_page_number_field(self, section_index: int) -> bool:
-    #     sect_pr = self.section_properties(section_index)
-    #     if sect_pr is None:
-    #         return False
-
-    #     refs = (
-    #         sect_pr.findall("w:headerReference", self.NS)
-    #         + sect_pr.findall("w:footerReference", self.NS)
-    #     )
-
-    #     for ref in refs:
-    #         r_id = ref.attrib.get(f"{{{self.NS['w']}}}id")
-    #         if not r_id:
-    #             continue
-
-    #         part_path = self.resolve_part_target(r_id)
-    #         if not part_path:
-    #             continue
-
-    #         try:
-    #             xml = self._load(part_path)
-    #         except KeyError:
-    #             continue
-
-    #         # hledáme PAGE field
-    #         for instr in xml.findall(".//w:instrText", self.NS):
-    #             if instr.text and "PAGE" in instr.text.upper():
-    #                 return True
-
-    #     return False
         
     # Kontinualni cislovani sekce 2 na sekci 3
     def get_heading_num_id(self, p: ET.Element) -> str | None:
@@ -939,21 +1000,48 @@ class WordDocument:
                 captions.append(text.strip())
 
         return captions
-
-
+    
     def iter_list_of_figures_texts(self) -> list[str]:
-        items = []
+        """
+        Vrátí položky seznamu obrázků (Table of Figures).
+        Funguje pro:
+        - TOC \\c "Obrázek"
+        - položky ve <w:p> se stylem seznamu
+        """
+        items: list[str] = []
 
-        for p in self._xml.findall(".//w:p", self.NS):
-            if not self._paragraph_is_toc_or_object_list(p):
+        paragraphs = list(self._xml.findall(".//w:body/w:p", self.NS))
+
+        is_inside_figures_toc = False
+
+        for p in paragraphs:
+
+            # 1️⃣ detekce začátku seznamu obrázků
+            for instr in p.findall(".//w:instrText", self.NS):
+                if instr.text:
+                    txt = instr.text.upper()
+                    if "TOC" in txt and "\\C" in txt and "OBRÁZEK" in txt:
+                        is_inside_figures_toc = True
+                        break
+
+            if not is_inside_figures_toc:
                 continue
 
-            text = self._paragraph_text(p)
+            # 2️⃣ konec – další sectPr
+            if p.find("w:pPr/w:sectPr", self.NS) is not None:
+                break
+
+            # 3️⃣ položky seznamu obrázků = hyperlink s textem
+            hl = p.find("w:hyperlink", self.NS)
+            if hl is None:
+                continue
+
+            text = self._paragraph_text(hl)
             if text:
                 items.append(text.strip())
 
         return items
-         
+            
     def object_image_rids(self, element) -> list[str]:
         """
         Vrátí seznam rId (relationship Id) všech obrázků v daném elementu (typicky <w:p>).
@@ -1189,3 +1277,13 @@ class WordDocument:
                 return target
 
         return None
+    
+    def has_text_after_paragraph(self, paragraphs, index: int) -> bool:
+        """
+        Vrátí True, pokud se ZA daným indexem nachází
+        alespoň jeden odstavec s viditelným textem.
+        """
+        for p in paragraphs[index + 1:]:
+            if self._paragraph_text(p):
+                return True
+        return False

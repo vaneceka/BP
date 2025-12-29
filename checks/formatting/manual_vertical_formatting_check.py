@@ -7,9 +7,16 @@ class ManualVerticalSpacingCheck(BaseCheck):
 
     def run(self, document, assignment=None):
         paragraphs = list(document.iter_paragraphs())
-        errors = 0
+        errors: list[tuple[int, str]] = []
 
         for i, p in enumerate(paragraphs):
+            # ⛔ ignoruj odstavec, který obsahuje objekt (obrázek, graf, rovnice)
+            if (
+                p.findall(".//w:drawing", document.NS) or
+                p.findall(".//m:oMath", document.NS) or
+                p.findall(".//m:oMathPara", document.NS)
+            ):
+                continue
             # 1️⃣ má odstavec text?
             has_text = any(
                 t.text and t.text.strip()
@@ -19,7 +26,8 @@ class ManualVerticalSpacingCheck(BaseCheck):
                 continue
 
             # 2️⃣ poslední odstavec dokumentu → ignoruj
-            if i == len(paragraphs) - 1:
+            # ⛔ prázdné řádky na konci dokumentu ignoruj
+            if not document.has_text_after_paragraph(paragraphs, i):
                 continue
 
             # 3️⃣ sectPr (oddíly) → OK
@@ -27,8 +35,11 @@ class ManualVerticalSpacingCheck(BaseCheck):
                 continue
 
             next_p = paragraphs[i + 1]
+            # ⛔ ignoruj, pokud následující odstavec patří obsahu / seznamům
+            if document._paragraph_is_toc_or_object_list(next_p):
+                continue
 
-            # 4️⃣ následující odstavec má page break (přímo nebo ve stylu)
+            # 4️⃣ page break
             if document.paragraph_has_page_break(next_p):
                 continue
 
@@ -36,7 +47,7 @@ class ManualVerticalSpacingCheck(BaseCheck):
             if next_style_id and document.style_has_page_break(next_style_id):
                 continue
 
-            # 5️⃣ následující odstavec má spaceBefore → OK
+            # 5️⃣ spaceBefore
             next_ppr = next_p.find("w:pPr", document.NS)
             if next_ppr is not None:
                 spacing = next_ppr.find("w:spacing", document.NS)
@@ -45,15 +56,23 @@ class ManualVerticalSpacingCheck(BaseCheck):
                     if before and int(before) > 0:
                         continue
 
-            # ❌ jinak je to ruční vertikální odsazení
-            errors += 1
+            # ❌ ruční odsazení
+            context = document._paragraph_text(next_p)
+            style = document._paragraph_style_id(next_p) or "bez stylu"
+            errors.append((i + 1, i + 2, style, context))
 
         if errors:
+            lines = [
+                f"- prázdný řádek (odstavec {empty_idx}) před odstavcem {next_idx} "
+                f"(styl: {style}): „{txt[:80]}…“"
+                for empty_idx, next_idx, style, txt in errors[:5]
+            ]
+
             return CheckResult(
                 False,
-                "V dokumentu je text vertikálně formátován pomocí prázdných řádků "
-                "(místo použití stylů nebo konce stránky).",
-                self.penalty * errors,
+                "V dokumentu je text vertikálně formátován pomocí prázdných řádků:\n"
+                + "\n".join(lines),
+                self.penalty * len(errors),
             )
 
         return CheckResult(

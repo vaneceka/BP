@@ -5,16 +5,13 @@ class SectionFooterEmptyCheck(BaseCheck):
     penalty = -2
 
     def __init__(self, section_number: int):
-        """
-        section_number = číslo oddílu (1-based, lidské číslování)
-        """
         self.section_number = section_number
         self.section_index = section_number - 1
-
         self.name = f"{section_number}. oddíl nemá prázdné zápatí"
 
     def run(self, document, assignment=None):
 
+        # oddíl neexistuje
         if document.section_count() <= self.section_index:
             return CheckResult(True, "Oddíl v dokumentu neexistuje.", 0)
 
@@ -24,13 +21,9 @@ class SectionFooterEmptyCheck(BaseCheck):
 
         footer_refs = sect_pr.findall("w:footerReference", document.NS)
 
-        # ❗ žádný footerReference → implicitně prázdné
+        # žádné footerReference → implicitně prázdné
         if not footer_refs:
-            return CheckResult(
-                True,
-                "Zápatí oddílu je prázdné.",
-                0,
-            )
+            return CheckResult(True, "Zápatí oddílu je prázdné.", 0)
 
         for ref in footer_refs:
             r_id = ref.attrib.get(f"{{{document.NS['r']}}}id")
@@ -46,26 +39,31 @@ class SectionFooterEmptyCheck(BaseCheck):
             except KeyError:
                 continue
 
-            # ❌ text v zápatí
+            # ==================================================
+            # 1️⃣ VIDITELNÝ TEXT
+            # ==================================================
             for t in xml.findall(".//w:t", document.NS):
                 if t.text and t.text.strip():
                     return CheckResult(
                         False,
-                        f"{self.section_number}. oddíl obsahuje neprázdné zápatí.",
+                        f"{self.section_number}. oddíl obsahuje neprázdné zápatí (text).",
                         self.penalty,
                     )
 
-            # ❌ pole (PAGE, DATE, ...)
-            for instr in xml.findall(".//w:instrText", document.NS):
-                if instr.text and instr.text.strip():
-                    return CheckResult(
-                        False,
-                        f"{self.section_number}. oddíl obsahuje neprázdné zápatí.",
-                        self.penalty,
-                    )
+            # ==================================================
+            # 2️⃣ VIDITELNÉ OBJEKTY
+            # ==================================================
+            if (
+                xml.findall(".//w:drawing", document.NS)
+                or xml.findall(".//m:oMath", document.NS)
+                or xml.findall(".//m:oMathPara", document.NS)
+            ):
+                return CheckResult(
+                    False,
+                    f"{self.section_number}. oddíl obsahuje neprázdné zápatí (objekt).",
+                    self.penalty,
+                )
 
-        return CheckResult(
-            True,
-            "Zápatí oddílu je prázdné.",
-            0,
-        )
+            # ❗ instrText / fldChar ZÁMĚRNĚ IGNORUJEME
+
+        return CheckResult(True, "Zápatí oddílu je prázdné.", 0)

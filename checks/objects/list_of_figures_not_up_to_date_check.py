@@ -9,6 +9,8 @@ class ListOfFiguresNotUpdatedCheck(BaseCheck):
 
         captions = document.iter_figure_caption_texts()
         toc_items = document.iter_list_of_figures_texts()
+        print("CAPTIONS:", captions)
+        print("TOC ITEMS:", toc_items)
 
         missing = [
             c for c in captions
