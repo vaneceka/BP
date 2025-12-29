@@ -257,6 +257,41 @@ class WordDocument:
 
         return None
     
+    def _resolve_alignment(self, style):
+        while style is not None:
+            ppr = style.find("w:pPr", self.NS)
+            if ppr is not None:
+                jc = ppr.find("w:jc", self.NS)
+                if jc is not None:
+                    return jc.attrib.get(f"{{{self.NS['w']}}}val")
+
+            based = style.find("w:basedOn", self.NS)
+            style = (
+                self._find_style_by_id(based.attrib.get(f"{{{self.NS['w']}}}val"))
+                if based is not None
+                else None
+            )
+
+        return None
+
+    def _resolve_space_before(self, style) -> int | None:
+        while style is not None:
+            ppr = style.find("w:pPr", self.NS)
+            if ppr is not None:
+                spacing = ppr.find("w:spacing", self.NS)
+                if spacing is not None:
+                    val = spacing.attrib.get(f"{{{self.NS['w']}}}before")
+                    if val is not None:
+                        return int(val)
+
+            based = style.find("w:basedOn", self.NS)
+            style = (
+                self._find_style_by_id(based.attrib.get(f"{{{self.NS['w']}}}val"))
+                if based is not None
+                else None
+            )
+
+        return None
 
     def _resolve_color(self, style) -> str | None:
         while style is not None:
@@ -358,6 +393,33 @@ class WordDocument:
 
         return False
     
+    def _resolve_tabs(self, style) -> list[tuple[str, int]] | None:
+        tabs = []
+
+        while style is not None:
+            ppr = style.find("w:pPr", self.NS)
+            if ppr is not None:
+                tabs_el = ppr.find("w:tabs", self.NS)
+                if tabs_el is not None:
+                    for tab in tabs_el.findall("w:tab", self.NS):
+                        val = tab.attrib.get(f"{{{self.NS['w']}}}val")
+                        pos = tab.attrib.get(f"{{{self.NS['w']}}}pos")
+                        if val and pos:
+                            tabs.append((val, int(pos)))
+
+                    if tabs:
+                        return tabs
+
+            # dědění
+            based = style.find("w:basedOn", self.NS)
+            style = (
+                self._find_style_by_id(based.attrib.get(f"{{{self.NS['w']}}}val"))
+                if based is not None
+                else None
+            )
+
+        return None
+    
     def get_doc_default_font_size(self) -> int | None:
         dd = self._styles_xml.find(".//w:docDefaults/w:rPrDefault/w:rPr", self.NS)
         if dd is None:
@@ -416,17 +478,18 @@ class WordDocument:
         italic = self._resolve_bool(style, "i")
         
         all_caps = self._resolve_bool(style, "caps")
-        alignment = default_alignment
+        alignment = self._resolve_alignment(style) or default_alignment
         page_break = self._resolve_page_break_before(style)
         num_level = None
         is_numbered = None
-        line_height = None
+        before = self._resolve_space_before(style)
         based_on = None
 
         indent_left = None
         indent_right = None
         indent_first = None
         indent_hanging = None
+        tabs = self._resolve_tabs(style)
 
 
         ppr = style.find("w:pPr", self.NS)
@@ -434,12 +497,6 @@ class WordDocument:
             jc = ppr.find("w:jc", self.NS)
             if jc is not None:
                 alignment = jc.attrib.get(f"{{{self.NS['w']}}}val") or alignment
-
-            spacing = ppr.find("w:spacing", self.NS)
-            if spacing is not None:
-                line = spacing.attrib.get(f"{{{self.NS['w']}}}line")
-                if line:
-                    line_height = int(line) / 240
 
             if ppr is not None:
                 numpr = ppr.find("w:numPr", self.NS)
@@ -476,15 +533,16 @@ class WordDocument:
             allCaps=all_caps,
             color=color,
             alignment=alignment,
-            lineHeight=line_height,
             pageBreakBefore=page_break,
             isNumbered=is_numbered,
             numLevel=num_level,
             basedOn=based_on,
+            spaceBefore=before,
             indentLeft=int(indent_left) if indent_left else None,
             indentRight=int(indent_right) if indent_right else None,
             indentFirstLine=int(indent_first) if indent_first else None,
             indentHanging=int(indent_hanging) if indent_hanging else None,
+            tabs=tabs,
         )
     
     #NOTE tady se taky pouziva ve vice vecech

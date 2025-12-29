@@ -23,6 +23,7 @@ def load_assignment(path: str) -> Assignment:
             pageBreakBefore=spec.get("pageBreakBefore"),
             numLevel=spec.get("numLevel"),
             basedOn=spec.get("basedOn"),
+            spaceBefore=spec.get("spaceBefore"),
             tabs=[(t[0], int(t[1])) for t in spec.get("tabs", [])] or None
         )
     
