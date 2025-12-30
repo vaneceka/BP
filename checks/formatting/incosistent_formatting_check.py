@@ -9,7 +9,7 @@ class InconsistentFormattingCheck(BaseCheck):
 
         for p in document.iter_paragraphs():
 
-            # 1️⃣ ignoruj obsah / seznamy
+            # ignoruj obsah / seznamy
             if document._paragraph_is_toc_or_object_list(p):
                 continue
 
@@ -27,17 +27,18 @@ class InconsistentFormattingCheck(BaseCheck):
 
             for r in p.findall(".//w:r", document.NS):
 
-                # 2️⃣ ignoruj technické běhy
                 if r.find("w:instrText", document.NS) is not None:
                     continue
                 if r.find("w:fldChar", document.NS) is not None:
                     continue
 
-                # 3️⃣ musí mít skutečný text
-                has_text = any(
-                    t.text and t.text.strip()
-                    for t in r.findall(".//w:t", document.NS)
-                )
+                # musí mít skutečný text
+                has_text = False
+
+                for t in r.findall(".//w:t", document.NS):
+                    if t.text is not None and t.text.strip() != "":
+                        has_text = True
+                        break
                 if not has_text:
                     continue
 

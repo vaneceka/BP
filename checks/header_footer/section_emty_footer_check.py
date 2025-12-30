@@ -21,7 +21,7 @@ class SectionFooterEmptyCheck(BaseCheck):
 
         footer_refs = sect_pr.findall("w:footerReference", document.NS)
 
-        # žádné footerReference → implicitně prázdné
+        # žádné footerReference -> implicitně prázdné
         if not footer_refs:
             return CheckResult(True, "Zápatí oddílu je prázdné.", 0)
 
@@ -38,10 +38,8 @@ class SectionFooterEmptyCheck(BaseCheck):
                 xml = document._load(part_name)
             except KeyError:
                 continue
-
-            # ==================================================
-            # 1️⃣ VIDITELNÝ TEXT
-            # ==================================================
+            
+            # viditelný text
             for t in xml.findall(".//w:t", document.NS):
                 if t.text and t.text.strip():
                     return CheckResult(
@@ -50,9 +48,7 @@ class SectionFooterEmptyCheck(BaseCheck):
                         self.penalty,
                     )
 
-            # ==================================================
-            # 2️⃣ VIDITELNÉ OBJEKTY
-            # ==================================================
+            # viditelné objekty
             if (
                 xml.findall(".//w:drawing", document.NS)
                 or xml.findall(".//m:oMath", document.NS)
@@ -63,7 +59,5 @@ class SectionFooterEmptyCheck(BaseCheck):
                     f"{self.section_number}. oddíl obsahuje neprázdné zápatí (objekt).",
                     self.penalty,
                 )
-
-            # ❗ instrText / fldChar ZÁMĚRNĚ IGNORUJEME
 
         return CheckResult(True, "Zápatí oddílu je prázdné.", 0)

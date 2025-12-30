@@ -1,46 +1,48 @@
-from collections import Counter
 from checks.base_check import BaseCheck, CheckResult
 
 class HeadingsUsedCorrectlyCheck(BaseCheck):
     name = "Nadpisy nejsou použity správně dle seznamu"
-    points_per_error = -5
+    penalty = -5
 
     def run(self, document, assignment=None):
-        expected_list = assignment.headlines
-        expected = Counter(
-            (h["text"].strip(), int(h["level"])) for h in expected_list
-        )
-
-        actual_list = document.iter_headings()
-        actual = Counter(actual_list)
-
-        missing = list((expected - actual).elements())
-        extra = list((actual - expected).elements())
-
-        error_count = len(missing) + len(extra)
-
-        if error_count == 0:
-            return CheckResult(
-                True,
-                "Všechny nadpisy odpovídají textům i úrovním.",
-                0,
-            )
-
-        penalty = self.points_per_error * error_count
-
-        lines = [
-            f"Nalezeno {error_count} chyb v použití nadpisů "
-            f"({abs(self.points_per_error)} bodů za každou):"
+        expected = [
+            (h["text"].strip(), int(h["level"]))
+            for h in assignment.headlines
         ]
 
+        actual = document.iter_headings()
+
+        def count(items):
+            d = {}
+            for i in items:
+                d[i] = d.get(i, 0) + 1
+            return d
+
+        expected_counts = count(expected)
+        actual_counts = count(actual)
+
+        missing = []
+        for k, v in expected_counts.items():
+            missing.extend([k] * max(0, v - actual_counts.get(k, 0)))
+
+        extra = []
+        # k -> nadpis, v -> pocet
+        for k, v in actual_counts.items():
+            extra.extend([k] * max(0, v - expected_counts.get(k, 0)))
+
+        if not missing and not extra:
+            return CheckResult(True, "Všechny nadpisy odpovídají.", 0)
+
+        lines = []
+
         if missing:
-            lines.append("\nChybí nadpisy:")
-            lines += [f"- {t} (H{lvl})" for (t, lvl) in missing]
+            lines.append("Chybí nadpisy:")
+            lines += [f"- {t} (H{lvl})" for t, lvl in missing]
 
         if extra:
-            lines.append("\nNavíc / špatně zařazené nadpisy:")
-            lines += [f"- {t} (H{lvl})" for (t, lvl) in extra]
+            lines.append("Navíc / špatné nadpisy:")
+            lines += [f"- {t} (H{lvl})" for t, lvl in extra]
 
-        lines.append(f"\nCelková penalizace: {penalty} bodů")
+        penalty = self.penalty * (len(missing) + len(extra))
 
         return CheckResult(False, "\n".join(lines), penalty)

@@ -28,9 +28,8 @@ class ObjectCaptionBindingCheck(BaseCheck):
                 caption_p = document.paragraph_after(element) or document.paragraph_before(element)
 
             if caption_p is None:
-                continue  # chybějící titulek řeší jiný check
+                continue 
 
-            # 1️⃣ musí mít styl Titulek / Caption
             style_id = document._paragraph_style_id(caption_p)
             if not style_id:
                 errors.append(f"{expected} není s titulkem spojen.")
@@ -44,7 +43,7 @@ class ObjectCaptionBindingCheck(BaseCheck):
                 errors.append(f"{expected} není s titulkem spojen.")
                 continue
 
-            # 2️⃣ musí obsahovat SEQ
+            # musí obsahovat SEQ
             label = document.paragraph_has_seq_caption(caption_p)
             if label != expected:
                 errors.append(f"{expected} není s titulkem spojen.")

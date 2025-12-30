@@ -34,12 +34,11 @@ class ObjectCaptionCheck(BaseCheck):
                 if after_p is not None else None
             )
 
-            # ================= TABULKA =================
             if obj_type == "table":
                 label = before_label or after_label
 
                 if label is None:
-                    # žádný SEQ → zjisti, zda je aspoň text
+                    # žádný SEQ
                     has_text = False
                     if before_p and document._paragraph_text(before_p):
                         has_text = True
@@ -56,7 +55,6 @@ class ObjectCaptionCheck(BaseCheck):
                         f"Tabulka má špatný typ návěští („{label}“)."
                     )
 
-            # ============ OBRÁZEK / GRAF ==============
             else:
                 if after_p is None:
                     errors.append(f"{expected} nemá žádný titulek.")

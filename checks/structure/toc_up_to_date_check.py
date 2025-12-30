@@ -12,10 +12,6 @@ class TOCUpToDateCheck(BaseCheck):
         "literatura",
     }
 
-    # --------------------------------------------------
-    # Pomocné funkce
-    # --------------------------------------------------
-
     def _norm(self, text: str) -> str:
         """
         Normalizuje text nadpisu / položky obsahu:
@@ -32,27 +28,23 @@ class TOCUpToDateCheck(BaseCheck):
 
         return text.strip()
 
-    def _visible_text(self, element, document) -> str:
-        """
-        Vrátí pouze viditelný text (ignoruje webHidden).
-        """
-        parts = []
+    # def _visible_text(self, element, document) -> str:
+    #     """
+    #     Vrátí pouze viditelný text (ignoruje webHidden).
+    #     """
+    #     parts = []
 
-        for r in element.findall(".//w:r", document.NS):
-            rpr = r.find("w:rPr", document.NS)
-            if rpr is not None and rpr.find("w:webHidden", document.NS) is not None:
-                continue
+    #     for r in element.findall(".//w:r", document.NS):
+    #         rpr = r.find("w:rPr", document.NS)
+    #         if rpr is not None and rpr.find("w:webHidden", document.NS) is not None:
+    #             continue
 
-            for t in r.findall("w:t", document.NS):
-                if t.text:
-                    parts.append(t.text)
+    #         for t in r.findall("w:t", document.NS):
+    #             if t.text:
+    #                 parts.append(t.text)
 
-        return self._norm("".join(parts))
-
-    # --------------------------------------------------
-    # Hlavní logika
-    # --------------------------------------------------
-
+    #     return self._norm("".join(parts))
+    
     def run(self, document, assignment=None):
 
         # 1️⃣ Najdi oddíl s obsahem
@@ -65,7 +57,7 @@ class TOCUpToDateCheck(BaseCheck):
         if toc_section is None:
             return CheckResult(True, "Obsah neexistuje – nelze ověřit aktuálnost.", 0)
 
-        # 2️⃣ Nadpisy v dokumentu (H1–H3)
+        # nadpisy v dokumentu (H1–H3)
         headings = {
             self._norm(t)
             for (t, lvl) in document.iter_headings()
@@ -75,7 +67,7 @@ class TOCUpToDateCheck(BaseCheck):
         if not headings:
             return CheckResult(True, "Dokument nemá nadpisy – obsah nelze posoudit.", 0)
 
-        # 3️⃣ Položky obsahu
+        # položky obsahu
         toc_items = set()
 
         paragraphs = document.section(toc_section)
@@ -101,11 +93,11 @@ class TOCUpToDateCheck(BaseCheck):
                 if hl is None:
                     continue
 
-                text = self._visible_text(hl, document)
+                # text = self._visible_text(hl, document)
+                text = self._norm(document._visible_text(hl))
                 if text and text.lower() != "obsah":
                     toc_items.add(text)
 
-        # 4️⃣ Porovnání
         allowed = {t.lower() for t in self.ALLOWED_EXTRA_TOC_ITEMS}
 
         missing = sorted(
@@ -121,7 +113,6 @@ class TOCUpToDateCheck(BaseCheck):
         if not missing and not extra:
             return CheckResult(True, "Obsah je aktuální.", 0)
 
-        # 5️⃣ Výpis chyb
         lines = []
 
         if missing:

@@ -8,6 +8,7 @@ BAD_PATTERNS = [
     r"_{4,}",   # 4+ podtržítek
 ]
 
+# NOTE mozna opravit aby to nevypisovalo v jakych odstavcich
 class ManualHorizontalSpacingCheck(BaseCheck):
     name = "Ruční horizontální zarovnání pomocí mezer/znaků"
     penalty = -5  # násobí se
@@ -20,14 +21,13 @@ class ManualHorizontalSpacingCheck(BaseCheck):
             if not raw:
                 continue
 
-            # ignoruj TOC (volitelně – podle stylu)
+            # ignoruj TOC
             style_id = document._paragraph_style_id(p)
             if style_id and "toc" in style_id.lower():
                 continue
 
             for pat in BAD_PATTERNS:
                 if re.search(pat, raw):
-                    # pro debug si vypiš i ukázku
                     sample = raw.replace("\t", "\\t")
                     errors.append(f"„{sample[:120]}“")
                     break

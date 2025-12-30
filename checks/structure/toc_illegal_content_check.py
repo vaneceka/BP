@@ -6,34 +6,12 @@ class TOCIllegalContentCheck(BaseCheck):
     name = "Ruční text nebo nepovolená položka v obsahu"
     penalty = -10
 
-    # ==================================================
-    # Pomocné funkce
-    # ==================================================
-
     def _clean_text(self, text: str) -> str:
         return re.sub(r"\s+", " ", text or "").strip()
 
-    def _extract_visible_text(self, element, document) -> str:
-        parts = []
-
-        for r in element.findall(".//w:r", document.NS):
-            rpr = r.find("w:rPr", document.NS)
-            if rpr is not None and rpr.find("w:webHidden", document.NS) is not None:
-                continue
-
-            for t in r.findall("w:t", document.NS):
-                if t.text:
-                    parts.append(t.text)
-
-        return self._clean_text("".join(parts))
-
-    # ==================================================
-    # Hlavní logika
-    # ==================================================
-
     def run(self, document, assignment=None):
 
-        # 1️⃣ Najdi sekci s obsahem
+        # najdi sekci s obsahem
         toc_section = None
         for i in range(document.section_count()):
             if document.has_toc_in_section(i):
@@ -43,7 +21,7 @@ class TOCIllegalContentCheck(BaseCheck):
         if toc_section is None:
             return CheckResult(True, "Obsah dokumentu neexistuje.", 0)
 
-        # 2️⃣ Najdi sdtContent (TOC)
+        # najdi sdtContent (TOC)
         toc_sdt = None
         for el in document.section(toc_section):
             if el.tag.endswith("}sdt"):
@@ -59,7 +37,7 @@ class TOCIllegalContentCheck(BaseCheck):
                 self.penalty
             )
 
-        # 3️⃣ Bookmarky skutečných nadpisů (H1–H3)
+        # bookmarky skutečných nadpisů (H1–H3)
         heading_bookmarks = set()
 
         for p in document._xml.findall(".//w:body/w:p", document.NS):
@@ -76,22 +54,22 @@ class TOCIllegalContentCheck(BaseCheck):
                 if name:
                     heading_bookmarks.add(name)
 
-        # 4️⃣ Kontrola položek obsahu
+        # kontrola položek obsahu
         errors = []
 
         for el in toc_sdt:
 
-            # ❌ tabulka v obsahu
+            # tabulka v obsahu
             if el.tag.endswith("}tbl"):
                 errors.append("V obsahu je vložená tabulka.")
                 continue
 
-            # ❌ obrázek / graf
+            # obrázek / graf
             if el.findall(".//w:drawing", document.NS):
                 errors.append("V obsahu je vložený obrázek nebo graf.")
                 continue
 
-            # ❌ rovnice
+            # rovnice
             if (
                 el.findall(".//m:oMath", document.NS)
                 or el.findall(".//m:oMathPara", document.NS)
@@ -99,25 +77,26 @@ class TOCIllegalContentCheck(BaseCheck):
                 errors.append("V obsahu je vložená rovnice.")
                 continue
 
-            # ❌ nepovolený element
+            # nepovolený element
             if not el.tag.endswith("}p"):
                 errors.append("V obsahu je nepovolený objekt.")
                 continue
 
-            # ⬇️ je to <w:p>
+            # je to <w:p>
             link = el.find("w:hyperlink", document.NS)
 
-            # ❌ ručně vložený text
+            # ručně vložený text
             if link is None:
-                text = self._extract_visible_text(el, document)
+                # text = self._extract_visible_tex(el, document)
+                text = document._visible_text(el)
                 if text and text.lower() != "obsah":
                     errors.append(f"Ručně vložený text v obsahu: „{text}“")
                 continue
 
-            # ✔ text položky (jen pro hlášení)
-            text = self._extract_visible_text(link, document)
+            # text položky (jen pro hlášení)
+            text = document._visible_text(link)
 
-            # ❌ chybí PAGEREF
+            # chybí PAGEREF
             if not any(
                 instr.text and "PAGEREF" in instr.text
                 for instr in link.findall(".//w:instrText", document.NS)
@@ -125,27 +104,26 @@ class TOCIllegalContentCheck(BaseCheck):
                 errors.append(f"Položka obsahu bez odkazu na stránku: „{text}“")
                 continue
 
-            # ✔ anchor
+            # anchor
             anchor = link.attrib.get(f"{{{document.NS['w']}}}anchor")
 
             if not anchor:
                 errors.append(f"Položka obsahu bez anchor odkazu: „{text}“")
                 continue
 
-            # ⛔ POVOLENÁ VÝJIMKA – Bibliografie
+            # povolená vyjímka – Bibliografie
             clean_text = self._clean_text(text).lower()
 
             if clean_text in {"bibliografie", "literatura", "references"}:
                 # ověř, že v dokumentu skutečně existuje Word bibliografie
                 if document.has_word_bibliography():
-                    continue  # OK – Wordem generovaná bibliografie
+                    continue  
 
                 if anchor not in heading_bookmarks:
                     errors.append(
                         f"Položka obsahu bez odpovídajícího nadpisu: „{text}“"
                     )
 
-        # 5️⃣ Výsledek
         if errors:
             return CheckResult(
                 False,

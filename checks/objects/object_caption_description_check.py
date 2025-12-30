@@ -16,18 +16,19 @@ class ObjectCaptionDescriptionCheck(BaseCheck):
             if obj_type not in ("image", "chart", "table"):
                 continue
 
-            # 🔎 hledej titulek POUZE jako SEQ
+            # hledej titulek POUZE jako SEQ
             caption_p = None
 
-            for p in (
-                document.paragraph_before(element),
-                document.paragraph_after(element),
-            ):
-                if p is not None and document.paragraph_has_seq_caption(p):
+            before = document.paragraph_before(element)
+            after = document.paragraph_after(element)
+
+            caption_p = None
+
+            for p in (before, after):
+                if p and document.paragraph_has_seq_caption(p):
                     caption_p = p
                     break
 
-            # chybějící titulek řeší jiný check
             if caption_p is None:
                 continue
 

@@ -12,17 +12,16 @@ class RequiredCustomStylesUsageCheck(BaseCheck):
         errors = []
         total_penalty = 0
 
-        # 🔹 rozdělíme styly
+        # rozdělíme styly
         custom_styles, _ = document.split_assignment_styles(assignment)
 
-        # 🔹 zjistíme base styly (rodiče)
-        base_styles = {
-            spec.basedOn
-            for spec in custom_styles.values()
-            if spec.basedOn
-        }
+        # zjistíme base styly
+        base_styles = set()
 
-        # 🔹 zjistíme použité styly v dokumentu
+        for spec in custom_styles.values():
+            if spec.basedOn:
+                base_styles.add(spec.basedOn)
+
         used_style_ids = set()
         for p in document.iter_paragraphs():
             ppr = p.find("w:pPr", document.NS)
@@ -34,21 +33,17 @@ class RequiredCustomStylesUsageCheck(BaseCheck):
                     ps.attrib.get(f"{{{document.NS['w']}}}val")
                 )
 
-        # 🔹 kontrola jen LEAF vlastních stylů
         for style_name, spec in custom_styles.items():
 
-            # 1️⃣ styl musí existovat
             style_el = document._find_style(name=style_name)
             if style_el is None:
                 errors.append(f"Styl „{style_name}“ v dokumentu neexistuje.")
                 total_penalty += self.penalty
                 continue
 
-            # 2️⃣ base styl → NEKONTROLUJEME použití
             if style_name in base_styles:
                 continue
 
-            # 3️⃣ leaf styl → MUSÍ být použit
             style_id = style_el.attrib.get(f"{{{document.NS['w']}}}styleId")
             if style_id not in used_style_ids:
                 errors.append(f"Styl „{style_name}“ existuje, ale není použit.")

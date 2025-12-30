@@ -6,7 +6,6 @@ class DocumentStructureCheck(BaseCheck):
 
     def run(self, document, assignment=None):
         headings = document.iter_headings()
-        print("HEADINGS:")
         for h in headings:
             print(h)
         if not headings:
@@ -16,13 +15,13 @@ class DocumentStructureCheck(BaseCheck):
         last_level = None
 
         for text, level in headings:
-            # ❌ dokument nezačíná Nadpisem 1
+            # dokument nezačíná Nadpisem 1
             if last_level is None and level != 1:
                 errors.append(
                     f"Nadpis „{text}“ je úrovně {level}, dokument musí začínat Nadpisem 1."
                 )
 
-            # ❌ přeskok úrovně (např. H1 → H3)
+            # přeskok úrovně (např. H1 -> H3)
             if last_level is not None and level > last_level + 1:
                 errors.append(
                     f"Nadpis „{text}“ (úroveň {level}) přeskakuje úroveň "

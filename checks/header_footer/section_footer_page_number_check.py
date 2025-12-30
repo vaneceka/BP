@@ -5,9 +5,6 @@ class SectionFooterHasPageNumberCheck(BaseCheck):
     penalty = -2
 
     def __init__(self, section_number: int):
-        """
-        section_number = číslo oddílu (1-based, lidské číslování)
-        """
         self.section_number = section_number
         self.section_index = section_number - 1
 
@@ -28,7 +25,7 @@ class SectionFooterHasPageNumberCheck(BaseCheck):
 
         footer_refs = sect_pr.findall("w:footerReference", document.NS)
 
-        # ❌ žádný footerReference → implicitně zděděné → špatně
+        # žádný footerReference -> implicitně zděděné → špatně
         if not footer_refs:
             return CheckResult(
                 False,
@@ -38,7 +35,7 @@ class SectionFooterHasPageNumberCheck(BaseCheck):
 
         for ref in footer_refs:
 
-            # ❌ zděděné zápatí → ignoruj
+            # zděděné zápatí -> ignoruj
             if ref.find("w:linkToPrevious", document.NS) is not None:
                 continue
 
@@ -55,7 +52,6 @@ class SectionFooterHasPageNumberCheck(BaseCheck):
             except KeyError:
                 continue
 
-            # 1️⃣ fldSimple
             for fld in footer_xml.findall(".//w:fldSimple", document.NS):
                 instr = fld.attrib.get(f"{{{document.NS['w']}}}instr", "")
                 if "PAGE" in instr.upper():
@@ -65,7 +61,6 @@ class SectionFooterHasPageNumberCheck(BaseCheck):
                         0,
                     )
 
-            # 2️⃣ instrText
             for instr in footer_xml.findall(".//w:instrText", document.NS):
                 if instr.text and "PAGE" in instr.text.upper():
                     return CheckResult(

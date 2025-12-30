@@ -5,7 +5,7 @@ class BibliographyStyleCheck(BaseCheck):
     penalty = -5
 
     def run(self, document, assignment=None):
-        expected = assignment.styles.get("Bibliography")  # <- klíč z JSON
+        expected = assignment.styles.get("Bibliography")
         if expected is None:
             return CheckResult(True, "Zadání styl Bibliografie neřeší.", 0)
 

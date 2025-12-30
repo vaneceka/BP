@@ -19,7 +19,6 @@ class SecondSectionHeaderHasTextCheck(BaseCheck):
             return CheckResult(False, "Druhý oddíl nemá žádné záhlaví.", self.penalty)
 
         for ref in header_refs:
-            # ✅ r:id (relationships), ne w:id
             r_id = ref.attrib.get(f"{{{document.NS['r']}}}id")
             if not r_id:
                 continue

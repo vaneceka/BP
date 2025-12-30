@@ -21,8 +21,6 @@ class ContentHeadingStyleCheck(BaseCheck):
                 self.penalty
             )
 
-        # pokud chceš řešit i default font size, doplň:
-        # diffs = actual.diff(expected, strict=True, doc_default_size=document.get_doc_default_font_size())
         diffs = actual.diff(expected, strict=True)
 
         if diffs:

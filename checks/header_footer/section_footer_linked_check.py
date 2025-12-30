@@ -17,7 +17,7 @@ class FooterLinkedToPreviousCheck(BaseCheck):
 
     def run(self, document, assignment=None):
 
-        # první oddíl nemá předchozí → OK
+        # první oddíl nemá předchozí -> OK
         if self.section_index == 0:
             return CheckResult(True, "První oddíl nemá předchozí oddíl.", 0)
 
@@ -35,7 +35,7 @@ class FooterLinkedToPreviousCheck(BaseCheck):
         footers_prev = sect_prev.findall("w:footerReference", document.NS)
         footers_curr = sect_curr.findall("w:footerReference", document.NS)
 
-        # ❌ žádný footerReference → implicitně zděděné
+        # žádný footerReference -> implicitně zděděné
         if not footers_curr:
             return CheckResult(
                 False,
@@ -43,13 +43,11 @@ class FooterLinkedToPreviousCheck(BaseCheck):
                 self.penalty,
             )
 
-        R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
-
         def footer_map(footers):
             result = {}
             for f in footers:
                 f_type = f.attrib.get(f"{{{document.NS['w']}}}type", "default")
-                r_id = f.attrib.get(f"{{{R_NS}}}id")
+                r_id = f.attrib.get(f"{{{document.NS['r']}}}id")
                 if r_id:
                     result[f_type] = r_id
             return result

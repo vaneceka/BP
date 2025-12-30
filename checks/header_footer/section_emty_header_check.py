@@ -5,9 +5,6 @@ class SectionHeaderEmptyCheck(BaseCheck):
     penalty = -2
 
     def __init__(self, section_number: int):
-        """
-        section_number = číslo oddílu (1-based, lidské číslování)
-        """
         self.section_number = section_number
         self.section_index = section_number - 1
 
@@ -24,7 +21,7 @@ class SectionHeaderEmptyCheck(BaseCheck):
 
         header_refs = sect_pr.findall("w:headerReference", document.NS)
 
-        # ❗ žádný headerReference → implicitně prázdné
+        # žádný headerReference -> implicitně prázdné
         if not header_refs:
             return CheckResult(
                 True,
@@ -46,7 +43,7 @@ class SectionHeaderEmptyCheck(BaseCheck):
             except KeyError:
                 continue
 
-            # ❌ text v záhlaví
+            # text v záhlaví
             for t in xml.findall(".//w:t", document.NS):
                 if t.text and t.text.strip():
                     return CheckResult(
@@ -55,7 +52,7 @@ class SectionHeaderEmptyCheck(BaseCheck):
                         self.penalty,
                     )
 
-            # ❌ pole (PAGE, DATE, apod.)
+            # pole (PAGE, DATE, apod.)
             for instr in xml.findall(".//w:instrText", document.NS):
                 if instr.text and instr.text.strip():
                     return CheckResult(

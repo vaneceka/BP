@@ -5,9 +5,6 @@ class HeaderNotLinkedToPreviousCheck(BaseCheck):
     penalty = -2
 
     def __init__(self, section_number: int):
-        """
-        section_number = číslo oddílu, jak ho vnímá uživatel (1, 2, 3, ...)
-        """
         self.section_number = section_number
         self.section_index = section_number - 1
 
@@ -17,7 +14,7 @@ class HeaderNotLinkedToPreviousCheck(BaseCheck):
 
     def run(self, document, assignment=None):
 
-        # první oddíl nemá předchozí → vždy OK
+        # první oddíl nemá předchozí -> vždy OK
         if self.section_index == 0:
             return CheckResult(True, "První oddíl nemá předchozí oddíl.", 0)
 
@@ -34,7 +31,7 @@ class HeaderNotLinkedToPreviousCheck(BaseCheck):
 
         header_refs = sect_pr.findall("w:headerReference", document.NS)
 
-        # ❌ žádný headerReference = implicitně zděděné
+        # žádný headerReference = implicitně zděděné
         if not header_refs:
             return CheckResult(
                 False,

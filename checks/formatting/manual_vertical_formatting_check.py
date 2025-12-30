@@ -10,36 +10,34 @@ class ManualVerticalSpacingCheck(BaseCheck):
         errors: list[tuple[int, str]] = []
 
         for i, p in enumerate(paragraphs):
-            # ⛔ ignoruj odstavec, který obsahuje objekt (obrázek, graf, rovnice)
+            # ignoruj odstavec, který obsahuje objekt (obrázek, graf, rovnice)
             if (
                 p.findall(".//w:drawing", document.NS) or
                 p.findall(".//m:oMath", document.NS) or
                 p.findall(".//m:oMathPara", document.NS)
             ):
                 continue
-            # 1️⃣ má odstavec text?
-            has_text = any(
-                t.text and t.text.strip()
-                for t in p.findall(".//w:t", document.NS)
-            )
+            # má odstavec text?
+            has_text = False
+
+            for t in p.findall(".//w:t", document.NS):
+                if t.text is not None and t.text.strip() != "":
+                    has_text = True
+                    break
+            
             if has_text:
                 continue
 
-            # 2️⃣ poslední odstavec dokumentu → ignoruj
-            # ⛔ prázdné řádky na konci dokumentu ignoruj
+            # poslední odstavec dokumentu se ignoruje
             if not document.has_text_after_paragraph(paragraphs, i):
                 continue
 
-            # 3️⃣ sectPr (oddíly) → OK
             if p.find("w:pPr/w:sectPr", document.NS) is not None:
                 continue
 
             next_p = paragraphs[i + 1]
 
-            # ⛔ ignoruj, pokud:
-            # - prázdný řádek je součástí TOC / seznamu
-            # - nebo sousedí s TOC / seznamem
-            # - nebo je generovaný polem
+            # ignoruj, pokud: prázdný řádek je součástí TOC / seznamu, nebo sousedí s TOC / seznamem, nebo je generovaný polem
             if (
                 document._paragraph_is_toc_or_object_list(p)
                 or document._paragraph_is_toc_or_object_list(next_p)
@@ -48,7 +46,6 @@ class ManualVerticalSpacingCheck(BaseCheck):
             ):
                 continue
 
-            # 4️⃣ page break
             if document.paragraph_has_page_break(next_p):
                 continue
 
@@ -56,7 +53,6 @@ class ManualVerticalSpacingCheck(BaseCheck):
             if next_style_id and document.style_has_page_break(next_style_id):
                 continue
 
-            # 5️⃣ spaceBefore
             next_ppr = next_p.find("w:pPr", document.NS)
             if next_ppr is not None:
                 spacing = next_ppr.find("w:spacing", document.NS)
@@ -65,7 +61,6 @@ class ManualVerticalSpacingCheck(BaseCheck):
                     if before and int(before) > 0:
                         continue
 
-            # ❌ ruční odsazení
             context = document._paragraph_text(next_p)
             style = document._paragraph_style_id(next_p) or "bez stylu"
             errors.append((i + 1, i + 2, style, context))

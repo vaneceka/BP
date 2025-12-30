@@ -18,14 +18,13 @@ class CustomStyleWithTabsCheck(BaseCheck):
             if not spec.tabs:
                 continue  # styl nemá mít tabulátory
 
-            # 1️⃣ styl musí existovat
             style_el = document._find_style(name=style_name)
             if style_el is None:
                 errors.append(f"Styl „{style_name}“ v dokumentu neexistuje.")
                 total_penalty += self.penalty
                 continue
 
-            # 2️⃣ tabulátory musí být explicitně ve stylu
+            # tabulátory musí být explicitně ve stylu
             ppr = style_el.find("w:pPr", document.NS)
             tabs_el = ppr.find("w:tabs", document.NS) if ppr is not None else None
 
@@ -36,7 +35,7 @@ class CustomStyleWithTabsCheck(BaseCheck):
                 total_penalty += self.penalty
                 continue
 
-            # 3️⃣ skutečné tabulátory
+            # skutečné tabulátory
             actual_tabs = {}
             for tab in tabs_el.findall("w:tab", document.NS):
                 val = tab.attrib.get(f"{{{document.NS['w']}}}val")
@@ -47,13 +46,13 @@ class CustomStyleWithTabsCheck(BaseCheck):
 
                 actual_tabs[val.lower()] = int(pos)
 
-            # 4️⃣ očekávané tabulátory (JSON = twips)
-            expected_tabs = {
-                align.lower(): int(pos)
-                for align, pos in spec.tabs
-            }
+            # očekávané tabulátory (twips)
+            expected_tabs = {}
 
-            # 5️⃣ kontrola počtu
+            for align, pos in spec.tabs:
+                expected_tabs[align.lower()] = int(pos)
+
+            # kontrola počtu
             if set(actual_tabs.keys()) != set(expected_tabs.keys()):
                 errors.append(
                     f"Styl „{style_name}“ má špatné typy tabulátorů:\n"
@@ -63,7 +62,6 @@ class CustomStyleWithTabsCheck(BaseCheck):
                 total_penalty += self.penalty
                 continue
 
-            # 6️⃣ kontrola pozic
             for align, expected_pos in expected_tabs.items():
                 actual_pos = actual_tabs[align]
                 if abs(expected_pos - actual_pos) > TOLERANCE:

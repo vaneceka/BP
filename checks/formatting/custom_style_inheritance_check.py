@@ -4,6 +4,7 @@ class CustomStyleInheritanceCheck(BaseCheck):
     name = "Vlastní styl s dědičností"
     penalty = -5
 
+    # z různých heading 1, Heading 1 -> heading1
     def _norm(self, s: str | None) -> str:
         return (s or "").lower().replace("-", "").replace("_", "").replace(" ", "")
     
@@ -17,7 +18,6 @@ class CustomStyleInheritanceCheck(BaseCheck):
             if not expected or not expected.basedOn:
                 continue  # zadání dědičnost nepožaduje
 
-            # 1️⃣ najdi styl v dokumentu
             style_el = document._find_style(name=style_name)
             if style_el is None:
                 errors.append(
@@ -25,7 +25,6 @@ class CustomStyleInheritanceCheck(BaseCheck):
                 )
                 continue
 
-            # 2️⃣ najdi basedOn v dokumentu
             based_el = style_el.find("w:basedOn", document.NS)
             if based_el is None:
                 errors.append(
@@ -42,7 +41,6 @@ class CustomStyleInheritanceCheck(BaseCheck):
                 )
                 continue
 
-            # 3️⃣ porovnání názvu parent stylu
             parent_name_el = parent_style.find("w:name", document.NS)
             parent_name = parent_name_el.attrib.get(f"{{{document.NS['w']}}}val") if parent_name_el is not None else ""
 

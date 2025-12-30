@@ -21,7 +21,6 @@ class SecondSectionPageNumberStartsAtOneCheck(BaseCheck):
 
         pg_num = sect_pr.find("w:pgNumType", document.NS)
 
-        # ❌ žádné pgNumType → pokračující číslování
         if pg_num is None:
             return CheckResult(
                 False,
@@ -31,7 +30,6 @@ class SecondSectionPageNumberStartsAtOneCheck(BaseCheck):
 
         start = pg_num.attrib.get(f"{{{document.NS['w']}}}start")
 
-        # ❌ start chybí nebo není 1
         if start != "1":
             return CheckResult(
                 False,

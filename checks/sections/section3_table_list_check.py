@@ -6,13 +6,13 @@ class Section3TableListCheck(BaseCheck):
 
     def run(self, document, assignment=None):
 
-        # 1️⃣ zjisti, zda dokument vůbec obsahuje tabulky
+        # zjisti, zda dokument vůbec obsahuje tabulky
         has_tables = any(
             obj["type"] == "table"
             for obj in document.iter_objects()
         )
 
-        # ❗ žádné tabulky → seznam se NEVYŽADUJE
+        # žádné tabulky, tak se seznam se nevyžaduje
         if not has_tables:
             return CheckResult(
                 True,
@@ -20,7 +20,7 @@ class Section3TableListCheck(BaseCheck):
                 0,
             )
 
-        # 2️⃣ tabulky existují → seznam MUSÍ být
+        # pokud tabulky existují, tak seznam musí být
         if document.has_list_of_tables_in_section(2):
             return CheckResult(True, "Seznam tabulek nalezen.", 0)
 

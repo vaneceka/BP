@@ -704,37 +704,17 @@ class WordDocument:
         return bool(self.find_manual_formatting())
 
     def has_inline_font_changes(self) -> bool:
-        for p in self._xml.findall(".//w:p", self.NS):
-
-            # ⛔ ignoruj obsah a captiony
-            if self._paragraph_is_toc_or_object_list(p):
-                continue
-            if self.paragraph_is_caption(p):
-                continue
-
-            # ⛔ ignoruj odstavce s objekty
-            if (
-                p.findall(".//w:drawing", self.NS) or
-                p.findall(".//m:oMath", self.NS)
-            ):
-                continue
-
-            for r in p.findall(".//w:r", self.NS):
-                rpr = r.find("w:rPr", self.NS)
-                if rpr is None:
-                    continue
-
-                if (
-                    rpr.find("w:sz", self.NS) is not None or
-                    rpr.find("w:rFonts", self.NS) is not None or
-                    rpr.find("w:color", self.NS) is not None
-                ):
-                    return True
-
-        return False
+        return bool(self.find_inline_font_changes())
     
     def has_html_artifacts(self) -> bool:
-        for p in self._xml.findall(".//w:p", self.NS):
+        return bool(self.find_html_artifacts())
+    
+    def find_html_artifacts(self) -> list[tuple[int, str]]:
+        results = []
+
+        paragraphs = list(self._xml.findall(".//w:body/w:p", self.NS))
+
+        for i, p in enumerate(paragraphs, start=1):
 
             if self._paragraph_is_toc_or_object_list(p):
                 continue
@@ -744,10 +724,9 @@ class WordDocument:
                 continue
 
             if any(x in text for x in ["&nbsp;", "&#160;", "<", ">"]):
-                return True
+                results.append((i, text))
 
-        return False
-    
+        return results
 
     def find_manual_formatting(self) -> list[tuple[int, str]]:
         results = []
@@ -798,6 +777,43 @@ class WordDocument:
                 # ❌ skutečné ruční formátování
                 results.append((i, text))
                 break
+
+        return results
+    
+    def find_inline_font_changes(self) -> list[tuple[int, str]]:
+        results = []
+
+        paragraphs = list(self._xml.findall(".//w:body/w:p", self.NS))
+
+        for i, p in enumerate(paragraphs, start=1):
+
+            # ⛔ ignoruj obsah a captiony
+            if self._paragraph_is_toc_or_object_list(p):
+                continue
+            if self.paragraph_is_caption(p):
+                continue
+
+            # ⛔ ignoruj objekty
+            if (
+                p.findall(".//w:drawing", self.NS) or
+                p.findall(".//m:oMath", self.NS)
+            ):
+                continue
+
+            for r in p.findall(".//w:r", self.NS):
+                rpr = r.find("w:rPr", self.NS)
+                if rpr is None:
+                    continue
+
+                if (
+                    rpr.find("w:sz", self.NS) is not None or
+                    rpr.find("w:rFonts", self.NS) is not None or
+                    rpr.find("w:color", self.NS) is not None
+                ):
+                    text = self._paragraph_text(p)
+                    if text:
+                        results.append((i, text))
+                    break
 
         return results
 
@@ -902,6 +918,37 @@ class WordDocument:
             # hledáme PAGE field
             for instr in xml.findall(".//w:instrText", self.NS):
                 if instr.text and "PAGE" in instr.text.upper():
+                    return True
+
+        return False
+    
+    def section_has_header_or_footer_content(self, section_index: int) -> bool:
+        sect_pr = self.section_properties(section_index)
+        if sect_pr is None:
+            return False
+
+        refs = (
+            sect_pr.findall("w:headerReference", self.NS)
+            + sect_pr.findall("w:footerReference", self.NS)
+        )
+
+        for ref in refs:
+            r_id = ref.attrib.get(f"{{{self.NS['r']}}}id")
+            if not r_id:
+                continue
+
+            xml = self.load_part_by_rid(r_id)
+            if xml is None:
+                continue
+
+            # viditelný text
+            for t in xml.findall(".//w:t", self.NS):
+                if t.text and t.text.strip():
+                    return True
+
+            # pole (PAGE, DATE…)
+            for instr in xml.findall(".//w:instrText", self.NS):
+                if instr.text and instr.text.strip():
                     return True
 
         return False
@@ -1324,4 +1371,21 @@ class WordDocument:
         txt = re.sub(r"\s+", " ", txt).strip()
         return txt
     
+    def first_heading_in_section(self, section_index: int, level: int = 1):
+        for el in self.section(section_index):
+            if not el.tag.endswith("}p"):
+                continue
+
+            if not self._paragraph_text(el):
+                continue
+
+            style_id = self._paragraph_style_id(el)
+            if not style_id:
+                continue
+
+            lvl = self._style_level_from_styles_xml(style_id)
+            if lvl == level:
+                return el
+
+        return None
   
