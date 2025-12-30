@@ -41,9 +41,11 @@ class MissingDescriptiveStatisticsCheck(BaseCheck):
             if not m:
                 continue
 
-            func = m.group(1).upper()
-            if func in self.REQUIRED_FUNCTIONS:
-                found.add(func)
+            funcs = self.FUNC_RE.findall(formula)
+            for func in funcs:
+                func = func.upper()
+                if func in self.REQUIRED_FUNCTIONS:
+                    found.add(func)
 
         missing = self.REQUIRED_FUNCTIONS - found
 

@@ -1,5 +1,6 @@
 from assignment.excel.excel_assignment_loader import load_excel_assignment
 from checks.excel.data_process.array_formula_check import ArrayFormulaCheck
+from checks.excel.data_process.copied_from_source_relative_check import CopiedFromSourceByRelativeRefCheck
 from checks.excel.data_process.missing_desciptive_statistic_check import MissingDescriptiveStatisticsCheck
 from checks.excel.data_process.missing_wrong_formula_check import MissingOrWrongFormulaOrNotCalculatedCheck
 from checks.excel.data_process.named_range_usage_check import NamedRangeUsageCheck
@@ -163,6 +164,9 @@ def main():
         NamedRangeUsageCheck(),
         RedundantAbsoluteReferenceCheck(),
         MissingDescriptiveStatisticsCheck(),
+        # s otaznikem, nevim jak to ma byt
+        # CopiedFromSourceByRelativeRefCheck(),
+        
     ]
 
 
