@@ -6,7 +6,6 @@ class RequiredWorksheetCheck(BaseCheck):
     penalty = -100
 
     def run(self, document, assignment=None):
-        # document = ExcelDocument
         sheet_names = document.sheet_names()
 
         if not any(name.lower() == "zdroj" for name in sheet_names):

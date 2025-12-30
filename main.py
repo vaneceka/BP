@@ -1,3 +1,4 @@
+from checks.excel.data_process.required_worksheet_check import RequiredWorksheetCheck
 from checks.word.bibliography.bibliography_exist_check import MissingBibliographyCheck
 from checks.word.bibliography.bibliography_iso690_check import BibliographyISO690Check
 from checks.word.bibliography.bibliography_up_to_date_check import BibliographyNotUpdatedCheck
@@ -43,6 +44,7 @@ from checks.word.structure.toc_first_section_check import TOCFirstSectionContent
 from checks.word.structure.toc_heading_levels_check import TOCHeadingLevelsCheck
 from checks.word.structure.toc_illegal_content_check import TOCIllegalContentCheck
 from checks.word.structure.toc_up_to_date_check import TOCUpToDateCheck
+from document.excel_document import ExcelDocument
 from document.word_document import WordDocument
 from core.runner import Runner
 from core.report import Report
@@ -69,76 +71,84 @@ def main():
     doc.save_xml()
 
     checks = [
-        # --- Části / oddíly dokumentu ---
-        SectionCountCheck(),
-        Section1TOCCheck(),
-        Section2TextCheck(),
-        Section3FigureListCheck(),
-        Section3TableListCheck(),
-        Section3BibliographyCheck(),
+        # # --- Části / oddíly dokumentu ---
+        # SectionCountCheck(),
+        # Section1TOCCheck(),
+        # Section2TextCheck(),
+        # Section3FigureListCheck(),
+        # Section3TableListCheck(),
+        # Section3BibliographyCheck(),
 
-        # --- Formátování dle zadání ---
-        NormalStyleCheck(),
-        HeadingStyleCheck(1),
-        HeadingStyleCheck(2),
-        HeadingStyleCheck(3),
-        HeadingHierarchicalNumberingCheck(),
-        TocHeadingNumberingCheck(),
-        UnnumberedSpecialHeadingsCheck(),
-        CoverStylesCheck(),
-        FrontpageStylesCheck(),
-        BibliographyStyleCheck(),
-        CaptionStyleCheck(),
-        ContentHeadingStyleCheck(),
-        HeadingsUsedCorrectlyCheck(),
-        OriginalFormattingCheck(),
-        CustomStyleInheritanceCheck(),
-        RequiredCustomStylesUsageCheck(),
-        CustomStyleWithTabsCheck(),
-        MainChapterStartsOnNewPageCheck(),
-        ManualHorizontalSpacingCheck(),
-        ManualVerticalSpacingCheck(),
-        ListLevel2UsedCheck(),
-        InconsistentFormattingCheck(),
-        # -------Obsah a struktura-----
-        TOCExistsCheck(),
-        TOCUpToDateCheck(),
-        DocumentStructureCheck(),
-        TOCHeadingLevelsCheck(),
-        TOCFirstSectionContentCheck(),
-        TOCIllegalContentCheck(),
-        FirstChapterStartsOnPageOneCheck(),
-        ChapterNumberingContinuityCheck(),
-        # --------Objekty-----------------
-        MissingListOfFiguresCheck(),
-        ListOfFiguresNotUpdatedCheck(),
-        ImageLowQualityCheck(),
-        ObjectCaptionCheck(),
-        ObjectCaptionDescriptionCheck(),
-        ObjectCrossReferenceCheck(),
-        ObjectCaptionBindingCheck(),
-        # -------Liteatura---------
-        # NOTE stale chybi dost na dodelani
-        # MissingBibliographyCheck(),
-        # BibliographyNotUpdatedCheck(),
-        # BibliographyISO690Check(),
+        # # --- Formátování dle zadání ---
+        # NormalStyleCheck(),
+        # HeadingStyleCheck(1),
+        # HeadingStyleCheck(2),
+        # HeadingStyleCheck(3),
+        # HeadingHierarchicalNumberingCheck(),
+        # TocHeadingNumberingCheck(),
+        # UnnumberedSpecialHeadingsCheck(),
+        # CoverStylesCheck(),
+        # FrontpageStylesCheck(),
+        # BibliographyStyleCheck(),
+        # CaptionStyleCheck(),
+        # ContentHeadingStyleCheck(),
+        # HeadingsUsedCorrectlyCheck(),
+        # OriginalFormattingCheck(),
+        # CustomStyleInheritanceCheck(),
+        # RequiredCustomStylesUsageCheck(),
+        # CustomStyleWithTabsCheck(),
+        # MainChapterStartsOnNewPageCheck(),
+        # ManualHorizontalSpacingCheck(),
+        # ManualVerticalSpacingCheck(),
+        # ListLevel2UsedCheck(),
+        # InconsistentFormattingCheck(),
+        # # -------Obsah a struktura-----
+        # TOCExistsCheck(),
+        # TOCUpToDateCheck(),
+        # DocumentStructureCheck(),
+        # TOCHeadingLevelsCheck(),
+        # TOCFirstSectionContentCheck(),
+        # TOCIllegalContentCheck(),
+        # FirstChapterStartsOnPageOneCheck(),
+        # ChapterNumberingContinuityCheck(),
+        # # --------Objekty-----------------
+        # MissingListOfFiguresCheck(),
+        # ListOfFiguresNotUpdatedCheck(),
+        # ImageLowQualityCheck(),
+        # ObjectCaptionCheck(),
+        # ObjectCaptionDescriptionCheck(),
+        # ObjectCrossReferenceCheck(),
+        # ObjectCaptionBindingCheck(),
+        # # -------Liteatura---------
+        # # NOTE stale chybi dost na dodelani
+        # # MissingBibliographyCheck(),
+        # # BibliographyNotUpdatedCheck(),
+        # # BibliographyISO690Check(),
 
-        # --------Header-Foooter------
-        HeaderFooterMissingCheck(),
-        SecondSectionHeaderHasTextCheck(),
-        SecondSectionPageNumberStartsAtOneCheck(),
-        HeaderNotLinkedToPreviousCheck(2),
-        HeaderNotLinkedToPreviousCheck(3),
-        FooterLinkedToPreviousCheck(2),
-        FooterLinkedToPreviousCheck(3),
-        SectionHeaderEmptyCheck(1),
-        SectionHeaderEmptyCheck(3),
-        SectionFooterEmptyCheck(1),
-        SectionFooterHasPageNumberCheck(2),
-        SectionFooterHasPageNumberCheck(3),
-
-
+        # # --------Header-Foooter------
+        # HeaderFooterMissingCheck(),
+        # SecondSectionHeaderHasTextCheck(),
+        # SecondSectionPageNumberStartsAtOneCheck(),
+        # HeaderNotLinkedToPreviousCheck(2),
+        # HeaderNotLinkedToPreviousCheck(3),
+        # FooterLinkedToPreviousCheck(2),
+        # FooterLinkedToPreviousCheck(3),
+        # SectionHeaderEmptyCheck(1),
+        # SectionHeaderEmptyCheck(3),
+        # SectionFooterEmptyCheck(1),
+        # SectionFooterHasPageNumberCheck(2),
+        # SectionFooterHasPageNumberCheck(3),
     ]
+
+    exc = ExcelDocument("23_fb750.xlsx")
+    exc.save_xml()
+
+    excel_checks = [
+        #------excel-----
+        RequiredWorksheetCheck()
+    ]
+
+
 
     runner = Runner(checks)
     report = Report()
@@ -147,6 +157,14 @@ def main():
 
     # Výpis výsledků
     for check, result in results:
+        report.add(check.name, result)
+
+    #------------------------------------------
+
+    excel_runner = Runner(excel_checks)
+    excel_results = excel_runner.run(exc, assignment)
+
+    for check, result in excel_results:
         report.add(check.name, result)
 
     report.print()
