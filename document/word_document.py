@@ -12,6 +12,7 @@ NS = {
     "m": "http://schemas.openxmlformats.org/officeDocument/2006/math",
     "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
     "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
+    "rel": "http://schemas.openxmlformats.org/package/2006/relationships",
     }
 
 BUILTIN_STYLE_NAMES = {
@@ -38,10 +39,7 @@ class WordDocument:
         self._sections = self._split_into_sections()
 
     def save_xml(self, out_dir: str | Path = "debug_xml"):
-        """
-        Uloží načtené XML soubory (document.xml, styles.xml) do složky.
-        Slouží pouze pro debug / analýzu.
-        """
+
         out_dir = Path(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -87,10 +85,7 @@ class WordDocument:
 
         return custom, builtin
 
-    # ==========================================================
-    # ODDÍLY
-    # ==========================================================
-
+    # oddíly
     def _split_into_sections(self):
         """
         Rozdělí dokument na oddíly podle <w:sectPr>.
@@ -106,13 +101,13 @@ class WordDocument:
         for el in body:
             current.append(el)
 
-            # 1) sectPr jako přímé dítě body
+            # sectPr jako přímé dítě body
             if el.tag.endswith("}sectPr"):
                 sections.append(current)
                 current = []
                 continue
 
-            # 2) sectPr uvnitř odstavce
+            # sectPr uvnitř odstavce
             if el.tag.endswith("}p"):
                 ppr = el.find("w:pPr", self.NS)
                 if ppr is not None and ppr.find("w:sectPr", self.NS) is not None:
@@ -132,10 +127,6 @@ class WordDocument:
             return []
         return self._sections[index]
 
-    # ==========================================================
-    # OBECNÉ POMOCNÉ METODY
-    # ==========================================================
-
     def _find_instr_texts(self, section):
         texts = []
         for el in section:
@@ -144,20 +135,14 @@ class WordDocument:
                     texts.append(instr.text.strip())
         return texts
 
-    # ==========================================================
     # TOC / SEZNAMY
-    # ==========================================================
-
     def has_toc_in_section(self, section_index: int) -> bool:
         for instr in self._find_instr_texts(self.section(section_index)):
             if instr.startswith("TOC") and "\\o" in instr:
                 return True
         return False
 
-    # ==========================================================
     # TEXT
-    # ==========================================================
-
     def has_text_in_section(self, section_index: int) -> bool:
         for el in self.section(section_index):
             for t in el.findall(".//w:t", self.NS):
@@ -165,10 +150,7 @@ class WordDocument:
                     return True
         return False
 
-    # ==========================================================
-    # BIBLIOGRAFIE (SPRÁVNĚ PŘES SDT)
-    # ==========================================================
-
+    # bibliography
     def has_bibliography_in_section(self, section_index: int) -> bool:
         for el in self.section(section_index):
             for sdt in el.findall(".//w:sdt", self.NS):
@@ -180,14 +162,14 @@ class WordDocument:
     def get_field_instructions(self, section):
         instrs = []
 
-        # 1) fldSimple (nejdůležitější!)
+        # fldSimple
         for el in section:
             for fld in el.findall(".//w:fldSimple", self.NS):
                 instr = fld.attrib.get(f"{{{self.NS['w']}}}instr")
                 if instr:
                     instrs.append(instr.strip())
 
-        # 2) instrText (méně časté, ale ponecháme)
+        # instrText 
         for el in section:
             for instr in el.findall(".//w:instrText", self.NS):
                 if instr.text:
@@ -204,7 +186,6 @@ class WordDocument:
             if not instr_u.startswith("TOC"):
                 continue
 
-            # Word může použít \c "Obrázek" nebo \t "Figure,1"
             if "\\C" in instr_u or "\\T" in instr_u:
                 if "OBRÁZEK" in instr_u or "FIGURE" in instr_u:
                     return True
@@ -410,7 +391,6 @@ class WordDocument:
                     if tabs:
                         return tabs
 
-            # dědění
             based = style.find("w:basedOn", self.NS)
             style = (
                 self._find_style_by_id(based.attrib.get(f"{{{self.NS['w']}}}val"))
@@ -464,13 +444,11 @@ class WordDocument:
                         return False
                     return True
 
-            # 1️⃣ linked character style
             linked = self._get_linked_style(style)
             if linked is not None and id(linked) not in visited:
                 style = linked
                 continue
 
-            # 2️⃣ basedOn
             based = style.find("w:basedOn", self.NS)
             if based is not None:
                 style = self._find_style_by_id(
@@ -579,12 +557,12 @@ class WordDocument:
             if not name:
                 continue
 
-            # 1) match podle styleId
+            # match podle styleId
             style_id = style.attrib.get(f"{{{self.NS['w']}}}styleId")
             if style_id and style_id.strip().lower() == name.strip().lower():
                 return style
 
-            # 2) match podle zobrazovaného názvu w:name
+            # match podle zobrazovaného názvu w:name
             name_el = style.find("w:name", self.NS)
             if name_el is None:
                 continue
@@ -620,13 +598,13 @@ class WordDocument:
                 return self._build_style_spec(style, default_alignment=default_alignment)
         return None
     
-    # Test pro spravne pouziti nadpisu
+    # test pro spravne pouziti nadpisu
     def _paragraph_text(self, p: ET.Element) -> str:
         parts = []
         for t in p.findall(".//w:t", self.NS):
             if t.text:
                 parts.append(t.text)
-        # Word občas láme text do více runů → spojíme
+        # word občas láme text do více runů -> spojíme
         txt = "".join(parts)
         # normalizace mezer
         txt = re.sub(r"\s+", " ", txt).strip()
@@ -735,13 +713,13 @@ class WordDocument:
 
         for i, p in enumerate(paragraphs, start=1):
 
-            # ⛔ ignoruj TOC, seznamy, captiony
+            # ignoruj TOC, seznamy, captiony
             if self._paragraph_is_toc_or_object_list(p):
                 continue
             if self.paragraph_is_caption(p):
                 continue
 
-            # ⛔ ignoruj objekty
+            # ignoruj objekty
             if (
                 p.findall(".//w:drawing", self.NS) or
                 p.findall(".//m:oMath", self.NS) or
@@ -753,18 +731,23 @@ class WordDocument:
             if not text:
                 continue
 
-            # ⛔ pokud odstavec obsahuje REF pole → ignoruj celý odstavec
-            if any(
-                (instr.text or "").strip().upper().startswith("REF ")
-                for instr in p.findall(".//w:instrText", self.NS)
-            ):
+            # pokud odstavec obsahuje REF pole -> ignoruj celý odstavec
+            has_ref_field = False
+
+            for instr in p.findall(".//w:instrText", self.NS):
+                text = (instr.text or "").strip().upper()
+                if text.startswith("REF "):
+                    has_ref_field = True
+                    break
+
+            if has_ref_field:
                 continue
 
-            # ⛔ pokud obsahuje hyperlink → ignoruj celý odstavec
+            # pokud obsahuje hyperlink -> ignoruj celý odstavec
             if p.findall(".//w:hyperlink", self.NS):
                 continue
 
-            # ⛔ pokud má znakový styl (např. Hyperlink)
+            # pokud má znakový styl
             for r in p.findall(".//w:r", self.NS):
                 rpr = r.find("w:rPr", self.NS)
                 if rpr is None:
@@ -774,7 +757,7 @@ class WordDocument:
                 if rs is not None:
                     continue
 
-                # ❌ skutečné ruční formátování
+                # skutečné ruční formátování
                 results.append((i, text))
                 break
 
@@ -787,17 +770,22 @@ class WordDocument:
 
         for i, p in enumerate(paragraphs, start=1):
 
-            # ⛔ ignoruj obsah a captiony
+            # ignoruj obsah a captiony
             if self._paragraph_is_toc_or_object_list(p):
                 continue
             if self.paragraph_is_caption(p):
                 continue
 
-            # ⛔ ignoruj objekty
-            if (
-                p.findall(".//w:drawing", self.NS) or
-                p.findall(".//m:oMath", self.NS)
-            ):
+            # ignoruj objekty
+            has_object = False
+
+            if p.findall(".//w:drawing", self.NS):
+                has_object = True
+
+            if p.findall(".//m:oMath", self.NS):
+                has_object = True
+
+            if has_object:
                 continue
 
             for r in p.findall(".//w:r", self.NS):
@@ -819,19 +807,13 @@ class WordDocument:
 
     # číslování položek v obsahu
     def toc_shows_numbers(self) -> bool | None:
-        """
-        True  = obsah zobrazuje čísla
-        False = obsah čísla NEzobrazuje
-        None  = žádný obsah
-        """
         for instr in self._xml.findall(".//w:instrText", self.NS):
             txt = instr.text or ""
             if txt.strip().startswith("TOC"):
-                # \n = suppress numbering
                 return "\\n" not in txt
         return None
     
-    # Kontrola, zda hůavní kapitola začíná na nové straně
+    # kontrola, zda hůavní kapitola začíná na nové straně
     def paragraph_has_page_break(self, p):
         ppr = p.find("w:pPr", self.NS)
         if ppr is None:
@@ -849,7 +831,7 @@ class WordDocument:
 
         return ppr.find("w:pageBreakBefore", self.NS) is not None
     
-    # Horizontální ruční formátování
+    # horizontální ruční formátování
     def paragraph_text_raw(self, p: ET.Element) -> str:
         parts = []
 
@@ -858,31 +840,28 @@ class WordDocument:
             if t.text is not None:
                 parts.append(t.text)
 
-        # tabulátory z xml (jsou to reálné „zarovnávací“ taby)
+        # tabulátory z xml
         for tab in p.findall(".//w:tab", self.NS):
             parts.append("\t")
 
         return "".join(parts)
         
-    # Kontrola, zda 2. sekce ma cislovani od 1
+    # kontrola, zda 2. sekce ma cislovani od 1
     def section_properties(self, index: int) -> ET.Element | None:
         """
         Vrátí <w:sectPr> pro daný oddíl.
-        V tvém splitu může být sectPr:
-        - jako samostatný element v body
-        - nebo uvnitř posledního odstavce přes w:pPr/w:sectPr
         """
         sec = self.section(index)
         if not sec:
             return None
 
-        # projdi odzadu, většinou je sectPr na konci oddílu
+        # sectPr je většinou na konci oddílu
         for el in reversed(sec):
-            # 1) sectPr jako přímý element
+            # sectPr jako přímý element
             if el.tag.endswith("}sectPr"):
                 return el
 
-            # 2) sectPr uvnitř odstavce
+            # sectPr uvnitř odstavce
             if el.tag.endswith("}p"):
                 ppr = el.find("w:pPr", self.NS)
                 if ppr is not None:
@@ -946,7 +925,7 @@ class WordDocument:
                 if t.text and t.text.strip():
                     return True
 
-            # pole (PAGE, DATE…)
+            # pole (PAGE, DATE..)
             for instr in xml.findall(".//w:instrText", self.NS):
                 if instr.text and instr.text.strip():
                     return True
@@ -955,13 +934,7 @@ class WordDocument:
         
     # Kontinualni cislovani sekce 2 na sekci 3
     def get_heading_num_id(self, p: ET.Element) -> str | None:
-        """
-        Vrátí numId pro Heading 1.
-        Priorita:
-        1) numPr přímo na odstavci
-        2) numPr ve stylu (Heading 1)
-        """
-        # 1️⃣ přímo na odstavci
+        # přímo na odstavci
         ppr = p.find("w:pPr", self.NS)
         if ppr is not None:
             numpr = ppr.find("w:numPr", self.NS)
@@ -972,7 +945,7 @@ class WordDocument:
                     if num_id is not None:
                         return num_id.attrib.get(f"{{{self.NS['w']}}}val")
 
-        # 2️⃣ fallback – ze stylu
+        # fallback – ze stylu
         style_id = self._paragraph_style_id(p)
         if not style_id:
             return None
@@ -1049,12 +1022,6 @@ class WordDocument:
         return captions
     
     def iter_list_of_figures_texts(self) -> list[str]:
-        """
-        Vrátí položky seznamu obrázků (Table of Figures).
-        Funguje pro:
-        - TOC \\c "Obrázek"
-        - položky ve <w:p> se stylem seznamu
-        """
         items: list[str] = []
 
         paragraphs = list(self._xml.findall(".//w:body/w:p", self.NS))
@@ -1063,7 +1030,7 @@ class WordDocument:
 
         for p in paragraphs:
 
-            # 1️⃣ detekce začátku seznamu obrázků
+            # detekce začátku seznamu obrázků
             for instr in p.findall(".//w:instrText", self.NS):
                 if instr.text:
                     txt = instr.text.upper()
@@ -1074,11 +1041,11 @@ class WordDocument:
             if not is_inside_figures_toc:
                 continue
 
-            # 2️⃣ konec – další sectPr
+            # konec – další sectPr
             if p.find("w:pPr/w:sectPr", self.NS) is not None:
                 break
 
-            # 3️⃣ položky seznamu obrázků = hyperlink s textem
+            # položky seznamu obrázků = hyperlink s textem
             hl = p.find("w:hyperlink", self.NS)
             if hl is None:
                 continue
@@ -1090,9 +1057,6 @@ class WordDocument:
         return items
             
     def object_image_rids(self, element) -> list[str]:
-        """
-        Vrátí seznam rId (relationship Id) všech obrázků v daném elementu (typicky <w:p>).
-        """
         rids = []
 
         # v obrázku je <a:blip r:embed="rIdX">
@@ -1104,9 +1068,6 @@ class WordDocument:
         return rids
     
     def get_image_bytes(self, r_id: str) -> bytes | None:
-        """
-        Vrátí bajty obrázku podle relationship ID (rId).
-        """
         # načti document.xml.rels
         try:
             rels = self._load("word/_rels/document.xml.rels")
@@ -1134,25 +1095,21 @@ class WordDocument:
     def paragraph_has_seq_caption(self, p: ET.Element) -> str | None:
         """
         Vrátí návěští titulku z pole SEQ (např. 'Obrázek', 'Tabulka', 'Graf'), nebo None.
-        Podporuje:
-        - w:fldSimple (instr atribut)
-        - w:instrText (rozsekané)
         """
         if p is None:
             return None
 
-        # 1️⃣ fldSimple
         for fld in p.findall(".//w:fldSimple", self.NS):
             instr = fld.attrib.get(f"{{{self.NS['w']}}}instr") or ""
             m = re.search(r"\bSEQ\s+([^\s\\]+)", instr, re.IGNORECASE)
             if m:
                 return m.group(1)
 
-        # 2️⃣ instrText (pospojované)
-        instr_parts = [
-            instr.text for instr in p.findall(".//w:instrText", self.NS)
-            if instr.text
-        ]
+        instr_parts = []
+
+        for instr in p.findall(".//w:instrText", self.NS):
+            if instr.text:
+                instr_parts.append(instr.text)
 
         if instr_parts:
             joined = " ".join(instr_parts)
@@ -1168,7 +1125,7 @@ class WordDocument:
         try:
             idx = paragraphs.index(element)
         except ValueError:
-            return None  # element není v hlavním seznamu – bezpečný fallback
+            return None
 
         for p in reversed(paragraphs[:idx]):
             if self._paragraph_text(p):
@@ -1193,14 +1150,11 @@ class WordDocument:
     
 
     def paragraph_is_caption(self, p: ET.Element) -> bool:
-        """
-        Vrátí True, pokud odstavec obsahuje pole SEQ (titulky obrázků/tabulek/grafů).
-        """
         return self.paragraph_has_seq_caption(p) is not None
 
     
     def _paragraph_is_toc_or_object_list(self, p):
-        # 1️⃣ podle stylu (nejspolehlivější)
+        # podle stylu
         ppr = p.find("w:pPr", self.NS)
         if ppr is not None:
             ps = ppr.find("w:pStyle", self.NS)
@@ -1209,7 +1163,6 @@ class WordDocument:
                 if any(x in style for x in ("toc", "obsah", "seznam")):
                     return True
 
-        # 2️⃣ fallback – podle polí
         for instr in p.findall(".//w:instrText", self.NS):
             if instr.text:
                 txt = instr.text.upper()
@@ -1219,10 +1172,6 @@ class WordDocument:
         return False
     
     def iter_crossref_anchors_in_body_text(self) -> set[str]:
-        """
-        Vrátí anchor názvy, na které vede křížový odkaz v BĚŽNÉM TEXTU.
-        Ignoruje obsah / seznam obrázků a ignoruje titulky.
-        """
         anchors = set()
 
         for p in self._xml.findall(".//w:body/w:p", self.NS):
@@ -1231,13 +1180,13 @@ class WordDocument:
             if self.paragraph_is_caption(p):
                 continue
 
-            # 1) hyperlink anchor (nejčastější)
+            # hyperlink anchor
             for hl in p.findall(".//w:hyperlink", self.NS):
                 a = hl.attrib.get(f"{{{self.NS['w']}}}anchor")
                 if a:
                     anchors.add(a)
 
-            # 2) REF pole (někdy bez hyperlink tagu)
+            # REF pole
             for instr in p.findall(".//w:instrText", self.NS):
                 if not instr.text:
                     continue
@@ -1266,10 +1215,6 @@ class WordDocument:
         return count
     
     def count_bibliography_items(self) -> int:
-        """
-        Spočítá položky seznamu literatury podle stylu 'Bibliografie'
-        uvnitř Word bibliography SDT.
-        """
         count = 0
 
         for sdt in self._xml.findall(".//w:sdt", self.NS):
@@ -1312,44 +1257,33 @@ class WordDocument:
         return None
 
     def resolve_part_target(self, r_id: str) -> str | None:
-        """
-        Přeloží rId z headerReference/footerReference na reálný soubor,
-        např. rId9 -> word/header1.xml
-        """
         try:
             rels = self._load("word/_rels/document.xml.rels")
         except KeyError:
             return None
 
-        rel_ns = {"rel": "http://schemas.openxmlformats.org/package/2006/relationships"}
+        for rel in rels.findall(".//rel:Relationship", self.NS):
+            if rel.attrib.get("Id") != r_id:
+                continue
 
-        for rel in rels.findall(".//rel:Relationship", rel_ns):
-            if rel.attrib.get("Id") == r_id:
-                target = rel.attrib.get("Target")  # např. "header1.xml"
-                if not target:
-                    return None
+            target = rel.attrib.get("Target")
+            if not target:
+                return None
 
-                # Word target je relativně k word/
-                if not target.startswith("word/"):
-                    return f"word/{target}"
-                return target
+            if not target.startswith("word/"):
+                return f"word/{target}"
+
+            return target
 
         return None
     
     def has_text_after_paragraph(self, paragraphs, index: int) -> bool:
-        """
-        Vrátí True, pokud se ZA daným indexem nachází
-        alespoň jeden odstavec s viditelným textem.
-        """
         for p in paragraphs[index + 1:]:
             if self._paragraph_text(p):
                 return True
         return False
     
     def paragraph_is_generated_by_field(self, p) -> bool:
-        """
-        True pokud je odstavec součástí Word pole (TOC, PAGEREF, SEQ…)
-        """
         if p.findall(".//w:fldChar", self.NS):
             return True
         if p.findall(".//w:instrText", self.NS):
