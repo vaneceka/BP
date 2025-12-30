@@ -4,7 +4,7 @@ from checks.base_check import BaseCheck, CheckResult
 
 class MissingOrWrongFormulaOrNotCalculatedCheck(BaseCheck):
     name = "Zcela chybí výpočet/vzorec, je chybně nebo hodnota vypočtena není."
-    penalty = -10  # [-10*] → fatální
+    penalty = -10 
 
     def _norm_formula(self, f: str | None) -> str:
         if not f:
@@ -49,12 +49,12 @@ class MissingOrWrongFormulaOrNotCalculatedCheck(BaseCheck):
 
             actual_formula = cell["formula"]
 
-            # 1️⃣ chybí vzorec
+            # chybí vzorec
             if not (isinstance(actual_formula, str) and actual_formula.startswith("=")):
                 errors.append(f"{sheet}!{addr}: chybí vzorec")
                 continue
 
-            # 2️⃣ špatný vzorec
+            # špatný vzorec
             if self._norm_formula(actual_formula) != self._norm_formula(expected):
                 errors.append(
                     f"{sheet}!{addr}: špatný vzorec "
