@@ -7,30 +7,27 @@ class NonCopyableFormulasCheck(BaseCheck):
     penalty = -100
 
     CELL_REF_RE = re.compile(r"\b[A-Z]{1,3}\d+\b")
-    ABS_REF_RE = re.compile(r"\$[A-Z]{1,3}\$\d+")
 
     def run(self, document, assignment=None):
-
         bad_cells = []
 
         for cell in document.cells_with_formulas():
             formula = cell["formula"]
 
-            if not formula:
-                continue
-
-            # maticový vzorec
-            if cell.get("is_array"):
+            # maticový / interní vzorec
+            if not isinstance(formula, str):
                 bad_cells.append(
-                    (cell["sheet"], cell["address"], "maticový vzorec")
+                    (cell["sheet"], cell["address"], "maticový nebo interní vzorec")
                 )
                 continue
 
-            # relativní odkazy
-            has_rel = bool(self.CELL_REF_RE.search(formula))
-            has_abs = bool(self.ABS_REF_RE.search(formula))
+            # má odkazy na buňky?
+            has_cell_ref = bool(self.CELL_REF_RE.search(formula))
 
-            if has_rel and not has_abs:
+            # nemá žádné $
+            has_any_absolute = "$" in formula
+
+            if has_cell_ref and not has_any_absolute:
                 bad_cells.append(
                     (cell["sheet"], cell["address"], formula)
                 )

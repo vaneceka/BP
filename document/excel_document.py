@@ -4,15 +4,61 @@ import xml.dom.minidom as minidom
 import xml.etree.ElementTree as ET
 from openpyxl import load_workbook
 
+NS = {
+    "main": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
+    "rel": "http://schemas.openxmlformats.org/package/2006/relationships",
+}
+
 
 class ExcelDocument:
     def __init__(self, path: str):
         self.path = path
-        self.wb = load_workbook(path, data_only=False)
+        self.wb = load_workbook(path, data_only=False) # vzorce
+        self.wb_values = load_workbook(path, data_only=True)  # uložené výsledky    
+
+        # xml část
+        self.NS = NS
+        self._zip = zipfile.ZipFile(path)
+        self.workbook_xml = self._load_xml("xl/workbook.xml")
+        self.sheets = self._load_sheets_xml()  # <-- DŮLEŽITÉ: přidá self.sheets    
+
+
+    def _load_xml(self, name: str) -> ET.Element:
+        with self._zip.open(name) as f:
+            return ET.fromstring(f.read())
+
+    def _load_sheets_xml(self) -> dict:
+        sheets = {}
+
+        rels = self._load_xml("xl/_rels/workbook.xml.rels")
+        rel_map = {
+            r.attrib["Id"]: r.attrib["Target"]
+            for r in rels.findall("rel:Relationship", self.NS)
+        }
+
+        for sheet in self.workbook_xml.findall(".//main:sheet", self.NS):
+            name = sheet.attrib["name"]
+            r_id = sheet.attrib.get(
+                "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
+            )
+            target = rel_map.get(r_id)
+            if not target:
+                continue
+
+            xml = self._load_xml(f"xl/{target}")
+            sheets[name] = {"xml": xml, "path": target}
+
+        return sheets
 
     # ---------------------------
     # ZÁKLADNÍ API
     # ---------------------------
+
+    def get_cell(self, sheet: str, addr: str):
+        return self.wb[sheet][addr]
+
+    def get_cell_value_cached(self, sheet: str, addr: str):
+        return self.wb_values[sheet][addr].value
 
     def sheet_names(self) -> list[str]:
         return self.wb.sheetnames
@@ -27,23 +73,18 @@ class ExcelDocument:
 
     def cells_with_formulas(self):
         cells = []
+
         for ws in self.wb.worksheets:
             for row in ws.iter_rows():
                 for cell in row:
                     if cell.data_type == "f":
-                        formula = cell.value or ""
-                        is_array = (
-                            isinstance(formula, str)
-                            and formula.startswith("{")
-                            and formula.endswith("}")
-                        )
-
                         cells.append({
                             "sheet": ws.title,
                             "address": cell.coordinate,
-                            "formula": formula,
-                            "is_array": is_array,
+                            "formula": cell.value,
+                            "raw_cell": cell,   # 👈 KLÍČOVÉ
                         })
+
         return cells
 
     def has_chart(self) -> bool:

@@ -1,6 +1,9 @@
+from assignment.excel.excel_assignment_loader import load_excel_assignment
+from checks.excel.data_process.array_formula_check import ArrayFormulaCheck
+from checks.excel.data_process.missing_wrong_formula_check import MissingOrWrongFormulaOrNotCalculatedCheck
 from checks.excel.data_process.required_data_worksheet_check import RequiredDataWorksheetCheck
 from checks.excel.data_process.required_source_worksheet_check import RequiredSourceWorksheetCheck
-from checks.excel.non_copyable_formula_check import NonCopyableFormulasCheck
+from checks.excel.data_process.non_copyable_formula_check import NonCopyableFormulasCheck
 from checks.word.bibliography.bibliography_exist_check import MissingBibliographyCheck
 from checks.word.bibliography.bibliography_iso690_check import BibliographyISO690Check
 from checks.word.bibliography.bibliography_up_to_date_check import BibliographyNotUpdatedCheck
@@ -143,14 +146,17 @@ def main():
     ]
 
     exc = ExcelDocument("23_fb750.xlsx")
-    excel_assignment = load_assignment("assignment/excel/assignment.json")
+    excel_assignment = load_excel_assignment("assignment/excel/assignment.json")
     exc.save_xml()
 
     excel_checks = [
         #------excel-----
         RequiredSourceWorksheetCheck(),
         RequiredDataWorksheetCheck(),
-        NonCopyableFormulasCheck(),
+        # nevim, jak to mam chapat.
+        # NonCopyableFormulasCheck(),
+        MissingOrWrongFormulaOrNotCalculatedCheck(),
+        ArrayFormulaCheck(),
     ]
 
 
