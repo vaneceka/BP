@@ -90,6 +90,12 @@ class ExcelDocument:
     def has_chart(self) -> bool:
         return any(ws._charts for ws in self.wb.worksheets)
 
+
+    # document/excel_document.py
+
+    def defined_names(self) -> set[str]:
+        return {name.upper() for name in self.wb.defined_names.keys()}
+
     # ---------------------------
     # DEBUG XML (DŮLEŽITÉ)
     # ---------------------------

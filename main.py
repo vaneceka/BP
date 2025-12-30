@@ -1,6 +1,7 @@
 from assignment.excel.excel_assignment_loader import load_excel_assignment
 from checks.excel.data_process.array_formula_check import ArrayFormulaCheck
 from checks.excel.data_process.missing_wrong_formula_check import MissingOrWrongFormulaOrNotCalculatedCheck
+from checks.excel.data_process.named_range_usage_check import NamedRangeUsageCheck
 from checks.excel.data_process.required_data_worksheet_check import RequiredDataWorksheetCheck
 from checks.excel.data_process.required_source_worksheet_check import RequiredSourceWorksheetCheck
 from checks.excel.data_process.non_copyable_formula_check import NonCopyableFormulasCheck
@@ -157,6 +158,8 @@ def main():
         # NonCopyableFormulasCheck(),
         MissingOrWrongFormulaOrNotCalculatedCheck(),
         ArrayFormulaCheck(),
+        NamedRangeUsageCheck(),
+
     ]
 
 
