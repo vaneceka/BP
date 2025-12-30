@@ -9,6 +9,7 @@ from checks.excel.data_process.required_data_worksheet_check import RequiredData
 from checks.excel.data_process.required_source_worksheet_check import RequiredSourceWorksheetCheck
 from checks.excel.data_process.non_copyable_formula_check import NonCopyableFormulasCheck
 from checks.excel.formatting.number_formatting_check import NumberFormattingCheck
+from checks.excel.formatting.table_border_check import TableBorderCheck
 from checks.word.bibliography.bibliography_exist_check import MissingBibliographyCheck
 from checks.word.bibliography.bibliography_iso690_check import BibliographyISO690Check
 from checks.word.bibliography.bibliography_up_to_date_check import BibliographyNotUpdatedCheck
@@ -169,6 +170,7 @@ def main():
         # CopiedFromSourceByRelativeRefCheck(),
         #----------formatovani
         NumberFormattingCheck(),
+        TableBorderCheck(),
         
 
     ]

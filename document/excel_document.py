@@ -118,48 +118,14 @@ class ExcelDocument:
 
         return data
 
-    # def get_cell(self, address: str):
-    #     """
-    #     address ve formátu 'sheet!A1'
-    #     """
-    #     if "!" not in address:
-    #         raise ValueError("Cell address must be in format 'sheet!A1'")
-
-    #     sheet, addr = address.split("!", 1)
-
-    #     if sheet not in self.wb.sheetnames:
-    #         return None
-
-    #     ws = self.wb[sheet]
-    #     cell = ws[addr]
-
-    #     if cell.value is None and cell.data_type != "f":
-    #         return None
-
-    #     return {
-    #         "sheet": sheet,
-    #         "address": addr,
-    #         "formula": cell.value if cell.data_type == "f" else None,
-    #         "raw_cell": cell,
-    #         "value_cached": self.wb_values[sheet][addr].value,
-    #     }
-    
-    # def get_cell_info(self, sheet: str, addr: str):
-    #     ws = self.wb[sheet]
-    #     c = ws[addr]
-
-    #     formula = c.value if isinstance(c.value, str) and c.value.startswith("=") else None
-
-    #     return {
-    #         "sheet": sheet,
-    #         "address": addr,
-    #         "raw_cell": c,
-    #         "formula": formula,
-    #         "value": c.value,
-    #     }
-
     def has_chart(self) -> bool:
         return any(ws._charts for ws in self.wb.worksheets)
+    
+    def is_outer_cell(row, col, min_row, max_row, min_col, max_col):
+        return (
+            row == min_row or row == max_row or
+            col == min_col or col == max_col
+        )
 
 
     # document/excel_document.py
