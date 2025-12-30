@@ -54,8 +54,8 @@ class ExcelDocument:
     # ZÁKLADNÍ API
     # ---------------------------
 
-    def get_cell(self, sheet: str, addr: str):
-        return self.wb[sheet][addr]
+    # def get_cell(self, sheet: str, addr: str):
+    #     return self.wb[sheet][addr]
 
     def get_cell_value_cached(self, sheet: str, addr: str):
         return self.wb_values[sheet][addr].value
@@ -87,7 +87,7 @@ class ExcelDocument:
 
         return cells
 
-    def get_cell(self, address: str):
+    def get_cell(self, address: str, *, include_value=False):
         """
         address ve formátu 'sheet!A1'
         """
@@ -105,13 +105,58 @@ class ExcelDocument:
         if cell.value is None and cell.data_type != "f":
             return None
 
-        return {
+        data = {
             "sheet": sheet,
             "address": addr,
-            "formula": cell.value if cell.data_type == "f" else None,
             "raw_cell": cell,
+            "formula": cell.value if cell.data_type == "f" else None,
             "value_cached": self.wb_values[sheet][addr].value,
         }
+
+        if include_value:
+            data["value"] = cell.value
+
+        return data
+
+    # def get_cell(self, address: str):
+    #     """
+    #     address ve formátu 'sheet!A1'
+    #     """
+    #     if "!" not in address:
+    #         raise ValueError("Cell address must be in format 'sheet!A1'")
+
+    #     sheet, addr = address.split("!", 1)
+
+    #     if sheet not in self.wb.sheetnames:
+    #         return None
+
+    #     ws = self.wb[sheet]
+    #     cell = ws[addr]
+
+    #     if cell.value is None and cell.data_type != "f":
+    #         return None
+
+    #     return {
+    #         "sheet": sheet,
+    #         "address": addr,
+    #         "formula": cell.value if cell.data_type == "f" else None,
+    #         "raw_cell": cell,
+    #         "value_cached": self.wb_values[sheet][addr].value,
+    #     }
+    
+    # def get_cell_info(self, sheet: str, addr: str):
+    #     ws = self.wb[sheet]
+    #     c = ws[addr]
+
+    #     formula = c.value if isinstance(c.value, str) and c.value.startswith("=") else None
+
+    #     return {
+    #         "sheet": sheet,
+    #         "address": addr,
+    #         "raw_cell": c,
+    #         "formula": formula,
+    #         "value": c.value,
+    #     }
 
     def has_chart(self) -> bool:
         return any(ws._charts for ws in self.wb.worksheets)
