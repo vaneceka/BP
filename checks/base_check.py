@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from document.excel_document import ExcelDocument
 from document.word_document import WordDocument
-from assignment.assignment import Assignment
+from assignment.word.word_assignment import Assignment
 
 class CheckResult:
     def __init__(self, passed: bool, message: str, points: int, fatal: bool = False):

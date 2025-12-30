@@ -26,17 +26,25 @@ class ExcelDocument:
         )
 
     def cells_with_formulas(self):
-        return [
-            {
-                "sheet": ws.title,
-                "address": cell.coordinate,
-                "formula": cell.value,
-            }
-            for ws in self.wb.worksheets
-            for row in ws.iter_rows()
-            for cell in row
-            if cell.data_type == "f"
-        ]
+        cells = []
+        for ws in self.wb.worksheets:
+            for row in ws.iter_rows():
+                for cell in row:
+                    if cell.data_type == "f":
+                        formula = cell.value or ""
+                        is_array = (
+                            isinstance(formula, str)
+                            and formula.startswith("{")
+                            and formula.endswith("}")
+                        )
+
+                        cells.append({
+                            "sheet": ws.title,
+                            "address": cell.coordinate,
+                            "formula": formula,
+                            "is_array": is_array,
+                        })
+        return cells
 
     def has_chart(self) -> bool:
         return any(ws._charts for ws in self.wb.worksheets)

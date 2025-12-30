@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict, List
-from .assignment_model import StyleSpec
+from .word_assignment_model import StyleSpec
 
 
 @dataclass

@@ -1,4 +1,6 @@
-from checks.excel.data_process.required_worksheet_check import RequiredWorksheetCheck
+from checks.excel.data_process.required_data_worksheet_check import RequiredDataWorksheetCheck
+from checks.excel.data_process.required_source_worksheet_check import RequiredSourceWorksheetCheck
+from checks.excel.non_copyable_formula_check import NonCopyableFormulasCheck
 from checks.word.bibliography.bibliography_exist_check import MissingBibliographyCheck
 from checks.word.bibliography.bibliography_iso690_check import BibliographyISO690Check
 from checks.word.bibliography.bibliography_up_to_date_check import BibliographyNotUpdatedCheck
@@ -58,7 +60,7 @@ from checks.word.sections.section3_table_list_check import Section3TableListChec
 from checks.word.sections.section3_bibliography_check import Section3BibliographyCheck
 
 # --- assignment ---
-from assignment.assignment_loader import load_assignment
+from assignment.word.word_assignment_loader import load_assignment
 
 # --- formatting (assignment-based) ---
 from checks.word.formatting.normal_style_check import NormalStyleCheck
@@ -67,7 +69,7 @@ from checks.word.formatting.normal_style_check import NormalStyleCheck
 
 def main():
     doc = WordDocument("student.docx")
-    assignment = load_assignment("assignment/assignment.json")
+    assignment = load_assignment("assignment/word/assignment.json")
     doc.save_xml()
 
     checks = [
@@ -141,11 +143,14 @@ def main():
     ]
 
     exc = ExcelDocument("23_fb750.xlsx")
+    excel_assignment = load_assignment("assignment/excel/assignment.json")
     exc.save_xml()
 
     excel_checks = [
         #------excel-----
-        RequiredWorksheetCheck()
+        RequiredSourceWorksheetCheck(),
+        RequiredDataWorksheetCheck(),
+        NonCopyableFormulasCheck(),
     ]
 
 
@@ -162,7 +167,7 @@ def main():
     #------------------------------------------
 
     excel_runner = Runner(excel_checks)
-    excel_results = excel_runner.run(exc, assignment)
+    excel_results = excel_runner.run(exc, excel_assignment)
 
     for check, result in excel_results:
         report.add(check.name, result)

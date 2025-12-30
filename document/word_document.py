@@ -3,7 +3,7 @@ import zipfile
 import xml.etree.ElementTree as ET
 import re
 
-from assignment.assignment_model import StyleSpec
+from assignment.word.word_assignment_model import StyleSpec
 from pathlib import Path
 import xml.dom.minidom as minidom
 

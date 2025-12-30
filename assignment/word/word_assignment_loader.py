@@ -1,6 +1,6 @@
 import json
-from .assignment import Assignment
-from .assignment_model import StyleSpec
+from .word_assignment import Assignment
+from .word_assignment_model import StyleSpec
 
 
 def load_assignment(path: str) -> Assignment:
