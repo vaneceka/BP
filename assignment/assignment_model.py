@@ -69,7 +69,7 @@ class StyleSpec:
         ignore = {"name"} if ignore_fields is None else ignore_fields
         diffs: list[str] = []
 
-        # 1) "musí odpovídat" – jen pole, která jsou v expected vyplněná
+        # musí odpovídat jen pole, která jsou v expected vyplněná
         for field, expected_value in vars(expected).items():
             if field in ignore:
                 continue
@@ -78,7 +78,7 @@ class StyleSpec:
 
             actual_value = getattr(self, field, None)
 
-            # --- speciální tolerantní pole ---
+            # speciální tolerantní pole 
             if field == "spaceBefore":
                 if not self._int_close(actual_value, expected_value, self.SPACE_TOLERANCE):
                     diffs.append(
@@ -127,7 +127,7 @@ class StyleSpec:
             if actual_value != expected_value:
                 diffs.append(f"{field}: očekáváno {expected_value}, nalezeno {actual_value}")
 
-        # 2) STRICT: nic navíc nesmí být zapnuto (jen když expected to nepožaduje)
+        # nic navíc nesmí být zapnuto 
         if strict:
             # jen bool pole (u čísel/fontů strict typicky nedává smysl bez dalších pravidel)
             bool_fields = ["bold", "italic","underline", "allCaps", "pageBreakBefore"]
@@ -137,7 +137,6 @@ class StyleSpec:
                 exp = getattr(expected, field, None)
                 act = getattr(self, field, None)
 
-                # pokud expected nic neříká, bereme "nemá být zapnuto"
                 if exp is None and act is True:
                     diffs.append(f"{field}: nemá být zapnuto, ale je True")
             
@@ -154,12 +153,12 @@ class StyleSpec:
                 if exp is None and act is not None:
                     diffs.append(f"{field}: nemá být nastaveno, ale je {act}")
             
-            # Zadaní řeší číslování
+            # zadaní řeší číslování
             if expected.numLevel is not None:
                 if not self.isNumbered:
                     diffs.append("isNumbered: má být číslovaný, ale není")
             else:
-                # Zadaní neřeší číslování
+                # zadaní neřeší číslování
                 if self.isNumbered:
                     diffs.append("isNumbered: nemá být číslovaný, ale je")
         return diffs
