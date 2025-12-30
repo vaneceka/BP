@@ -1,5 +1,5 @@
 import re
-from checks.word.base_check import BaseCheck, CheckResult
+from checks.base_check import BaseCheck, CheckResult
 
 BAD_PATTERNS = [
     r" {4,}",   # 4+ mezer

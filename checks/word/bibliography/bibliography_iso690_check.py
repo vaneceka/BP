@@ -1,4 +1,4 @@
-from checks.word.base_check import BaseCheck, CheckResult
+from checks.base_check import BaseCheck, CheckResult
 import re
 
 # NOTE nefunguje. Je treab se na to poradne jeste podivat

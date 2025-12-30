@@ -1,4 +1,4 @@
-from checks.word.base_check import BaseCheck, CheckResult
+from checks.base_check import BaseCheck, CheckResult
 
 class CaptionStyleCheck(BaseCheck):
     name = "Styl Titulek není změněn."

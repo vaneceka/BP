@@ -1,4 +1,4 @@
-from ..base_check import BaseCheck, CheckResult
+from ...base_check import BaseCheck, CheckResult
 
 class BibliographyCheck(BaseCheck):
     name = "Seznam literatury"

@@ -1,4 +1,4 @@
-from checks.word.base_check import BaseCheck, CheckResult
+from checks.base_check import BaseCheck, CheckResult
 
 class CustomStyleInheritanceCheck(BaseCheck):
     name = "Vlastní styl s dědičností"

@@ -1,4 +1,4 @@
-from ..base_check import BaseCheck, CheckResult
+from ...base_check import BaseCheck, CheckResult
 
 
 class Section3BibliographyCheck(BaseCheck):

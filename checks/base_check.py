@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from document.excel_document import ExcelDocument
 from document.word_document import WordDocument
 from assignment.assignment import Assignment
 
@@ -15,5 +16,7 @@ class BaseCheck(ABC):
     penalty: int
 
     @abstractmethod
-    def run(self, document: WordDocument, assignment: Assignment | None = None) -> CheckResult:
+    def run(self,
+             document: WordDocument | ExcelDocument,
+             assignment: Assignment | None = None) -> CheckResult:
         pass

@@ -1,4 +1,4 @@
-from checks.word.base_check import BaseCheck, CheckResult
+from checks.base_check import BaseCheck, CheckResult
 import re
 
 # NOTE poradne to jeste otestovat
