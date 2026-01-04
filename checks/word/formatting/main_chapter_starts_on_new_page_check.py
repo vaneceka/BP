@@ -2,7 +2,7 @@ from checks.base_check import BaseCheck, CheckResult
 
 class MainChapterStartsOnNewPageCheck(BaseCheck):
     name = "Hlavní kapitola nezačíná na nové straně"
-    penalty = -2  # násobí se
+    penalty = -2 
 
     def run(self, document, assignment=None):
         errors = []

@@ -50,7 +50,6 @@ class BibliographyISO690Check(BaseCheck):
             if "[online]" in t_lower:
                 continue
 
-            # základní prvky
             has_author = re.search(
                 r"^[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ][A-Za-zÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ\-]+,\s*[A-Z]",
                 t

@@ -36,7 +36,6 @@ class ObjectCaptionDescriptionCheck(BaseCheck):
                 errors.append("Titulek objektu je prázdný.")
                 continue
 
-            # odeber "Obrázek 1:", "Tabulka 2 –", "Graf 3"
             description = re.sub(
                 r"^(Obrázek|Tabulka|Graf)\s+\d+\s*[:\-]?\s*",
                 "",

@@ -1,4 +1,3 @@
-# assignment/excel_assignment_loader.py
 import json
 from .excel_assignment_model import ExcelAssignment, ExcelCellSpec
 

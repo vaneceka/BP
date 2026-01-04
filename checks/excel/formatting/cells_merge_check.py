@@ -6,7 +6,6 @@ class MergedCellsCheck(BaseCheck):
     penalty = -1
     SHEET = "data"
 
-    # oblasti, kde sloučení NESMÍ být
     FORBIDDEN_RANGES = [
         "A2:F23",  
         "A28:E30",
@@ -52,7 +51,7 @@ class MergedCellsCheck(BaseCheck):
                 "Chybné sloučení buněk:\n" +
                 "\n".join("– " + p for p in problems),
                 self.penalty,
-                fatal=True   # hvězdička
+                fatal=True 
             )
 
         return CheckResult(

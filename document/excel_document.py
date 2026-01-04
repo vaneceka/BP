@@ -13,8 +13,8 @@ NS = {
 class ExcelDocument:
     def __init__(self, path: str):
         self.path = path
-        self.wb = load_workbook(path, data_only=False) # vzorce
-        self.wb_values = load_workbook(path, data_only=True)  # uložené výsledky    
+        self.wb = load_workbook(path, data_only=False)
+        self.wb_values = load_workbook(path, data_only=True) 
 
         self.NS = NS
         self._zip = zipfile.ZipFile(path)
@@ -132,7 +132,6 @@ class ExcelDocument:
                     raw = z.read(name)
                     root = ET.fromstring(raw)
                 except Exception:
-                    # není validní XML (rare, ale může se stát)
                     continue
 
                 pretty = minidom.parseString(

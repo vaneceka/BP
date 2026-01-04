@@ -26,7 +26,6 @@ class HeadingsUsedCorrectlyCheck(BaseCheck):
             missing.extend([k] * max(0, v - actual_counts.get(k, 0)))
 
         extra = []
-        # k -> nadpis, v -> pocet
         for k, v in actual_counts.items():
             extra.extend([k] * max(0, v - expected_counts.get(k, 0)))
 

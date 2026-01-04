@@ -21,7 +21,6 @@ class ObjectCaptionBindingCheck(BaseCheck):
             if not expected:
                 continue
 
-            # určení směru titulku
             if obj_type == "table":
                 caption_p = document.paragraph_before(element)
             else:

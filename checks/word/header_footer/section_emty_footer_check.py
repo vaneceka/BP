@@ -36,7 +36,6 @@ class SectionFooterEmptyCheck(BaseCheck):
             except KeyError:
                 continue
             
-            # viditelný text
             for t in xml.findall(".//w:t", document.NS):
                 if t.text and t.text.strip():
                     return CheckResult(
@@ -45,7 +44,6 @@ class SectionFooterEmptyCheck(BaseCheck):
                         self.penalty,
                     )
 
-            # viditelné objekty
             if (
                 xml.findall(".//w:drawing", document.NS)
                 or xml.findall(".//m:oMath", document.NS)

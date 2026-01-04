@@ -6,8 +6,6 @@ class SecondSectionPageNumberStartsAtOneCheck(BaseCheck):
     penalty = -5
 
     def run(self, document, assignment=None):
-
-        # musí existovat alespoň 2 oddíly
         if document.section_count() < 2:
             return CheckResult(True, "Dokument má méně než dva oddíly.", 0)
 

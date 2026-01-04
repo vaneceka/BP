@@ -676,8 +676,6 @@ class WordDocument:
         paragraphs = list(self._xml.findall(".//w:body/w:p", self.NS))
 
         for i, p in enumerate(paragraphs, start=1):
-
-            # ignoruj TOC, seznamy, captiony, objekty
             if self._paragraph_is_toc_or_object_list(p):
                 continue
             if self.paragraph_is_caption(p):
@@ -728,14 +726,11 @@ class WordDocument:
         paragraphs = list(self._xml.findall(".//w:body/w:p", self.NS))
 
         for i, p in enumerate(paragraphs, start=1):
-
-            # ignoruj obsah a captiony
             if self._paragraph_is_toc_or_object_list(p):
                 continue
             if self.paragraph_is_caption(p):
                 continue
 
-            # ignoruj objekty
             has_object = False
 
             if p.findall(".//w:drawing", self.NS):
@@ -788,16 +783,13 @@ class WordDocument:
 
         return ppr.find("w:pageBreakBefore", self.NS) is not None
     
-    # horizontální ruční formátování
     def paragraph_text_raw(self, p: ET.Element) -> str:
         parts = []
 
-        # texty
         for t in p.findall(".//w:t", self.NS):
             if t.text is not None:
                 parts.append(t.text)
 
-        # tabulátory z xml
         for tab in p.findall(".//w:tab", self.NS):
             parts.append("\t")
 

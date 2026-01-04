@@ -38,7 +38,6 @@ class ObjectCaptionCheck(BaseCheck):
                 label = before_label or after_label
 
                 if label is None:
-                    # žádný SEQ
                     has_text = False
                     if before_p and document._paragraph_text(before_p):
                         has_text = True

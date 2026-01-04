@@ -31,7 +31,6 @@ class InconsistentFormattingCheck(BaseCheck):
                 if r.find("w:fldChar", document.NS) is not None:
                     continue
 
-                # musí mít skutečný text
                 has_text = False
 
                 for t in r.findall(".//w:t", document.NS):

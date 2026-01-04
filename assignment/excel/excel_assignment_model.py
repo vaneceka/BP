@@ -1,4 +1,3 @@
-# assignment/excel_assignment_model.py
 from dataclasses import dataclass
 from typing import Any
 
