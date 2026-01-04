@@ -28,10 +28,6 @@ class TableBorderCheck(BaseCheck):
         return getattr(side, "style", None)
 
     def _matches(self, actual_style, expected_style):
-        """
-        actual_style: např. "medium"
-        expected_style: např. "thick" (ze zadání)
-        """
         allowed = self.STYLE_EQUIV.get(expected_style, {expected_style})
         return actual_style in allowed
 
@@ -57,7 +53,7 @@ class TableBorderCheck(BaseCheck):
                     cell = ws.cell(row=r, column=c)
                     b = cell.border
 
-                    # ----- OUTER (konkrétní strany) -----
+                    # outer
                     if r == min_row:
                         if not self._matches(self._style(b.top), outer):
                             problems.append(f"{cell.coordinate}: chybí TOP vnější ({outer})")
@@ -71,7 +67,7 @@ class TableBorderCheck(BaseCheck):
                         if not self._matches(self._style(b.right), outer):
                             problems.append(f"{cell.coordinate}: chybí RIGHT vnější ({outer})")
 
-                    # ----- INNER: kontrola hran s tolerancí přes souseda -----
+                    # inner
                     if r > min_row:
                         top_ok = self._matches(self._style(b.top), inner)
                         if not top_ok:

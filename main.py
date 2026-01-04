@@ -8,6 +8,9 @@ from checks.excel.data_process.redundant_absolute_reference_check import Redunda
 from checks.excel.data_process.required_data_worksheet_check import RequiredDataWorksheetCheck
 from checks.excel.data_process.required_source_worksheet_check import RequiredSourceWorksheetCheck
 from checks.excel.data_process.non_copyable_formula_check import NonCopyableFormulasCheck
+from checks.excel.formatting.cells_merge_check import MergedCellsCheck
+from checks.excel.formatting.conditional_formatting_check import ConditionalFormattingCheck
+from checks.excel.formatting.header_formatting_check import HeaderFormattingCheck
 from checks.excel.formatting.number_formatting_check import NumberFormattingCheck
 from checks.excel.formatting.table_border_check import TableBorderCheck
 from checks.word.bibliography.bibliography_exist_check import MissingBibliographyCheck
@@ -60,7 +63,6 @@ from document.word_document import WordDocument
 from core.runner import Runner
 from core.report import Report
 
-# --- section checks ---
 from checks.word.sections.section_count_check import SectionCountCheck
 from checks.word.sections.section1_toc_check import Section1TOCCheck
 from checks.word.sections.section2_text_check import Section2TextCheck
@@ -68,10 +70,8 @@ from checks.word.sections.section3_figure_list_check import Section3FigureListCh
 from checks.word.sections.section3_table_list_check import Section3TableListCheck
 from checks.word.sections.section3_bibliography_check import Section3BibliographyCheck
 
-# --- assignment ---
 from assignment.word.word_assignment_loader import load_assignment
 
-# --- formatting (assignment-based) ---
 from checks.word.formatting.normal_style_check import NormalStyleCheck
 
 
@@ -157,21 +157,26 @@ def main():
 
     excel_checks = [
         #------excel-----
-        RequiredSourceWorksheetCheck(),
-        RequiredDataWorksheetCheck(),
+        # RequiredSourceWorksheetCheck(),
+        # RequiredDataWorksheetCheck(),
         # nevim, jak to mam chapat.
         # NonCopyableFormulasCheck(),
-        MissingOrWrongFormulaOrNotCalculatedCheck(),
-        ArrayFormulaCheck(),
-        NamedRangeUsageCheck(),
-        RedundantAbsoluteReferenceCheck(),
-        DescriptiveStatisticsCheck(),
+        # MissingOrWrongFormulaOrNotCalculatedCheck(),
+        # ArrayFormulaCheck(),
+        # NamedRangeUsageCheck(),
+        # RedundantAbsoluteReferenceCheck(),
+        # DescriptiveStatisticsCheck(),
+
         # s otaznikem, nevim jak to ma byt
         # CopiedFromSourceByRelativeRefCheck(),
         #----------formatovani
-        NumberFormattingCheck(),
-        TableBorderCheck(),
-        
+
+
+        # NumberFormattingCheck(),
+        # TableBorderCheck(),
+        # MergedCellsCheck(),
+        # HeaderFormattingCheck(),
+        ConditionalFormattingCheck(),
 
     ]
 

@@ -5,9 +5,6 @@ class FooterLinkedToPreviousCheck(BaseCheck):
     penalty = -2
 
     def __init__(self, section_number: int):
-        """
-        section_number = číslo oddílu (1-based, lidské číslování)
-        """
         self.section_number = section_number
         self.section_index = section_number - 1
 

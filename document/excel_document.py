@@ -16,11 +16,10 @@ class ExcelDocument:
         self.wb = load_workbook(path, data_only=False) # vzorce
         self.wb_values = load_workbook(path, data_only=True)  # uložené výsledky    
 
-        # xml část
         self.NS = NS
         self._zip = zipfile.ZipFile(path)
         self.workbook_xml = self._load_xml("xl/workbook.xml")
-        self.sheets = self._load_sheets_xml()  # <-- DŮLEŽITÉ: přidá self.sheets    
+        self.sheets = self._load_sheets_xml()    
 
 
     def _load_xml(self, name: str) -> ET.Element:
@@ -49,13 +48,6 @@ class ExcelDocument:
             sheets[name] = {"xml": xml, "path": target}
 
         return sheets
-
-    # ---------------------------
-    # ZÁKLADNÍ API
-    # ---------------------------
-
-    # def get_cell(self, sheet: str, addr: str):
-    #     return self.wb[sheet][addr]
 
     def get_cell_value_cached(self, sheet: str, addr: str):
         return self.wb_values[sheet][addr].value
@@ -88,9 +80,6 @@ class ExcelDocument:
         return cells
 
     def get_cell(self, address: str, *, include_value=False):
-        """
-        address ve formátu 'sheet!A1'
-        """
         if "!" not in address:
             raise ValueError("Cell address must be in format 'sheet!A1'")
 
@@ -127,20 +116,10 @@ class ExcelDocument:
             col == min_col or col == max_col
         )
 
-
-    # document/excel_document.py
-
     def defined_names(self) -> set[str]:
         return {name.upper() for name in self.wb.defined_names.keys()}
 
-    # ---------------------------
-    # DEBUG XML (DŮLEŽITÉ)
-    # ---------------------------
-
     def save_xml(self, out_dir: str | Path = "debug_excel_xml"):
-        """
-        Rozbalí XLSX a uloží všechna XML v čitelné podobě.
-        """
         out_dir = Path(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
 

@@ -13,12 +13,6 @@ class TOCUpToDateCheck(BaseCheck):
     }
 
     def _norm(self, text: str) -> str:
-        """
-        Normalizuje text nadpisu / položky obsahu:
-        - odstraní číslování (1., 1.1., 2.3.4.)
-        - odstraní koncová čísla (čísla stránek)
-        - sjednotí mezery
-        """
         if not text:
             return ""
 
@@ -27,24 +21,7 @@ class TOCUpToDateCheck(BaseCheck):
         text = re.sub(r"\s+\d+\s*$", "", text)
 
         return text.strip()
-
-    # def _visible_text(self, element, document) -> str:
-    #     """
-    #     Vrátí pouze viditelný text (ignoruje webHidden).
-    #     """
-    #     parts = []
-
-    #     for r in element.findall(".//w:r", document.NS):
-    #         rpr = r.find("w:rPr", document.NS)
-    #         if rpr is not None and rpr.find("w:webHidden", document.NS) is not None:
-    #             continue
-
-    #         for t in r.findall("w:t", document.NS):
-    #             if t.text:
-    #                 parts.append(t.text)
-
-    #     return self._norm("".join(parts))
-    
+        
     def run(self, document, assignment=None):
 
         # 1️⃣ Najdi oddíl s obsahem

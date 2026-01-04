@@ -61,19 +61,10 @@ class WordDocument:
     def iter_paragraphs(self) -> Iterable[ET.Element]:
         return self._xml.findall(".//w:p", self.NS)
 
-    def _iter_texts(self) -> Iterable[str]:
-        for t in self._xml.findall(".//w:t", self.NS):
-            if t.text:
-                yield t.text
     def _is_builtin_style_name(self, name: str) -> bool:
         return name.strip().lower() in BUILTIN_STYLE_NAMES
     
     def split_assignment_styles(self, assignment):
-        """
-        Rozdělí styly ze zadání na:
-        - custom (vlastní)
-        - builtin (vestavěné Word styly)
-        """
         custom = {}
         builtin = {}
 
@@ -87,12 +78,6 @@ class WordDocument:
 
     # oddíly
     def _split_into_sections(self):
-        """
-        Rozdělí dokument na oddíly podle <w:sectPr>.
-        Podporuje:
-        - <w:sectPr> jako dítě <w:body>
-        - <w:sectPr> uvnitř <w:pPr>
-        """
         sections = []
         current = []
 
@@ -629,7 +614,6 @@ class WordDocument:
         while style is not None and id(style) not in visited:
             visited.add(id(style))
 
-            # 1️⃣ zkus název stylu (nejspolehlivější)
             name_el = style.find("w:name", self.NS)
             if name_el is not None:
                 name = (name_el.attrib.get(f"{{{self.NS['w']}}}val") or "").lower()
@@ -637,14 +621,12 @@ class WordDocument:
                 if m:
                     return int(m.group(2))
 
-            # 2️⃣ outlineLvl
             ppr = style.find("w:pPr", self.NS)
             if ppr is not None:
                 out = ppr.find("w:outlineLvl", self.NS)
                 if out is not None:
                     return int(out.attrib.get(f"{{{self.NS['w']}}}val")) + 1
 
-            # 3️⃣ basedOn → jdi výš
             based = style.find("w:basedOn", self.NS)
             if based is None:
                 break
@@ -656,9 +638,6 @@ class WordDocument:
         return None
 
     def iter_headings(self) -> list[tuple[str, int]]:
-        """
-        Vrátí seznam (text, level) pro odstavce, které vypadají jako nadpisy.
-        """
         items: list[tuple[str, int]] = []
 
         for p in self._xml.findall(".//w:body/w:p", self.NS):
@@ -848,9 +827,6 @@ class WordDocument:
         
     # kontrola, zda 2. sekce ma cislovani od 1
     def section_properties(self, index: int) -> ET.Element | None:
-        """
-        Vrátí <w:sectPr> pro daný oddíl.
-        """
         sec = self.section(index)
         if not sec:
             return None
@@ -870,37 +846,7 @@ class WordDocument:
                         return sect
 
         return None
-    
-    def section_has_page_number_field(self, section_index: int) -> bool:
-        """
-        Vrátí True, pokud má oddíl v hlavičce nebo zápatí pole PAGE.
-        """
-        sect_pr = self.section_properties(section_index)
-        if sect_pr is None:
-            return False
-
-        # header / footer reference
-        refs = sect_pr.findall("w:headerReference", self.NS) + \
-            sect_pr.findall("w:footerReference", self.NS)
-
-        for ref in refs:
-            r_id = ref.attrib.get(f"{{{self.NS['w']}}}id")
-            if not r_id:
-                continue
-
-            part_name = f"word/{'header' if 'header' in ref.tag else 'footer'}{r_id}.xml"
-            try:
-                xml = self._load(part_name)
-            except KeyError:
-                continue
-
-            # hledáme PAGE field
-            for instr in xml.findall(".//w:instrText", self.NS):
-                if instr.text and "PAGE" in instr.text.upper():
-                    return True
-
-        return False
-    
+        
     def section_has_header_or_footer_content(self, section_index: int) -> bool:
         sect_pr = self.section_properties(section_index)
         if sect_pr is None:
@@ -1093,9 +1039,6 @@ class WordDocument:
         return None
     
     def paragraph_has_seq_caption(self, p: ET.Element) -> str | None:
-        """
-        Vrátí návěští titulku z pole SEQ (např. 'Obrázek', 'Tabulka', 'Graf'), nebo None.
-        """
         if p is None:
             return None
 
@@ -1323,3 +1266,9 @@ class WordDocument:
 
         return None
   
+
+    def iter_section_paragraphs(self, section_index: int) -> Iterable[ET.Element]:
+        for el in self.section(section_index):
+            if el.tag.endswith("}p"):
+                yield el
+            yield from el.findall(".//w:p", self.NS)
