@@ -6,7 +6,6 @@ class DescriptiveStatisticsCheck(BaseCheck):
 
     SHEET = "data"
 
-    # buňky, které MUSÍ obsahovat vzorec
     REQUIRED_CELLS = {
         "Výška": ["B28", "C28", "D28", "E28"],
         "Váha":  ["B29", "C29", "D29", "E29"],
@@ -16,7 +15,6 @@ class DescriptiveStatisticsCheck(BaseCheck):
     def run(self, document, assignment=None):
         problems = []
 
-        # existuje list?
         if self.SHEET not in document.sheet_names():
             return CheckResult(
                 False,
@@ -33,7 +31,6 @@ class DescriptiveStatisticsCheck(BaseCheck):
                     problems.append(f"{series}: {addr} chybí vzorec")
                     continue
 
-                # kontrola uloženého výsledku (data_only=True)
                 if cell["value_cached"] is None:
                     problems.append(
                         f"{series}: {addr} nemá uložený výsledek (nevypočteno / neuloženo)"
@@ -45,7 +42,7 @@ class DescriptiveStatisticsCheck(BaseCheck):
                 "Popisná charakteristika není kompletní:\n"
                 + "\n".join("– " + p for p in problems),
                 self.penalty,
-                fatal=True  # hvězdička v zadání
+                fatal=True 
             )
 
         return CheckResult(

@@ -8,8 +8,8 @@ class MergedCellsCheck(BaseCheck):
 
     # oblasti, kde sloučení NESMÍ být
     FORBIDDEN_RANGES = [
-        "A2:F23",   # hlavní data
-        "A28:E30",  # popisná charakteristika – hodnoty
+        "A2:F23",  
+        "A28:E30",
     ]
 
     def _overlaps(self, r1, r2):

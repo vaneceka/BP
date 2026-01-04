@@ -10,8 +10,6 @@ class SectionFooterEmptyCheck(BaseCheck):
         self.name = f"{section_number}. oddíl nemá prázdné zápatí"
 
     def run(self, document, assignment=None):
-
-        # oddíl neexistuje
         if document.section_count() <= self.section_index:
             return CheckResult(True, "Oddíl v dokumentu neexistuje.", 0)
 
@@ -21,7 +19,6 @@ class SectionFooterEmptyCheck(BaseCheck):
 
         footer_refs = sect_pr.findall("w:footerReference", document.NS)
 
-        # žádné footerReference -> implicitně prázdné
         if not footer_refs:
             return CheckResult(True, "Zápatí oddílu je prázdné.", 0)
 

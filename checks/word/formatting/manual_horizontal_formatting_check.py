@@ -11,7 +11,7 @@ BAD_PATTERNS = [
 # NOTE mozna opravit aby to nevypisovalo v jakych odstavcich
 class ManualHorizontalSpacingCheck(BaseCheck):
     name = "Ruční horizontální zarovnání pomocí mezer/znaků"
-    penalty = -5  # násobí se
+    penalty = -5 
 
     def run(self, document, assignment=None):
         errors = []
@@ -21,7 +21,6 @@ class ManualHorizontalSpacingCheck(BaseCheck):
             if not raw:
                 continue
 
-            # ignoruj TOC
             style_id = document._paragraph_style_id(p)
             if style_id and "toc" in style_id.lower():
                 continue

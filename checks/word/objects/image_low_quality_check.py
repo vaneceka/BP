@@ -19,7 +19,6 @@ class ImageLowQualityCheck(BaseCheck):
         for obj in image_objects:
             element = obj["element"]
 
-            # v jednom odstavci může být i víc obrázků
             for rid in document.object_image_rids(element):
                 img_bytes = document.get_image_bytes(rid)
                 if not img_bytes:

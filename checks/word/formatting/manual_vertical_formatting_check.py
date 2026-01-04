@@ -3,21 +3,19 @@ from checks.base_check import BaseCheck, CheckResult
 
 class ManualVerticalSpacingCheck(BaseCheck):
     name = "Ruční vertikální odsazení pomocí prázdných řádků"
-    penalty = -5  # násobí se
+    penalty = -5 
 
     def run(self, document, assignment=None):
         paragraphs = list(document.iter_paragraphs())
         errors: list[tuple[int, str]] = []
 
         for i, p in enumerate(paragraphs):
-            # ignoruj odstavec, který obsahuje objekt (obrázek, graf, rovnice)
             if (
                 p.findall(".//w:drawing", document.NS) or
                 p.findall(".//m:oMath", document.NS) or
                 p.findall(".//m:oMathPara", document.NS)
             ):
                 continue
-            # má odstavec text?
             has_text = False
 
             for t in p.findall(".//w:t", document.NS):
@@ -28,7 +26,6 @@ class ManualVerticalSpacingCheck(BaseCheck):
             if has_text:
                 continue
 
-            # poslední odstavec dokumentu se ignoruje
             if not document.has_text_after_paragraph(paragraphs, i):
                 continue
 
@@ -37,7 +34,6 @@ class ManualVerticalSpacingCheck(BaseCheck):
 
             next_p = paragraphs[i + 1]
 
-            # ignoruj, pokud: prázdný řádek je součástí TOC / seznamu, nebo sousedí s TOC / seznamem, nebo je generovaný polem
             if (
                 document._paragraph_is_toc_or_object_list(p)
                 or document._paragraph_is_toc_or_object_list(next_p)

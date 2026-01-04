@@ -11,7 +11,7 @@ class BibliographyStyleCheck(BaseCheck):
 
         actual = document.get_style_by_any_name(["Bibliography", "Bibliografie"], default_alignment="start")
         if actual is None:
-            return CheckResult(False, "Styl Bibliography/Bibliografie nebyl ve styles.xml nalezen.", self.penalty)
+            return CheckResult(False, "Styl Bibliografie nebyl ve styles.xml nalezen.", self.penalty)
 
         diffs = actual.diff(expected, strict=True, doc_default_size=document.get_doc_default_font_size())
         if diffs:

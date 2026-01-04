@@ -8,11 +8,9 @@ class BibliographyNotUpdatedCheck(BaseCheck):
 
         citations = document.count_word_citations()
 
-        # žádné citace → nemá smysl kontrolovat
         if citations == 0:
             return CheckResult(True, "Dokument neobsahuje citace.", 0)
 
-        # bibliografie chybí → řeší jiný check
         if not document.has_word_bibliography():
             return CheckResult(True, "Bibliografie chybí – řeší jiný check.", 0)
 

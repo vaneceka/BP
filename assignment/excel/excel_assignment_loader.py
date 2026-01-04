@@ -15,7 +15,7 @@ def load_excel_assignment(path: str) -> ExcelAssignment:
             input=spec.get("input"),
             expression=spec.get("expression"),
             style=spec.get("style"),
-            conditional_format=spec.get("conditionalFormat"),
+            conditionalFormat=spec.get("conditionalFormat"),
         )
 
     return ExcelAssignment(

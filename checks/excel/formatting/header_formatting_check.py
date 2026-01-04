@@ -2,7 +2,7 @@ from checks.base_check import BaseCheck, CheckResult
 
 class HeaderFormattingCheck(BaseCheck):
     name = "Není formátováno záhlaví tabulky"
-    penalty = -1  # [-1*]
+    penalty = -1
 
     SHEET = "data"
 
@@ -13,11 +13,10 @@ class HeaderFormattingCheck(BaseCheck):
         problems = []
 
         for addr, spec in assignment.cells.items():
-            style = spec.get("style") if isinstance(spec, dict) else getattr(spec, "style", None)
+            style = spec.style
             if not style:
                 continue
 
-            # zajímá nás jen to, co má být záhlaví
             if not style.get("bold", False):
                 continue
 
@@ -30,11 +29,9 @@ class HeaderFormattingCheck(BaseCheck):
 
             raw = cell["raw_cell"]
 
-            # bold
             if not raw.font or not raw.font.bold:
                 problems.append(f"{addr}: záhlaví není tučné")
 
-            # zarovnání (jen pokud je v assignmentu True)
             if expected_alignment:
                 h = raw.alignment.horizontal
                 v = raw.alignment.vertical

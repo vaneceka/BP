@@ -172,11 +172,11 @@ def main():
         #----------formatovani
 
 
-        # NumberFormattingCheck(),
+        NumberFormattingCheck(),
         # TableBorderCheck(),
         # MergedCellsCheck(),
         # HeaderFormattingCheck(),
-        ConditionalFormattingCheck(),
+        # ConditionalFormattingCheck(),
 
     ]
 

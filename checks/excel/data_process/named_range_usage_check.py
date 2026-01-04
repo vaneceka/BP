@@ -22,15 +22,12 @@ class NamedRangeUsageCheck(BaseCheck):
             tokens = self.TOKEN_RE.findall(formula)
 
             for token in tokens:
-                # funkce (IF, SUM, AVERAGE…)
                 if token.upper() == token:
                     continue
 
-                # adresa buňky
                 if self.CELL_RE.fullmatch(token):
                     continue
 
-                # pojmenovaná oblast
                 if token in defined_names:
                     bad_cells.append(
                         f"{cell['sheet']}!{cell['address']}: {token}"

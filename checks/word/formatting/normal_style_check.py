@@ -18,7 +18,6 @@ class NormalStyleCheck(BaseCheck):
         
         diffs = actual.diff(expected, strict=True)
         if diffs:
-            # složíme čitelnou zprávu
             message = (
                 "Styl Normal neodpovídá zadání:\n"
                 + "\n".join(f"- {d}" for d in diffs)

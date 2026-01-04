@@ -7,7 +7,6 @@ class CopiedFromSourceByRelativeRefCheck(BaseCheck):
     name = "Záhlaví nebo hodnoty na list „data“ nejsou zkopírovány odkazem"
     penalty = -5
 
-    # =zdroj!A1 nebo ='zdroj'!A1 (bez $)
     DIRECT_REF_RE = re.compile(r"^=\s*'?zdroj'?!([A-Z]{1,3}[0-9]+)\s*$", re.IGNORECASE)
 
     def run(self, document, assignment=None):
@@ -18,7 +17,6 @@ class CopiedFromSourceByRelativeRefCheck(BaseCheck):
         ws_src = document.wb["zdroj"]
         ws_data = document.wb["data"]
 
-        # rozsah zdroje (co existuje na zdroj)
         dim = ws_src.calculate_dimension()
         min_col, min_row, max_col, max_row = range_boundaries(dim)
 
@@ -29,18 +27,15 @@ class CopiedFromSourceByRelativeRefCheck(BaseCheck):
                 src_cell = ws_src.cell(row=r, column=c)
                 data_cell = ws_data.cell(row=r, column=c)
 
-                # pokud je ve zdroji prázdno, nic nevynucujeme
                 if src_cell.value is None:
                     continue
 
-                # na data musí být vzorec
                 if data_cell.data_type != "f" or not isinstance(data_cell.value, str):
                     problems.append(f"data!{data_cell.coordinate}: hodnota není převzatá odkazem")
                     continue
 
                 formula = data_cell.value.strip()
 
-                # musí to být přímý odkaz na zdroj a na stejnou buňku
                 m = self.DIRECT_REF_RE.match(formula)
                 if not m:
                     problems.append(f"data!{data_cell.coordinate}: není přímý odkaz na zdroj ({formula})")
@@ -53,7 +48,6 @@ class CopiedFromSourceByRelativeRefCheck(BaseCheck):
                     )
                     continue
 
-                # relativní adresa => nesmí obsahovat $
                 if "$" in formula:
                     problems.append(f"data!{data_cell.coordinate}: odkaz není relativní ({formula})")
 

@@ -16,7 +16,6 @@ class ObjectCaptionDescriptionCheck(BaseCheck):
             if obj_type not in ("image", "chart", "table"):
                 continue
 
-            # hledej titulek POUZE jako SEQ
             caption_p = None
 
             before = document.paragraph_before(element)
@@ -45,12 +44,10 @@ class ObjectCaptionDescriptionCheck(BaseCheck):
                 flags=re.IGNORECASE,
             ).strip()
 
-            # ❌ žádný popis
             if not description:
                 errors.append("V titulku chybí stručný popis objektu.")
                 continue
 
-            # ❌ příliš krátký popis (heuristika)
             if len(description) < 5 or len(description.split()) < 1:
                 errors.append(
                     f"Popis v titulku je příliš stručný („{description}“)."

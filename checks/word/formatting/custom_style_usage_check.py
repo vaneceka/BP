@@ -3,7 +3,7 @@ from checks.base_check import BaseCheck, CheckResult
 
 class RequiredCustomStylesUsageCheck(BaseCheck):
     name = "Použití požadovaných vlastních stylů"
-    penalty = -2  # násobí se
+    penalty = -2 
 
     def run(self, document, assignment=None):
         if assignment is None:
@@ -12,10 +12,8 @@ class RequiredCustomStylesUsageCheck(BaseCheck):
         errors = []
         total_penalty = 0
 
-        # rozdělíme styly
         custom_styles, _ = document.split_assignment_styles(assignment)
 
-        # zjistíme base styly
         base_styles = set()
 
         for spec in custom_styles.values():

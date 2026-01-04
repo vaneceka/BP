@@ -5,14 +5,6 @@ class NumberFormattingCheck(BaseCheck):
     penalty = -2
     SHEET = "data"
 
-    def _style_get(self, spec, key, default=None):
-        # spec.style může být dict nebo objekt
-        if not hasattr(spec, "style") or spec.style is None:
-            return default
-        if isinstance(spec.style, dict):
-            return spec.style.get(key, default)
-        return getattr(spec.style, key, default)
-
     def run(self, document, assignment=None):
         if assignment is None or not hasattr(assignment, "cells"):
             return CheckResult(True, "Chybí assignment – check přeskočen.", 0)
@@ -20,8 +12,9 @@ class NumberFormattingCheck(BaseCheck):
         problems = []
 
         for addr, spec in assignment.cells.items():
-            expected_fmt = self._style_get(spec, "numberFormat", None)
-            expected_align = self._style_get(spec, "alignment", False)
+            style = spec.style or {}
+            expected_fmt = style.get("numberFormat")
+            expected_align = style.get("alignment", False)
 
             cell = document.get_cell(f"{self.SHEET}!{addr}")
             if cell is None:
@@ -29,14 +22,12 @@ class NumberFormattingCheck(BaseCheck):
 
             raw = cell["raw_cell"]
 
-            # 1) number format kontroluj jen když je v assignmentu definovaný
             if expected_fmt is not None:
                 if raw.number_format != expected_fmt:
                     problems.append(
                         f"{addr}: špatný formát čísla (oček. {expected_fmt}, nalezen {raw.number_format})"
                     )
 
-            # 2) alignment kontroluj nezávisle na numberFormat
             if expected_align is True:
                 h = raw.alignment.horizontal
                 v = raw.alignment.vertical

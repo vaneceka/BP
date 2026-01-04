@@ -5,10 +5,6 @@ class ConditionalFormattingCheck(BaseCheck):
     penalty = -5
     SHEET = "data"
 
-    def _get(self, obj, key):
-        if isinstance(obj, dict):
-            return obj.get(key)
-        return getattr(obj, key, None)
 
     def run(self, document, assignment=None):
         
@@ -23,14 +19,12 @@ class ConditionalFormattingCheck(BaseCheck):
                 fatal=True
             )
 
-        ws = document.wb[self.SHEET]
+        ws = document.wb[self.SHEET] 
 
-        # 1️⃣ expected CF z assignmentu (deduplikované)
         expected = {}
 
         for spec in assignment.cells.values():
-            print(vars(spec))
-            cf = self._get(spec, "conditional_format")
+            cf = spec.conditionalFormat
             if not cf:
                 continue
 
@@ -56,8 +50,7 @@ class ConditionalFormattingCheck(BaseCheck):
                 self.penalty,
                 fatal=True
             )
-
-        # 2️⃣ skutečná CF v Excelu
+        
         found = {key: False for key in expected}
 
         for rules in ws.conditional_formatting._cf_rules.values():
@@ -83,7 +76,6 @@ class ConditionalFormattingCheck(BaseCheck):
 
                     found[key] = True
 
-        # 3️⃣ vyhodnocení – SČÍTÁNÍ CHYB
         missing = []
 
         for key, ok in found.items():

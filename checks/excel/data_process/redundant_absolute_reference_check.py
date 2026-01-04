@@ -5,9 +5,7 @@ import re
 class RedundantAbsoluteReferenceCheck(BaseCheck):
     name = "Nadbytečné použití absolutních adres"
     penalty = -10
-
-    ABS_RE = re.compile(r"\$")
-
+    
     def run(self, document, assignment=None):
 
         if assignment is None or not hasattr(assignment, "cells"):
@@ -33,7 +31,6 @@ class RedundantAbsoluteReferenceCheck(BaseCheck):
             if not isinstance(student, str):
                 continue
 
-            # porovnání bez $
             if student.replace("$", "") == expected.replace("$", ""):
                 if "$" in student and "$" not in expected:
                     problems.append(

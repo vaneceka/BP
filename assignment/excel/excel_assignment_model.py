@@ -9,7 +9,7 @@ class ExcelCellSpec:
     input: Any | None = None
     expression: str | None = None
     style: dict | None = None
-    conditional_format: list[dict] | None = None
+    conditionalFormat: list[dict] | None = None
 
 
 @dataclass

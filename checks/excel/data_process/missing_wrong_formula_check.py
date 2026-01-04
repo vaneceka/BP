@@ -49,12 +49,10 @@ class MissingOrWrongFormulaOrNotCalculatedCheck(BaseCheck):
 
             actual_formula = cell["formula"]
 
-            # chybí vzorec
             if not (isinstance(actual_formula, str) and actual_formula.startswith("=")):
                 errors.append(f"{sheet}!{addr}: chybí vzorec")
                 continue
 
-            # špatný vzorec
             if self._norm_formula(actual_formula) != self._norm_formula(expected):
                 errors.append(
                     f"{sheet}!{addr}: špatný vzorec "
@@ -62,7 +60,6 @@ class MissingOrWrongFormulaOrNotCalculatedCheck(BaseCheck):
                 )
                 continue
 
-            # 3️⃣ nevypočteno / chyba
             cached = cell.get("value_cached")
 
             if cached is None:

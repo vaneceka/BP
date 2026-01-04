@@ -9,30 +9,24 @@ class MainChapterStartsOnNewPageCheck(BaseCheck):
         total_penalty = 0
 
         for p in document.iter_paragraphs():
-            # zjisti text (pro hlášení)
             text = document._paragraph_text(p)
             if not text:
                 continue
 
-            # zjisti styl odstavce
             style_id = document._paragraph_style_id(p)
             if not style_id:
                 continue
 
-            # zjisti úroveň nadpisu
             level = document._style_level_from_styles_xml(style_id)
             if level != 1:
-                continue  # není hlavní kapitola
+                continue 
 
-            # page break přímo na odstavci
             if document.paragraph_has_page_break(p):
                 continue
 
-            # page break ve stylu (dědičně)
             if document.style_has_page_break(style_id):
                 continue
 
-            # chyba
             errors.append(
                 f"Hlavní kapitola „{text}“ nezačíná na nové straně."
             )

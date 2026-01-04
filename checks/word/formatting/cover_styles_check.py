@@ -18,7 +18,7 @@ class CoverStylesCheck(BaseCheck):
 
         for style_name, expected in required_styles.items():
             if expected is None:
-                continue  # zadání styl neřeší
+                continue
 
             actual = document.get_custom_style(style_name)
             if actual is None:

@@ -16,7 +16,7 @@ class CustomStyleInheritanceCheck(BaseCheck):
 
         for style_name, expected in assignment.styles.items():
             if not expected or not expected.basedOn:
-                continue  # zadání dědičnost nepožaduje
+                continue 
 
             style_el = document._find_style(name=style_name)
             if style_el is None:

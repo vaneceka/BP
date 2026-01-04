@@ -9,7 +9,6 @@ class InconsistentFormattingCheck(BaseCheck):
 
         for p in document.iter_paragraphs():
 
-            # ignoruj obsah / seznamy
             if document._paragraph_is_toc_or_object_list(p):
                 continue
 

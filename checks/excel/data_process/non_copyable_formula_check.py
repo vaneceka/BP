@@ -14,17 +14,14 @@ class NonCopyableFormulasCheck(BaseCheck):
         for cell in document.cells_with_formulas():
             formula = cell["formula"]
 
-            # maticový / interní vzorec
             if not isinstance(formula, str):
                 bad_cells.append(
                     (cell["sheet"], cell["address"], "maticový nebo interní vzorec")
                 )
                 continue
 
-            # má odkazy na buňky?
             has_cell_ref = bool(self.CELL_REF_RE.search(formula))
 
-            # nemá žádné $
             has_any_absolute = "$" in formula
 
             if has_cell_ref and not has_any_absolute:

@@ -23,8 +23,6 @@ class TOCUpToDateCheck(BaseCheck):
         return text.strip()
         
     def run(self, document, assignment=None):
-
-        # 1️⃣ Najdi oddíl s obsahem
         toc_section = None
         for i in range(document.section_count()):
             if document.has_toc_in_section(i):
@@ -34,7 +32,6 @@ class TOCUpToDateCheck(BaseCheck):
         if toc_section is None:
             return CheckResult(True, "Obsah neexistuje – nelze ověřit aktuálnost.", 0)
 
-        # nadpisy v dokumentu (H1–H3)
         headings = {
             self._norm(t)
             for (t, lvl) in document.iter_headings()
@@ -44,7 +41,6 @@ class TOCUpToDateCheck(BaseCheck):
         if not headings:
             return CheckResult(True, "Dokument nemá nadpisy – obsah nelze posoudit.", 0)
 
-        # položky obsahu
         toc_items = set()
 
         paragraphs = document.section(toc_section)
@@ -52,8 +48,6 @@ class TOCUpToDateCheck(BaseCheck):
 
         for el in paragraphs:
             for p in el.findall(".//w:p", document.NS):
-
-                # detekce TOC pole
                 for instr in p.findall(".//w:instrText", document.NS):
                     if instr.text and instr.text.strip().upper().startswith("TOC"):
                         inside_toc = True
@@ -62,7 +56,6 @@ class TOCUpToDateCheck(BaseCheck):
                 if not inside_toc:
                     continue
 
-                # konec obsahu
                 if p.find("w:pPr/w:sectPr", document.NS) is not None:
                     break
 
@@ -70,22 +63,28 @@ class TOCUpToDateCheck(BaseCheck):
                 if hl is None:
                     continue
 
-                # text = self._visible_text(hl, document)
                 text = self._norm(document._visible_text(hl))
                 if text and text.lower() != "obsah":
                     toc_items.add(text)
 
         allowed = {t.lower() for t in self.ALLOWED_EXTRA_TOC_ITEMS}
 
-        missing = sorted(
-            h for h in headings
-            if h not in toc_items
-        )
+        missing = []
 
-        extra = sorted(
-            t for t in toc_items
-            if t not in headings and t.lower() not in allowed
-        )
+        for h in headings:
+            if h not in toc_items:
+                missing.append(h)
+
+        missing.sort()
+
+
+        extra = []
+
+        for t in toc_items:
+            if t not in headings and t.lower() not in allowed:
+                extra.append(t)
+
+        extra.sort()
 
         if not missing and not extra:
             return CheckResult(True, "Obsah je aktuální.", 0)

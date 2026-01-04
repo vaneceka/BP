@@ -25,7 +25,6 @@ class SectionFooterHasPageNumberCheck(BaseCheck):
 
         footer_refs = sect_pr.findall("w:footerReference", document.NS)
 
-        # žádný footerReference -> implicitně zděděné → špatně
         if not footer_refs:
             return CheckResult(
                 False,
@@ -34,8 +33,6 @@ class SectionFooterHasPageNumberCheck(BaseCheck):
             )
 
         for ref in footer_refs:
-
-            # zděděné zápatí -> ignoruj
             if ref.find("w:linkToPrevious", document.NS) is not None:
                 continue
 

@@ -17,14 +17,12 @@ class HeadingHierarchicalNumberingCheck(BaseCheck):
             if expected is None or actual is None:
                 continue
 
-            # není číslovaný
             if not actual.isNumbered:
                 broken.append(
                     f"Nadpis {level}: není číslovaný"
                 )
                 continue
 
-            # špatná úroveň
             if actual.numLevel != level - 1:
                 broken.append(
                     f"Nadpis {level}: špatná úroveň "

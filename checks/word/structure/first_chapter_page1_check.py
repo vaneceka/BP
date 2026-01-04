@@ -6,8 +6,6 @@ class FirstChapterStartsOnPageOneCheck(BaseCheck):
     penalty = -5
 
     def run(self, document, assignment=None):
-
-        # musí existovat alespoň 2 oddíly
         if document.section_count() < 2:
             return CheckResult(
                 False,
@@ -69,7 +67,6 @@ class FirstChapterStartsOnPageOneCheck(BaseCheck):
             if el is first_h1:
                 break
 
-            # ignoruj generovaný obsah (TOC, pole…)
             if el.tag.endswith("}p"):
                 if document.paragraph_is_generated_by_field(el):
                     continue
@@ -83,7 +80,6 @@ class FirstChapterStartsOnPageOneCheck(BaseCheck):
                         self.penalty,
                     )
 
-            # tabulky / obrázky / rovnice
             if el.tag.endswith("}tbl"):
                 return CheckResult(
                     False,

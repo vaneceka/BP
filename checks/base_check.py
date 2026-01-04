@@ -17,7 +17,7 @@ class BaseCheck(ABC):
 
     @abstractmethod
     def run(self,
-            #  document: WordDocument | ExcelDocument,
+            # document: WordDocument | ExcelDocument,
             document,
             assignment: Assignment | None = None) -> CheckResult:
         pass

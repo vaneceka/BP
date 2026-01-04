@@ -5,7 +5,7 @@ TOLERANCE = 10  # twips
 
 class CustomStyleWithTabsCheck(BaseCheck):
     name = "Vlastní styl s definovanými tabulátory"
-    penalty = -2  # násobí se
+    penalty = -2 
 
     def run(self, document, assignment=None):
         if assignment is None:
@@ -16,7 +16,7 @@ class CustomStyleWithTabsCheck(BaseCheck):
 
         for style_name, spec in assignment.styles.items():
             if not spec.tabs:
-                continue  # styl nemá mít tabulátory
+                continue 
 
             style_el = document._find_style(name=style_name)
             if style_el is None:
@@ -24,7 +24,6 @@ class CustomStyleWithTabsCheck(BaseCheck):
                 total_penalty += self.penalty
                 continue
 
-            # tabulátory musí být explicitně ve stylu
             ppr = style_el.find("w:pPr", document.NS)
             tabs_el = ppr.find("w:tabs", document.NS) if ppr is not None else None
 
@@ -35,7 +34,6 @@ class CustomStyleWithTabsCheck(BaseCheck):
                 total_penalty += self.penalty
                 continue
 
-            # skutečné tabulátory
             actual_tabs = {}
             for tab in tabs_el.findall("w:tab", document.NS):
                 val = tab.attrib.get(f"{{{document.NS['w']}}}val")
@@ -46,13 +44,11 @@ class CustomStyleWithTabsCheck(BaseCheck):
 
                 actual_tabs[val.lower()] = int(pos)
 
-            # očekávané tabulátory (twips)
             expected_tabs = {}
 
             for align, pos in spec.tabs:
                 expected_tabs[align.lower()] = int(pos)
 
-            # kontrola počtu
             if set(actual_tabs.keys()) != set(expected_tabs.keys()):
                 errors.append(
                     f"Styl „{style_name}“ má špatné typy tabulátorů:\n"

@@ -6,13 +6,10 @@ class TableBorderCheck(BaseCheck):
     penalty = -1
     SHEET = "data"
 
-    # Mapování „zadání → realita openpyxl“
-    # Excel UI „tlustá“ často = openpyxl "medium"
     STYLE_EQUIV = {
         "thick": {"thick", "medium"},
         "medium": {"medium"},
         "thin": {"thin"},
-        "hair": {"hair"},
         "dotted": {"dotted"},
         "dashDot": {"dashDot"},
         "dashDotDot": {"dashDotDot"},
@@ -20,9 +17,6 @@ class TableBorderCheck(BaseCheck):
         "double": {"double"},
         "slantDashDot": {"slantDashDot"},
     }
-
-    def _get(self, obj, key):
-        return obj.get(key) if isinstance(obj, dict) else getattr(obj, key)
 
     def _style(self, side):
         return getattr(side, "style", None)
@@ -42,9 +36,9 @@ class TableBorderCheck(BaseCheck):
         problems = []
 
         for table in assignment.borders:
-            rng = self._get(table, "location")
-            outer = self._get(table, "outlineBorderStyle")   # v JSON "thick"
-            inner = self._get(table, "insideBorderStyle")    # v JSON "thin"
+            rng = table["location"]
+            outer = table["outlineBorderStyle"]
+            inner = table["insideBorderStyle"]
 
             min_col, min_row, max_col, max_row = range_boundaries(rng)
 
@@ -53,7 +47,6 @@ class TableBorderCheck(BaseCheck):
                     cell = ws.cell(row=r, column=c)
                     b = cell.border
 
-                    # outer
                     if r == min_row:
                         if not self._matches(self._style(b.top), outer):
                             problems.append(f"{cell.coordinate}: chybí TOP vnější ({outer})")
@@ -67,7 +60,6 @@ class TableBorderCheck(BaseCheck):
                         if not self._matches(self._style(b.right), outer):
                             problems.append(f"{cell.coordinate}: chybí RIGHT vnější ({outer})")
 
-                    # inner
                     if r > min_row:
                         top_ok = self._matches(self._style(b.top), inner)
                         if not top_ok:

@@ -13,12 +13,9 @@ class FooterLinkedToPreviousCheck(BaseCheck):
         )
 
     def run(self, document, assignment=None):
-
-        # první oddíl nemá předchozí -> OK
         if self.section_index == 0:
             return CheckResult(True, "První oddíl nemá předchozí oddíl.", 0)
 
-        # musí existovat aktuální i předchozí oddíl
         if document.section_count() <= self.section_index:
             return CheckResult(True, "Oddíl v dokumentu neexistuje.", 0)
 
@@ -28,11 +25,9 @@ class FooterLinkedToPreviousCheck(BaseCheck):
         if sect_prev is None or sect_curr is None:
             return CheckResult(True, "Oddíly nemají nastavení.", 0)
 
-        # zápatí obou oddílů
         footers_prev = sect_prev.findall("w:footerReference", document.NS)
         footers_curr = sect_curr.findall("w:footerReference", document.NS)
 
-        # žádný footerReference -> implicitně zděděné
         if not footers_curr:
             return CheckResult(
                 False,
@@ -52,7 +47,6 @@ class FooterLinkedToPreviousCheck(BaseCheck):
         map_prev = footer_map(footers_prev)
         map_curr = footer_map(footers_curr)
 
-        # stejný r:id = propojené
         for f_type in map_prev:
             if f_type in map_curr and map_prev[f_type] == map_curr[f_type]:
                 return CheckResult(

@@ -43,7 +43,6 @@ class ObjectCaptionBindingCheck(BaseCheck):
                 errors.append(f"{expected} není s titulkem spojen.")
                 continue
 
-            # musí obsahovat SEQ
             label = document.paragraph_has_seq_caption(caption_p)
             if label != expected:
                 errors.append(f"{expected} není s titulkem spojen.")

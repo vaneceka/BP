@@ -6,7 +6,6 @@ class ArrayFormulaCheck(BaseCheck):
     penalty = -10
 
     def run(self, document, assignment=None):
-
         array_cells = []
 
         for sheet_name, data in document.sheets.items():

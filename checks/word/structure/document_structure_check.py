@@ -2,7 +2,7 @@ from checks.base_check import BaseCheck, CheckResult
 
 class DocumentStructureCheck(BaseCheck):
     name = "Chybná struktura dokumentu"
-    penalty = -5  # násobí se
+    penalty = -5 
 
     def run(self, document, assignment=None):
         headings = document.iter_headings()
@@ -15,13 +15,11 @@ class DocumentStructureCheck(BaseCheck):
         last_level = None
 
         for text, level in headings:
-            # dokument nezačíná Nadpisem 1
             if last_level is None and level != 1:
                 errors.append(
                     f"Nadpis „{text}“ je úrovně {level}, dokument musí začínat Nadpisem 1."
                 )
 
-            # přeskok úrovně (např. H1 -> H3)
             if last_level is not None and level > last_level + 1:
                 errors.append(
                     f"Nadpis „{text}“ (úroveň {level}) přeskakuje úroveň "

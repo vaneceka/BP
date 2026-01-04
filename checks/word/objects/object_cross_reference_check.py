@@ -15,34 +15,28 @@ class ObjectCrossReferenceCheck(BaseCheck):
 
             element = obj["element"]
 
-            # titulek může být před nebo za
             caption_p = (
                 document.paragraph_after(element)
                 or document.paragraph_before(element)
             )
 
-            # pokud to není titulek pokračuj
             if caption_p is None or not document.paragraph_is_caption(caption_p):
                 continue
 
-            # najdi bookmarky v titulku 
             caption_bookmarks = []
             for bm in caption_p.findall(".//w:bookmarkStart", document.NS):
                 name = bm.attrib.get(f"{{{document.NS['w']}}}name")
                 if name:
                     caption_bookmarks.append(name)
 
-            # pokud titulky nemají bookmark -> chyba
             if not caption_bookmarks:
                 errors.append(f"{obj['type']} není v textu zmíněn křížovým odkazem.")
                 continue
 
-            # žádný křížový odkaz v textu vůbec neexistuje
             if not anchors_in_text:
                 errors.append(f"{obj['type']} není v textu zmíněn křížovým odkazem.")
                 continue
 
-            # pokud žádný bookmark z titulku není v odkazech v textu -> chyba
             if not any(bm in anchors_in_text for bm in caption_bookmarks):
                 errors.append(f"{obj['type']} není v textu zmíněn křížovým odkazem.")
 

@@ -119,15 +119,13 @@ class WordDocument:
                 if instr.text:
                     texts.append(instr.text.strip())
         return texts
-
-    # TOC / SEZNAMY
+    
     def has_toc_in_section(self, section_index: int) -> bool:
         for instr in self._find_instr_texts(self.section(section_index)):
             if instr.startswith("TOC") and "\\o" in instr:
                 return True
         return False
 
-    # TEXT
     def has_text_in_section(self, section_index: int) -> bool:
         for el in self.section(section_index):
             for t in el.findall(".//w:t", self.NS):
@@ -147,14 +145,12 @@ class WordDocument:
     def get_field_instructions(self, section):
         instrs = []
 
-        # fldSimple
         for el in section:
             for fld in el.findall(".//w:fldSimple", self.NS):
                 instr = fld.attrib.get(f"{{{self.NS['w']}}}instr")
                 if instr:
                     instrs.append(instr.strip())
 
-        # instrText 
         for el in section:
             for instr in el.findall(".//w:instrText", self.NS):
                 if instr.text:
@@ -196,7 +192,6 @@ class WordDocument:
     def _normalize_font(self, font: str | None) -> str | None:
         if not font:
             return None
-        # odstraní cokoliv od "(" až do konce
         font = re.sub(r"\s*\(.*$", "", font)
         return font.strip()
     
@@ -269,7 +264,6 @@ class WordDocument:
                     if val:
                         return val.upper()
 
-            # jdi na parent styl
             based = style.find("w:basedOn", self.NS)
             if based is None:
                 break
@@ -320,13 +314,11 @@ class WordDocument:
                     val = u.attrib.get(f"{{{self.NS['w']}}}val", "single")
                     return val != "none"
 
-            # linked character style
             linked = self._get_linked_style(style)
             if linked is not None and id(linked) not in visited:
                 style = linked
                 continue
 
-            # basedOn
             based = style.find("w:basedOn", self.NS)
             if based is not None:
                 style = self._find_style_by_id(
@@ -348,7 +340,6 @@ class WordDocument:
                 if ppr.find("w:pageBreakBefore", self.NS) is not None:
                     return True
 
-            # linked / basedOn
             linked = self._get_linked_style(style)
             if linked is not None and id(linked) not in visited:
                 style = linked
@@ -542,12 +533,10 @@ class WordDocument:
             if not name:
                 continue
 
-            # match podle styleId
             style_id = style.attrib.get(f"{{{self.NS['w']}}}styleId")
             if style_id and style_id.strip().lower() == name.strip().lower():
                 return style
 
-            # match podle zobrazovaného názvu w:name
             name_el = style.find("w:name", self.NS)
             if name_el is None:
                 continue
@@ -583,15 +572,14 @@ class WordDocument:
                 return self._build_style_spec(style, default_alignment=default_alignment)
         return None
     
-    # test pro spravne pouziti nadpisu
     def _paragraph_text(self, p: ET.Element) -> str:
         parts = []
         for t in p.findall(".//w:t", self.NS):
             if t.text:
                 parts.append(t.text)
-        # word občas láme text do více runů -> spojíme
+
         txt = "".join(parts)
-        # normalizace mezer
+
         txt = re.sub(r"\s+", " ", txt).strip()
         return txt
 
@@ -692,13 +680,12 @@ class WordDocument:
 
         for i, p in enumerate(paragraphs, start=1):
 
-            # ignoruj TOC, seznamy, captiony
+            # ignoruj TOC, seznamy, captiony, objekty
             if self._paragraph_is_toc_or_object_list(p):
                 continue
             if self.paragraph_is_caption(p):
                 continue
 
-            # ignoruj objekty
             if (
                 p.findall(".//w:drawing", self.NS) or
                 p.findall(".//m:oMath", self.NS) or
@@ -710,7 +697,6 @@ class WordDocument:
             if not text:
                 continue
 
-            # pokud odstavec obsahuje REF pole -> ignoruj celý odstavec
             has_ref_field = False
 
             for instr in p.findall(".//w:instrText", self.NS):
@@ -722,11 +708,9 @@ class WordDocument:
             if has_ref_field:
                 continue
 
-            # pokud obsahuje hyperlink -> ignoruj celý odstavec
             if p.findall(".//w:hyperlink", self.NS):
                 continue
 
-            # pokud má znakový styl
             for r in p.findall(".//w:r", self.NS):
                 rpr = r.find("w:rPr", self.NS)
                 if rpr is None:
@@ -736,7 +720,6 @@ class WordDocument:
                 if rs is not None:
                     continue
 
-                # skutečné ruční formátování
                 results.append((i, text))
                 break
 
@@ -784,7 +767,6 @@ class WordDocument:
 
         return results
 
-    # číslování položek v obsahu
     def toc_shows_numbers(self) -> bool | None:
         for instr in self._xml.findall(".//w:instrText", self.NS):
             txt = instr.text or ""
@@ -792,7 +774,6 @@ class WordDocument:
                 return "\\n" not in txt
         return None
     
-    # kontrola, zda hůavní kapitola začíná na nové straně
     def paragraph_has_page_break(self, p):
         ppr = p.find("w:pPr", self.NS)
         if ppr is None:
@@ -831,13 +812,10 @@ class WordDocument:
         if not sec:
             return None
 
-        # sectPr je většinou na konci oddílu
         for el in reversed(sec):
-            # sectPr jako přímý element
             if el.tag.endswith("}sectPr"):
                 return el
 
-            # sectPr uvnitř odstavce
             if el.tag.endswith("}p"):
                 ppr = el.find("w:pPr", self.NS)
                 if ppr is not None:
@@ -880,7 +858,6 @@ class WordDocument:
         
     # Kontinualni cislovani sekce 2 na sekci 3
     def get_heading_num_id(self, p: ET.Element) -> str | None:
-        # přímo na odstavci
         ppr = p.find("w:pPr", self.NS)
         if ppr is not None:
             numpr = ppr.find("w:numPr", self.NS)
@@ -891,7 +868,7 @@ class WordDocument:
                     if num_id is not None:
                         return num_id.attrib.get(f"{{{self.NS['w']}}}val")
 
-        # fallback – ze stylu
+        # ze stylu
         style_id = self._paragraph_style_id(p)
         if not style_id:
             return None
@@ -975,8 +952,6 @@ class WordDocument:
         is_inside_figures_toc = False
 
         for p in paragraphs:
-
-            # detekce začátku seznamu obrázků
             for instr in p.findall(".//w:instrText", self.NS):
                 if instr.text:
                     txt = instr.text.upper()
@@ -987,11 +962,9 @@ class WordDocument:
             if not is_inside_figures_toc:
                 continue
 
-            # konec – další sectPr
             if p.find("w:pPr/w:sectPr", self.NS) is not None:
                 break
 
-            # položky seznamu obrázků = hyperlink s textem
             hl = p.find("w:hyperlink", self.NS)
             if hl is None:
                 continue
@@ -1005,7 +978,6 @@ class WordDocument:
     def object_image_rids(self, element) -> list[str]:
         rids = []
 
-        # v obrázku je <a:blip r:embed="rIdX">
         for blip in element.findall(".//a:blip", self.NS):
             rid = blip.attrib.get(f"{{{self.NS['r']}}}embed")
             if rid:
@@ -1014,7 +986,6 @@ class WordDocument:
         return rids
     
     def get_image_bytes(self, r_id: str) -> bytes | None:
-        # načti document.xml.rels
         try:
             rels = self._load("word/_rels/document.xml.rels")
         except KeyError:
@@ -1024,7 +995,6 @@ class WordDocument:
             if rel.attrib.get("Id") == r_id:
                 target = rel.attrib.get("Target")
 
-                # obrázky jsou typicky v word/media/
                 if not target.startswith("media/"):
                     return None
 
@@ -1097,7 +1067,6 @@ class WordDocument:
 
     
     def _paragraph_is_toc_or_object_list(self, p):
-        # podle stylu
         ppr = p.find("w:pPr", self.NS)
         if ppr is not None:
             ps = ppr.find("w:pStyle", self.NS)
@@ -1123,13 +1092,11 @@ class WordDocument:
             if self.paragraph_is_caption(p):
                 continue
 
-            # hyperlink anchor
             for hl in p.findall(".//w:hyperlink", self.NS):
                 a = hl.attrib.get(f"{{{self.NS['w']}}}anchor")
                 if a:
                     anchors.add(a)
 
-            # REF pole
             for instr in p.findall(".//w:instrText", self.NS):
                 if not instr.text:
                     continue

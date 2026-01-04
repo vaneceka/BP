@@ -6,8 +6,6 @@ class ChapterNumberingContinuityCheck(BaseCheck):
     penalty = -5
 
     def run(self, document, assignment=None):
-
-        # musí existovat alespoň 3 oddíly
         if document.section_count() < 3:
             return CheckResult(
                 True,
@@ -18,7 +16,6 @@ class ChapterNumberingContinuityCheck(BaseCheck):
         h1_sec2 = document.first_heading_in_section(1, level=1)
         h1_sec3 = document.first_heading_in_section(2, level=1)
 
-        # pokud jeden z oddílů kapitoly nemá -> OK
         if h1_sec2 is None or h1_sec3 is None:
             return CheckResult(
                 True,
@@ -26,7 +23,6 @@ class ChapterNumberingContinuityCheck(BaseCheck):
                 0,
             )
 
-        # Zjisti numId kapitol
         num2 = document.get_heading_num_id(h1_sec2)
         num3 = document.get_heading_num_id(h1_sec3)
 
@@ -37,7 +33,6 @@ class ChapterNumberingContinuityCheck(BaseCheck):
                 self.penalty,
             )
 
-        # Kontrola kontinuity
         if num2 != num3:
             return CheckResult(
                 False,
