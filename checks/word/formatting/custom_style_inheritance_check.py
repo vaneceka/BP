@@ -4,7 +4,6 @@ class CustomStyleInheritanceCheck(BaseCheck):
     name = "Vlastní styl s dědičností"
     penalty = -5
 
-    # z různých heading 1, Heading 1 -> heading1
     def _norm(self, s: str | None) -> str:
         return (s or "").lower().replace("-", "").replace("_", "").replace(" ", "")
     

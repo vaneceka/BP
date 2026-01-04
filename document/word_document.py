@@ -39,7 +39,6 @@ class WordDocument:
         self._sections = self._split_into_sections()
 
     def save_xml(self, out_dir: str | Path = "debug_xml"):
-
         out_dir = Path(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -86,13 +85,11 @@ class WordDocument:
         for el in body:
             current.append(el)
 
-            # sectPr jako přímé dítě body
             if el.tag.endswith("}sectPr"):
                 sections.append(current)
                 current = []
                 continue
 
-            # sectPr uvnitř odstavce
             if el.tag.endswith("}p"):
                 ppr = el.find("w:pPr", self.NS)
                 if ppr is not None and ppr.find("w:sectPr", self.NS) is not None:
@@ -806,7 +803,6 @@ class WordDocument:
 
         return "".join(parts)
         
-    # kontrola, zda 2. sekce ma cislovani od 1
     def section_properties(self, index: int) -> ET.Element | None:
         sec = self.section(index)
         if not sec:
@@ -856,7 +852,6 @@ class WordDocument:
 
         return False
         
-    # Kontinualni cislovani sekce 2 na sekci 3
     def get_heading_num_id(self, p: ET.Element) -> str | None:
         ppr = p.find("w:pPr", self.NS)
         if ppr is not None:

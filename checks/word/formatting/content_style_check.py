@@ -21,7 +21,7 @@ class ContentHeadingStyleCheck(BaseCheck):
                 self.penalty
             )
 
-        diffs = actual.diff(expected, strict=True)
+        diffs = actual.diff(expected)
 
         if diffs:
             message = (

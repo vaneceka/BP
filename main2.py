@@ -54,8 +54,6 @@ from core.report import Report
 from core.runner import Runner
 from document.word_document import WordDocument
 
-# ... tvoje importy ...
-
 def run_checks(word_path: str | Path,
                word_assignment_path: str | Path = "assignment/word/assignment.json",
                run_excel: bool = False,

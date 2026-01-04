@@ -16,14 +16,14 @@ class NormalStyleCheck(BaseCheck):
                 self.penalty
             )
         
-        diffs = actual.diff(expected, strict=True)
+        diffs = actual.diff(expected)
         if diffs:
             message = (
                 "Styl Normal neodpovídá zadání:\n"
                 + "\n".join(f"- {d}" for d in diffs)
             )
 
-        if not actual.matches(expected, strict=True):
+        if not actual.matches(expected):
             return CheckResult(
                 False,
                 message,

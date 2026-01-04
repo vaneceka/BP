@@ -13,7 +13,7 @@ class CaptionStyleCheck(BaseCheck):
         if actual is None:
             return CheckResult(False, "Styl Caption/Titulek nebyl ve styles.xml nalezen.", self.penalty)
 
-        diffs = actual.diff(expected, strict=True, doc_default_size=document.get_doc_default_font_size())
+        diffs = actual.diff(expected, doc_default_size=document.get_doc_default_font_size())
         if diffs:
             msg = "Styl Titulek (Caption) neodpovídá zadání:\n" + "\n".join(f"- {d}" for d in diffs)
             return CheckResult(False, msg, self.penalty)

@@ -21,9 +21,8 @@ class HeadingStyleCheck(BaseCheck):
                 self.penalty,
             )
 
-        diffs = actual.diff(expected, strict=True)
+        diffs = actual.diff(expected)
         if diffs:
-            # složíme čitelnou zprávu
             message = (
                 f"Styl Heading {self.level} neodpovídá zadání:\n"
                 + "\n".join(f"- {d}" for d in diffs)
