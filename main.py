@@ -83,53 +83,53 @@ def main():
 
     checks = [
         # # --- Části / oddíly dokumentu ---
-        # SectionCountCheck(),
-        # Section1TOCCheck(),
-        # Section2TextCheck(),
-        # Section3FigureListCheck(),
-        # Section3TableListCheck(),
-        # Section3BibliographyCheck(),
+        SectionCountCheck(),
+        Section1TOCCheck(),
+        Section2TextCheck(),
+        Section3FigureListCheck(),
+        Section3TableListCheck(),
+        Section3BibliographyCheck(),
 
         # # --- Formátování dle zadání ---
-        # NormalStyleCheck(),
-        # HeadingStyleCheck(1),
-        # HeadingStyleCheck(2),
-        # HeadingStyleCheck(3),
-        # HeadingHierarchicalNumberingCheck(),
-        # TocHeadingNumberingCheck(),
-        # UnnumberedSpecialHeadingsCheck(),
-        # CoverStylesCheck(),
-        # FrontpageStylesCheck(),
-        # BibliographyStyleCheck(),
-        # CaptionStyleCheck(),
-        # ContentHeadingStyleCheck(),
-        # HeadingsUsedCorrectlyCheck(),
-        # OriginalFormattingCheck(),
-        # CustomStyleInheritanceCheck(),
-        # RequiredCustomStylesUsageCheck(),
-        # CustomStyleWithTabsCheck(),
-        # MainChapterStartsOnNewPageCheck(),
-        # ManualHorizontalSpacingCheck(),
-        # ManualVerticalSpacingCheck(),
-        # ListLevel2UsedCheck(),
-        # InconsistentFormattingCheck(),
+        NormalStyleCheck(),
+        HeadingStyleCheck(1),
+        HeadingStyleCheck(2),
+        HeadingStyleCheck(3),
+        HeadingHierarchicalNumberingCheck(),
+        TocHeadingNumberingCheck(),
+        UnnumberedSpecialHeadingsCheck(),
+        CoverStylesCheck(),
+        FrontpageStylesCheck(),
+        BibliographyStyleCheck(),
+        CaptionStyleCheck(),
+        ContentHeadingStyleCheck(),
+        HeadingsUsedCorrectlyCheck(),
+        OriginalFormattingCheck(),
+        CustomStyleInheritanceCheck(),
+        RequiredCustomStylesUsageCheck(),
+        CustomStyleWithTabsCheck(),
+        MainChapterStartsOnNewPageCheck(),
+        ManualHorizontalSpacingCheck(),
+        ManualVerticalSpacingCheck(),
+        ListLevel2UsedCheck(),
+        InconsistentFormattingCheck(),
         # # -------Obsah a struktura-----
-        # TOCExistsCheck(),
-        # TOCUpToDateCheck(),
-        # DocumentStructureCheck(),
-        # TOCHeadingLevelsCheck(),
-        # TOCFirstSectionContentCheck(),
-        # TOCIllegalContentCheck(),
-        # FirstChapterStartsOnPageOneCheck(),
-        # ChapterNumberingContinuityCheck(),
+        TOCExistsCheck(),
+        TOCUpToDateCheck(),
+        DocumentStructureCheck(),
+        TOCHeadingLevelsCheck(),
+        TOCFirstSectionContentCheck(),
+        TOCIllegalContentCheck(),
+        FirstChapterStartsOnPageOneCheck(),
+        ChapterNumberingContinuityCheck(),
         # # --------Objekty-----------------
-        # MissingListOfFiguresCheck(),
-        # ListOfFiguresNotUpdatedCheck(),
-        # ImageLowQualityCheck(),
-        # ObjectCaptionCheck(),
-        # ObjectCaptionDescriptionCheck(),
-        # ObjectCrossReferenceCheck(),
-        # ObjectCaptionBindingCheck(),
+        MissingListOfFiguresCheck(),
+        ListOfFiguresNotUpdatedCheck(),
+        ImageLowQualityCheck(),
+        ObjectCaptionCheck(),
+        ObjectCaptionDescriptionCheck(),
+        ObjectCrossReferenceCheck(),
+        ObjectCaptionBindingCheck(),
         # # -------Liteatura---------
         # # NOTE stale chybi dost na dodelani
         # # MissingBibliographyCheck(),
@@ -137,23 +137,23 @@ def main():
         # # BibliographyISO690Check(),
 
         # # --------Header-Foooter------
-        # HeaderFooterMissingCheck(),
-        # SecondSectionHeaderHasTextCheck(),
-        # SecondSectionPageNumberStartsAtOneCheck(),
-        # HeaderNotLinkedToPreviousCheck(2),
-        # HeaderNotLinkedToPreviousCheck(3),
-        # FooterLinkedToPreviousCheck(2),
-        # FooterLinkedToPreviousCheck(3),
-        # SectionHeaderEmptyCheck(1),
-        # SectionHeaderEmptyCheck(3),
-        # SectionFooterEmptyCheck(1),
-        # SectionFooterHasPageNumberCheck(2),
-        # SectionFooterHasPageNumberCheck(3),
+        HeaderFooterMissingCheck(),
+        SecondSectionHeaderHasTextCheck(),
+        SecondSectionPageNumberStartsAtOneCheck(),
+        HeaderNotLinkedToPreviousCheck(2),
+        HeaderNotLinkedToPreviousCheck(3),
+        FooterLinkedToPreviousCheck(2),
+        FooterLinkedToPreviousCheck(3),
+        SectionHeaderEmptyCheck(1),
+        SectionHeaderEmptyCheck(3),
+        SectionFooterEmptyCheck(1),
+        SectionFooterHasPageNumberCheck(2),
+        SectionFooterHasPageNumberCheck(3),
     ]
 
-    exc = ExcelDocument("23_fb750.xlsx")
+    excel = ExcelDocument("23_fb750.xlsx")
     excel_assignment = load_excel_assignment("assignment/excel/assignment.json")
-    exc.save_xml()
+    excel.save_xml()
 
     excel_checks = [
         #------excel-----
@@ -170,8 +170,6 @@ def main():
         # s otaznikem, nevim jak to ma byt
         # CopiedFromSourceByRelativeRefCheck(),
         #----------formatovani
-
-
         NumberFormattingCheck(),
         # TableBorderCheck(),
         # MergedCellsCheck(),
@@ -180,21 +178,16 @@ def main():
 
     ]
 
-
-
-    runner = Runner(checks)
     report = Report()
 
-    results = runner.run(doc, assignment)
+    word_runner = Runner(checks)
+    results = word_runner.run(doc, assignment)
 
-    # Výpis výsledků
     for check, result in results:
         report.add(check.name, result)
 
-    #------------------------------------------
-
     excel_runner = Runner(excel_checks)
-    excel_results = excel_runner.run(exc, excel_assignment)
+    excel_results = excel_runner.run(excel, excel_assignment)
 
     for check, result in excel_results:
         report.add(check.name, result)

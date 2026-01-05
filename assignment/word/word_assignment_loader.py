@@ -1,9 +1,9 @@
 import json
-from .word_assignment import Assignment
-from .word_assignment_model import StyleSpec
+
+from .word_assignment_model import StyleSpec, WordAssignment
 
 
-def load_assignment(path: str) -> Assignment:
+def load_assignment(path: str) -> WordAssignment:
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -31,7 +31,7 @@ def load_assignment(path: str) -> Assignment:
     objects = data.get("objects", [])
     bibliography = data.get("bibliography", [])
 
-    return Assignment(
+    return WordAssignment(
         styles=styles,
         headlines=headlines,
         objects=objects,

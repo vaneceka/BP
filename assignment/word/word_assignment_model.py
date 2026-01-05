@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Dict, List
 
 @dataclass
 class StyleSpec:
@@ -128,3 +129,11 @@ class StyleSpec:
 
     def matches(self, expected: "StyleSpec", *, doc_default_size: int | None = None, strict: bool = False) -> bool:
         return len(self.diff(expected, doc_default_size=doc_default_size)) == 0
+    
+
+@dataclass
+class WordAssignment:
+    styles: Dict[str, StyleSpec]
+    headlines: List[dict]
+    objects: List[dict]
+    bibliography: List[dict]

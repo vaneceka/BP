@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from document.excel_document import ExcelDocument
-from document.word_document import WordDocument
-from assignment.word.word_assignment import Assignment
+
+from assignment.word.word_assignment_model import WordAssignment
+
 
 class CheckResult:
     def __init__(self, passed: bool, message: str, points: int, fatal: bool = False):
@@ -17,7 +17,6 @@ class BaseCheck(ABC):
 
     @abstractmethod
     def run(self,
-            # document: WordDocument | ExcelDocument,
             document,
-            assignment: Assignment | None = None) -> CheckResult:
+            assignment: WordAssignment | None = None) -> CheckResult:
         pass
