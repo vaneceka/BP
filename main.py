@@ -14,7 +14,6 @@ from checks.excel.formatting.header_formatting_check import HeaderFormattingChec
 from checks.excel.formatting.number_formatting_check import NumberFormattingCheck
 from checks.excel.formatting.table_border_check import TableBorderCheck
 from checks.word.bibliography.bibliography_exist_check import MissingBibliographyCheck
-from checks.word.bibliography.bibliography_iso690_check import BibliographyISO690Check
 from checks.word.bibliography.bibliography_up_to_date_check import BibliographyNotUpdatedCheck
 from checks.word.formatting.bibliography_style_check import BibliographyStyleCheck
 from checks.word.formatting.caption_style_check import CaptionStyleCheck
@@ -82,73 +81,71 @@ def main():
     doc.save_xml()
 
     checks = [
-        # # --- Části / oddíly dokumentu ---
-        SectionCountCheck(),
-        Section1TOCCheck(),
-        Section2TextCheck(),
-        Section3FigureListCheck(),
-        Section3TableListCheck(),
-        Section3BibliographyCheck(),
+        # # Části / oddíly 
+        # SectionCountCheck(),
+        # Section1TOCCheck(),
+        # Section2TextCheck(),
+        # Section3FigureListCheck(),
+        # Section3TableListCheck(),
+        # Section3BibliographyCheck(),
 
-        # # --- Formátování dle zadání ---
-        NormalStyleCheck(),
-        HeadingStyleCheck(1),
-        HeadingStyleCheck(2),
-        HeadingStyleCheck(3),
-        HeadingHierarchicalNumberingCheck(),
-        TocHeadingNumberingCheck(),
-        UnnumberedSpecialHeadingsCheck(),
-        CoverStylesCheck(),
-        FrontpageStylesCheck(),
-        BibliographyStyleCheck(),
-        CaptionStyleCheck(),
-        ContentHeadingStyleCheck(),
-        HeadingsUsedCorrectlyCheck(),
-        OriginalFormattingCheck(),
-        CustomStyleInheritanceCheck(),
-        RequiredCustomStylesUsageCheck(),
-        CustomStyleWithTabsCheck(),
-        MainChapterStartsOnNewPageCheck(),
-        ManualHorizontalSpacingCheck(),
-        ManualVerticalSpacingCheck(),
-        ListLevel2UsedCheck(),
-        InconsistentFormattingCheck(),
-        # # -------Obsah a struktura-----
-        TOCExistsCheck(),
-        TOCUpToDateCheck(),
-        DocumentStructureCheck(),
-        TOCHeadingLevelsCheck(),
-        TOCFirstSectionContentCheck(),
-        TOCIllegalContentCheck(),
-        FirstChapterStartsOnPageOneCheck(),
-        ChapterNumberingContinuityCheck(),
-        # # --------Objekty-----------------
-        MissingListOfFiguresCheck(),
-        ListOfFiguresNotUpdatedCheck(),
-        ImageLowQualityCheck(),
-        ObjectCaptionCheck(),
+        # # Formátování 
+        # NormalStyleCheck(),
+        # HeadingStyleCheck(1),
+        # HeadingStyleCheck(2),
+        # HeadingStyleCheck(3),
+        # HeadingHierarchicalNumberingCheck(),
+        # TocHeadingNumberingCheck(),
+        # UnnumberedSpecialHeadingsCheck(),
+        # CoverStylesCheck(),
+        # FrontpageStylesCheck(),
+        # BibliographyStyleCheck(),
+        # CaptionStyleCheck(),
+        # ContentHeadingStyleCheck(),
+        # HeadingsUsedCorrectlyCheck(),
+        # OriginalFormattingCheck(),
+        # CustomStyleInheritanceCheck(),
+        # RequiredCustomStylesUsageCheck(),
+        # CustomStyleWithTabsCheck(),
+        # MainChapterStartsOnNewPageCheck(),
+        # ManualHorizontalSpacingCheck(),
+        # ManualVerticalSpacingCheck(),
+        # ListLevel2UsedCheck(),
+        # InconsistentFormattingCheck(),
+        # # Obsah
+        # TOCExistsCheck(),
+        # TOCUpToDateCheck(),
+        # DocumentStructureCheck(),
+        # TOCHeadingLevelsCheck(),
+        # TOCFirstSectionContentCheck(),
+        # TOCIllegalContentCheck(),
+        # FirstChapterStartsOnPageOneCheck(),
+        # ChapterNumberingContinuityCheck(),
+        # # Objekty
+        # MissingListOfFiguresCheck(),
+        # ListOfFiguresNotUpdatedCheck(),
+        # ImageLowQualityCheck(),
+        # ObjectCaptionCheck(),
         ObjectCaptionDescriptionCheck(),
-        ObjectCrossReferenceCheck(),
-        ObjectCaptionBindingCheck(),
-        # # -------Liteatura---------
-        # # NOTE stale chybi dost na dodelani
-        # # MissingBibliographyCheck(),
-        # # BibliographyNotUpdatedCheck(),
-        # # BibliographyISO690Check(),
+        # ObjectCrossReferenceCheck(),
+        # ObjectCaptionBindingCheck(),
+        # # Liteatura
+        # MissingBibliographyCheck(),
+        # BibliographyNotUpdatedCheck(),
 
-        # # --------Header-Foooter------
-        HeaderFooterMissingCheck(),
-        SecondSectionHeaderHasTextCheck(),
-        SecondSectionPageNumberStartsAtOneCheck(),
-        HeaderNotLinkedToPreviousCheck(2),
-        HeaderNotLinkedToPreviousCheck(3),
-        FooterLinkedToPreviousCheck(2),
-        FooterLinkedToPreviousCheck(3),
-        SectionHeaderEmptyCheck(1),
-        SectionHeaderEmptyCheck(3),
-        SectionFooterEmptyCheck(1),
-        SectionFooterHasPageNumberCheck(2),
-        SectionFooterHasPageNumberCheck(3),
+        # # Header-Foooter
+        # HeaderFooterMissingCheck(),
+        # SecondSectionHeaderHasTextCheck(),
+        # SecondSectionPageNumberStartsAtOneCheck(),
+        # HeaderNotLinkedToPreviousCheck(2),
+        # HeaderNotLinkedToPreviousCheck(3),
+        # FooterLinkedToPreviousCheck(2),
+        # FooterLinkedToPreviousCheck(3),
+        # SectionHeaderEmptyCheck(1),
+        # SectionHeaderEmptyCheck(3),
+        # SectionFooterEmptyCheck(1),
+        # SectionFooterHasPageNumberCheck(2),
+        # SectionFooterHasPageNumberCheck(3),
     ]
 
     excel = ExcelDocument("23_fb750.xlsx")
@@ -170,7 +167,7 @@ def main():
         # s otaznikem, nevim jak to ma byt
         # CopiedFromSourceByRelativeRefCheck(),
         #----------formatovani
-        NumberFormattingCheck(),
+        # NumberFormattingCheck(),
         # TableBorderCheck(),
         # MergedCellsCheck(),
         # HeaderFormattingCheck(),

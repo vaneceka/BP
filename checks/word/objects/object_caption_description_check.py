@@ -1,7 +1,6 @@
 from checks.base_check import BaseCheck, CheckResult
 import re
 
-# NOTE poradne to jeste otestovat
 class ObjectCaptionDescriptionCheck(BaseCheck):
     name = "V titulku chybí stručný popis objektu"
     penalty = -5

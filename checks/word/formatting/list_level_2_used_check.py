@@ -4,7 +4,7 @@ from checks.base_check import BaseCheck, CheckResult
 class ListLevel2UsedCheck(BaseCheck):
     name = "Použití seznamu 2. úrovně"
     penalty = -1 
-    # NOTE mozna, kdyz bude word v anglictine, bude problem.
+
 
     STYLE_IDS = {
         "slovanseznam2",        

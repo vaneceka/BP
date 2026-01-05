@@ -8,13 +8,12 @@ BAD_PATTERNS = [
     r"_{4,}",   # 4+ podtržítek
 ]
 
-# NOTE mozna opravit aby to nevypisovalo v jakych odstavcich
 class ManualHorizontalSpacingCheck(BaseCheck):
     name = "Ruční horizontální zarovnání pomocí mezer/znaků"
     penalty = -5 
 
     def run(self, document, assignment=None):
-        errors = []
+        found = 0
 
         for p in document.iter_paragraphs():
             raw = document.paragraph_text_raw(p)
@@ -27,15 +26,14 @@ class ManualHorizontalSpacingCheck(BaseCheck):
 
             for pat in BAD_PATTERNS:
                 if re.search(pat, raw):
-                    sample = raw.replace("\t", "\\t")
-                    errors.append(f"„{sample[:120]}“")
+                    found += 1
                     break
 
-        if errors:
+        if found > 0:
             return CheckResult(
                 False,
-                "Nalezeno ruční horizontální formátování v odstavcích:\n- " + "\n- ".join(errors),
-                len(errors) * self.penalty,
+                "Nalezeno ruční horizontální formátování.",
+                found * self.penalty,
             )
 
         return CheckResult(True, "Nenalezeno ruční horizontální formátování.", 0)

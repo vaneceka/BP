@@ -271,7 +271,6 @@ class WordDocument:
 
         return None
     
-    #NOTE mozna predela, pouziva se localne v souboru word a jeste jinde
     def _find_style_by_id(self, style_id: str):
         if not style_id:
             return None
@@ -519,7 +518,6 @@ class WordDocument:
             tabs=tabs,
         )
     
-    #NOTE tady se taky pouziva ve vice vecech
     def _find_style(self, *, name: str | None = None, default: bool = False):
         for style in self._styles_xml.findall(".//w:style", self.NS):
             if default:
