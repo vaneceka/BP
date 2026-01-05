@@ -1,6 +1,4 @@
 from checks.base_check import BaseCheck, CheckResult
-import re
-
 
 class RedundantAbsoluteReferenceCheck(BaseCheck):
     name = "Nadbytečné použití absolutních adres"
