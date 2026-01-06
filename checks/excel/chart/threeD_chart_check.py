@@ -20,7 +20,6 @@ class ThreeDChartCheck(BaseCheck):
         charts = getattr(ws, "_charts", [])
 
         if not charts:
-            # tady NECHYBA – jiný check řeší "graf chybí"
             return CheckResult(True, "Graf nebyl nalezen.", 0)
 
         bad = []

@@ -17,6 +17,7 @@ from checks.excel.formatting.conditional_formatting_is_correct_check import Cond
 from checks.excel.formatting.header_formatting_check import HeaderFormattingCheck
 from checks.excel.formatting.number_formatting_check import NumberFormattingCheck
 from checks.excel.formatting.table_border_check import TableBorderCheck
+from checks.excel.formatting.wrap_text_check import WrapTextCheck
 from checks.word.bibliography.bibliography_exist_check import MissingBibliographyCheck
 from checks.word.bibliography.bibliography_up_to_date_check import BibliographyNotUpdatedCheck
 from checks.word.formatting.bibliography_style_check import BibliographyStyleCheck
@@ -174,7 +175,8 @@ def main():
         # MissingChartCheck(),
         # ChartFormattingCheck(),
         # ChartTypeCheck(),
-        ThreeDChartCheck()
+        # ThreeDChartCheck(),
+        WrapTextCheck()
 
     ]
 
