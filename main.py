@@ -8,7 +8,8 @@ from checks.excel.data_process.required_data_worksheet_check import RequiredData
 from checks.excel.data_process.required_source_worksheet_check import RequiredSourceWorksheetCheck
 from checks.excel.data_process.non_copyable_formula_check import NonCopyableFormulasCheck
 from checks.excel.formatting.cells_merge_check import MergedCellsCheck
-from checks.excel.formatting.conditional_formatting_check import ConditionalFormattingCheck
+from checks.excel.formatting.conditional_formatting_check import ConditionalFormattingExistsCheck
+from checks.excel.formatting.conditional_formatting_is_correct_check import ConditionalFormattingCorrectnessCheck
 from checks.excel.formatting.header_formatting_check import HeaderFormattingCheck
 from checks.excel.formatting.number_formatting_check import NumberFormattingCheck
 from checks.excel.formatting.table_border_check import TableBorderCheck
@@ -72,8 +73,6 @@ from assignment.word.word_assignment_loader import load_assignment
 
 from checks.word.formatting.normal_style_check import NormalStyleCheck
 
-
-
 def main():
     doc = WordDocument("student.docx")
     assignment = load_assignment("assignment/word/assignment.json")
@@ -125,7 +124,7 @@ def main():
         # ListOfFiguresNotUpdatedCheck(),
         # ImageLowQualityCheck(),
         # ObjectCaptionCheck(),
-        ObjectCaptionDescriptionCheck(),
+        # ObjectCaptionDescriptionCheck(),
         # ObjectCrossReferenceCheck(),
         # ObjectCaptionBindingCheck(),
         # # Liteatura
@@ -161,12 +160,14 @@ def main():
         # RedundantAbsoluteReferenceCheck(),
         # DescriptiveStatisticsCheck(),
 
-        # # formatovani
+        # formatovani
         # NumberFormattingCheck(),
         # TableBorderCheck(),
         # MergedCellsCheck(),
         # HeaderFormattingCheck(),
-        # ConditionalFormattingCheck(),
+        ConditionalFormattingExistsCheck(),
+        ConditionalFormattingCorrectnessCheck(),
+
     ]
 
     report = Report()
