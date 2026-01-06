@@ -3,6 +3,8 @@ from pathlib import Path
 import xml.dom.minidom as minidom
 import xml.etree.ElementTree as ET
 from openpyxl import load_workbook
+from openpyxl.worksheet.worksheet import Worksheet
+from openpyxl.chart.bar_chart import BarChart
 
 NS = {
     "main": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",

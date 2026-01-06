@@ -1,4 +1,6 @@
 from assignment.excel.excel_assignment_loader import load_excel_assignment
+from checks.excel.chart.chart_formatting_check import ChartFormattingCheck
+from checks.excel.chart.chart_type_check import ChartTypeCheck
 from checks.excel.chart.missing_chart_check import MissingChartCheck
 from checks.excel.data_process.array_formula_check import ArrayFormulaCheck
 from checks.excel.data_process.descriptive_statistic_check import DescriptiveStatisticsCheck
@@ -168,7 +170,9 @@ def main():
         # HeaderFormattingCheck(),
         # ConditionalFormattingExistsCheck(),
         # ConditionalFormattingCorrectnessCheck(),
-        MissingChartCheck()
+        # MissingChartCheck(),
+        ChartFormattingCheck(),
+        # ChartTypeCheck()
 
     ]
 
