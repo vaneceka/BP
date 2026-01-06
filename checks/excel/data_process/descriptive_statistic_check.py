@@ -3,7 +3,6 @@ from checks.base_check import BaseCheck, CheckResult
 class DescriptiveStatisticsCheck(BaseCheck):
     name = "Chybí popisná charakteristika pro datovou řadu"
     penalty = -5
-
     SHEET = "data"
 
     REQUIRED_CELLS = {

@@ -30,7 +30,7 @@ class ConditionalFormattingCorrectnessCheck(BaseCheck):
             if not spec.conditionalFormat:
                 continue
 
-            column = re.sub(r"\d+", "", addr)  # E2 → E
+            column = re.sub(r"\d+", "", addr)  
 
             for rule in spec.conditionalFormat:
                 expected.append({
@@ -52,7 +52,7 @@ class ConditionalFormattingCorrectnessCheck(BaseCheck):
         found = [False] * len(expected)
 
         for cf, rules in ws.conditional_formatting._cf_rules.items():
-            range_str = str(cf.sqref)  # např. "E2:E23"
+            range_str = str(cf.sqref)  
 
             for r in rules:
                 if r.type != "cellIs" or not r.formula:

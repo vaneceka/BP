@@ -1,4 +1,5 @@
 from assignment.excel.excel_assignment_loader import load_excel_assignment
+from checks.excel.chart.missing_chart_check import MissingChartCheck
 from checks.excel.data_process.array_formula_check import ArrayFormulaCheck
 from checks.excel.data_process.descriptive_statistic_check import DescriptiveStatisticsCheck
 from checks.excel.data_process.missing_wrong_formula_check import MissingOrWrongFormulaOrNotCalculatedCheck
@@ -165,8 +166,9 @@ def main():
         # TableBorderCheck(),
         # MergedCellsCheck(),
         # HeaderFormattingCheck(),
-        ConditionalFormattingExistsCheck(),
-        ConditionalFormattingCorrectnessCheck(),
+        # ConditionalFormattingExistsCheck(),
+        # ConditionalFormattingCorrectnessCheck(),
+        MissingChartCheck()
 
     ]
 
