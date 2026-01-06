@@ -1,4 +1,5 @@
 from assignment.excel.excel_assignment_loader import load_excel_assignment
+from checks.excel.chart.threeD_chart_check import ThreeDChartCheck
 from checks.excel.chart.chart_formatting_check import ChartFormattingCheck
 from checks.excel.chart.chart_type_check import ChartTypeCheck
 from checks.excel.chart.missing_chart_check import MissingChartCheck
@@ -171,8 +172,9 @@ def main():
         # ConditionalFormattingExistsCheck(),
         # ConditionalFormattingCorrectnessCheck(),
         # MissingChartCheck(),
-        ChartFormattingCheck(),
-        # ChartTypeCheck()
+        # ChartFormattingCheck(),
+        # ChartTypeCheck(),
+        ThreeDChartCheck()
 
     ]
 
