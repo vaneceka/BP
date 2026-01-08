@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ns0:document-content xmlns:ns0="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:ns1="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:ns2="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:ns3="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:ns4="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:ns5="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:ns6="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:ns7="urn:oasis:names:tc:opendocument:xmlns:text:1.0" ns0:version="1.4">
+  <ns0:scripts/>
+  <ns0:font-face-decls>
+    <ns1:font-face ns1:name="Arial Unicode MS" ns2:font-family="'Arial Unicode MS'" ns1:font-family-generic="system" ns1:font-pitch="variable"/>
+    <ns1:font-face ns1:name="Calibri" ns2:font-family="Calibri"/>
+    <ns1:font-face ns1:name="Liberation Sans" ns2:font-family="'Liberation Sans'" ns1:font-family-generic="swiss" ns1:font-pitch="variable"/>
+  </ns0:font-face-decls>
+  <ns0:automatic-styles>
+    <ns1:style ns1:name="co1" ns1:family="table-column">
+      <ns1:table-column-properties ns3:break-before="auto" ns1:column-width="1.72cm"/>
+    </ns1:style>
+    <ns1:style ns1:name="co2" ns1:family="table-column">
+      <ns1:table-column-properties ns3:break-before="auto" ns1:column-width="2.381cm"/>
+    </ns1:style>
+    <ns1:style ns1:name="co3" ns1:family="table-column">
+      <ns1:table-column-properties ns3:break-before="auto" ns1:column-width="2.17cm"/>
+    </ns1:style>
+    <ns1:style ns1:name="co4" ns1:family="table-column">
+      <ns1:table-column-properties ns3:break-before="auto" ns1:column-width="3.466cm"/>
+    </ns1:style>
+    <ns1:style ns1:name="co5" ns1:family="table-column">
+      <ns1:table-column-properties ns3:break-before="auto" ns1:column-width="5.45cm"/>
+    </ns1:style>
+    <ns1:style ns1:name="co6" ns1:family="table-column">
+      <ns1:table-column-properties ns3:break-before="auto" ns1:column-width="2.258cm"/>
+    </ns1:style>
+    <ns1:style ns1:name="ro1" ns1:family="table-row">
+      <ns1:table-row-properties ns1:row-height="0.487cm" ns3:break-before="auto" ns1:use-optimal-row-height="true"/>
+    </ns1:style>
+    <ns1:style ns1:name="ro2" ns1:family="table-row">
+      <ns1:table-row-properties ns1:row-height="0.452cm" ns3:break-before="auto" ns1:use-optimal-row-height="true"/>
+    </ns1:style>
+    <ns1:style ns1:name="ta1" ns1:family="table" ns1:master-page-name="Default">
+      <ns1:table-properties ns4:display="true" ns1:writing-mode="lr-tb"/>
+    </ns1:style>
+    <ns1:style ns1:name="ce2" ns1:family="table-cell" ns1:parent-style-name="Default">
+      <ns1:table-cell-properties ns1:rotation-align="none" ns1:vertical-align="bottom"/>
+      <ns1:text-properties ns3:color="#000000" ns1:font-name="Calibri" ns3:font-size="11pt"/>
+    </ns1:style>
+    <ns1:style ns1:name="ce3" ns1:family="table-cell" ns1:parent-style-name="Default">
+      <ns1:table-cell-properties ns3:background-color="#fff5ce" ns1:rotation-align="none" ns1:vertical-align="bottom"/>
+      <ns1:text-properties ns3:color="#000000" ns1:font-name="Calibri" ns3:font-size="11pt"/>
+    </ns1:style>
+    <ns1:style ns1:name="ce4" ns1:family="table-cell" ns1:parent-style-name="Default">
+      <ns1:table-cell-properties ns1:rotation-align="none" ns1:vertical-align="bottom"/>
+      <ns1:text-properties ns3:color="#000000" ns1:font-name="Calibri" ns3:font-size="11pt"/>
+      <ns1:map ns1:condition="cell-content()&gt;25" ns1:apply-style-name="Bad" ns1:base-cell-address="data.E2"/>
+    </ns1:style>
+    <ns1:style ns1:name="ce5" ns1:family="table-cell" ns1:parent-style-name="Default">
+      <ns1:table-cell-properties ns3:background-color="#fff5ce" ns1:rotation-align="none" ns1:vertical-align="bottom"/>
+      <ns1:text-properties ns3:color="#000000" ns1:font-name="Calibri" ns3:font-size="11pt"/>
+      <ns1:map ns1:condition="cell-content()&gt;25" ns1:apply-style-name="Bad" ns1:base-cell-address="data.E2"/>
+    </ns1:style>
+    <ns1:style ns1:name="ce6" ns1:family="table-cell" ns1:parent-style-name="Default">
+      <ns1:table-cell-properties ns3:background-color="#fff5ce" ns1:rotation-align="none" ns1:vertical-align="bottom"/>
+      <ns1:text-properties ns3:color="#000000" ns1:font-name="Calibri" ns3:font-size="11pt"/>
+    </ns1:style>
+  </ns0:automatic-styles>
+  <ns0:body>
+    <ns0:spreadsheet>
+      <ns4:table ns4:name="data" ns4:style-name="ta1">
+        <ns0:forms ns5:automatic-focus="false" ns5:apply-design-mode="false"/>
+        <ns4:table-column ns4:style-name="co1" ns4:number-columns-repeated="2" ns4:default-cell-style-name="ce2"/>
+        <ns4:table-column ns4:style-name="co2" ns4:default-cell-style-name="ce2"/>
+        <ns4:table-column ns4:style-name="co3" ns4:default-cell-style-name="ce4"/>
+        <ns4:table-column ns4:style-name="co4" ns4:default-cell-style-name="ce5"/>
+        <ns4:table-column ns4:style-name="co5" ns4:default-cell-style-name="ce6"/>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>Pacient</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>Pohlaví</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>Výška (cm)</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce2" ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>Váha (kg)</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce2" ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>BMI</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce2" ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>BMI nad střední hodnotou</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="1" ns6:value-type="float">
+            <ns7:p>1</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="170.7" ns6:value-type="float">
+            <ns7:p>170,7</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="64.6" ns6:value-type="float">
+            <ns7:p>64,6</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D2]/([.C2]/100)^2" ns0:value-type="float" ns0:value="22.1699889047099" ns6:value-type="float">
+            <ns7:p>22,1699889047099</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E2];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="ne" ns6:value-type="string">
+            <ns7:p>ne</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="2" ns6:value-type="float">
+            <ns7:p>2</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="159.8" ns6:value-type="float">
+            <ns7:p>159,8</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="103.7" ns6:value-type="float">
+            <ns7:p>103,7</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D3]/([.C3]/100)^2" ns0:value-type="float" ns0:value="40.6092722285836" ns6:value-type="float">
+            <ns7:p>40,6092722285836</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E3];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="více" ns6:value-type="string">
+            <ns7:p>více</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="3" ns6:value-type="float">
+            <ns7:p>3</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="183.5" ns6:value-type="float">
+            <ns7:p>183,5</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="68" ns6:value-type="float">
+            <ns7:p>68</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D4]/([.C4]/100)^2" ns0:value-type="float" ns0:value="20.1946706858021" ns6:value-type="float">
+            <ns7:p>20,1946706858021</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E4];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="ne" ns6:value-type="string">
+            <ns7:p>ne</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="4" ns6:value-type="float">
+            <ns7:p>4</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>muž</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="158.2" ns6:value-type="float">
+            <ns7:p>158,2</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="91.4" ns6:value-type="float">
+            <ns7:p>91,4</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D5]/([.C5]/100)^2" ns0:value-type="float" ns0:value="36.5202075818189" ns6:value-type="float">
+            <ns7:p>36,5202075818189</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E5];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="více" ns6:value-type="string">
+            <ns7:p>více</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="5" ns6:value-type="float">
+            <ns7:p>5</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>muž</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="170.3" ns6:value-type="float">
+            <ns7:p>170,3</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="55.1" ns6:value-type="float">
+            <ns7:p>55,1</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D6]/([.C6]/100)^2" ns0:value-type="float" ns0:value="18.9986307883328" ns6:value-type="float">
+            <ns7:p>18,9986307883328</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E6];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="ne" ns6:value-type="string">
+            <ns7:p>ne</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="6" ns6:value-type="float">
+            <ns7:p>6</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>muž</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="182.4" ns6:value-type="float">
+            <ns7:p>182,4</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="84.3" ns6:value-type="float">
+            <ns7:p>84,3</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D7]/([.C7]/100)^2" ns0:value-type="float" ns0:value="25.3383252539243" ns6:value-type="float">
+            <ns7:p>25,3383252539243</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E7];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="ne" ns6:value-type="string">
+            <ns7:p>ne</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="7" ns6:value-type="float">
+            <ns7:p>7</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="177.8" ns6:value-type="float">
+            <ns7:p>177,8</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="76" ns6:value-type="float">
+            <ns7:p>76</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D8]/([.C8]/100)^2" ns0:value-type="float" ns0:value="24.0408644082594" ns6:value-type="float">
+            <ns7:p>24,0408644082594</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E8];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="ne" ns6:value-type="string">
+            <ns7:p>ne</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="8" ns6:value-type="float">
+            <ns7:p>8</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>muž</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="189.6" ns6:value-type="float">
+            <ns7:p>189,6</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="97.5" ns6:value-type="float">
+            <ns7:p>97,5</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D9]/([.C9]/100)^2" ns0:value-type="float" ns0:value="27.1223895743204" ns6:value-type="float">
+            <ns7:p>27,1223895743204</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E9];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="ne" ns6:value-type="string">
+            <ns7:p>ne</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="9" ns6:value-type="float">
+            <ns7:p>9</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="166.5" ns6:value-type="float">
+            <ns7:p>166,5</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="99.7" ns6:value-type="float">
+            <ns7:p>99,7</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D10]/([.C10]/100)^2" ns0:value-type="float" ns0:value="35.9638918197477" ns6:value-type="float">
+            <ns7:p>35,9638918197477</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E10];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="více" ns6:value-type="string">
+            <ns7:p>více</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="10" ns6:value-type="float">
+            <ns7:p>10</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="160.6" ns6:value-type="float">
+            <ns7:p>160,6</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="56.1" ns6:value-type="float">
+            <ns7:p>56,1</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D11]/([.C11]/100)^2" ns0:value-type="float" ns0:value="21.750626929835" ns6:value-type="float">
+            <ns7:p>21,750626929835</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E11];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="ne" ns6:value-type="string">
+            <ns7:p>ne</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="11" ns6:value-type="float">
+            <ns7:p>11</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="176.5" ns6:value-type="float">
+            <ns7:p>176,5</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="121.3" ns6:value-type="float">
+            <ns7:p>121,3</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D12]/([.C12]/100)^2" ns0:value-type="float" ns0:value="38.9377974303622" ns6:value-type="float">
+            <ns7:p>38,9377974303622</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E12];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="více" ns6:value-type="string">
+            <ns7:p>více</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="12" ns6:value-type="float">
+            <ns7:p>12</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="173.8" ns6:value-type="float">
+            <ns7:p>173,8</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="75.7" ns6:value-type="float">
+            <ns7:p>75,7</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D13]/([.C13]/100)^2" ns0:value-type="float" ns0:value="25.060881057152" ns6:value-type="float">
+            <ns7:p>25,060881057152</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E13];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="ne" ns6:value-type="string">
+            <ns7:p>ne</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="13" ns6:value-type="float">
+            <ns7:p>13</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="186.7" ns6:value-type="float">
+            <ns7:p>186,7</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="114.6" ns6:value-type="float">
+            <ns7:p>114,6</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D14]/([.C14]/100)^2" ns0:value-type="float" ns0:value="32.8772876754065" ns6:value-type="float">
+            <ns7:p>32,8772876754065</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E14];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="více" ns6:value-type="string">
+            <ns7:p>více</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="14" ns6:value-type="float">
+            <ns7:p>14</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="167.6" ns6:value-type="float">
+            <ns7:p>167,6</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="110.1" ns6:value-type="float">
+            <ns7:p>110,1</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D15]/([.C15]/100)^2" ns0:value-type="float" ns0:value="39.1957781056157" ns6:value-type="float">
+            <ns7:p>39,1957781056157</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E15];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="více" ns6:value-type="string">
+            <ns7:p>více</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="15" ns6:value-type="float">
+            <ns7:p>15</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>muž</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="162.6" ns6:value-type="float">
+            <ns7:p>162,6</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="101.9" ns6:value-type="float">
+            <ns7:p>101,9</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D16]/([.C16]/100)^2" ns0:value-type="float" ns0:value="38.5418983341125" ns6:value-type="float">
+            <ns7:p>38,5418983341125</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E16];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="více" ns6:value-type="string">
+            <ns7:p>více</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="16" ns6:value-type="float">
+            <ns7:p>16</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>muž</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="172.8" ns6:value-type="float">
+            <ns7:p>172,8</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="121" ns6:value-type="float">
+            <ns7:p>121</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D17]/([.C17]/100)^2" ns0:value-type="float" ns0:value="40.5226551783265" ns6:value-type="float">
+            <ns7:p>40,5226551783265</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E17];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="více" ns6:value-type="string">
+            <ns7:p>více</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="17" ns6:value-type="float">
+            <ns7:p>17</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>muž</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="161.4" ns6:value-type="float">
+            <ns7:p>161,4</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="76.6" ns6:value-type="float">
+            <ns7:p>76,6</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D18]/([.C18]/100)^2" ns0:value-type="float" ns0:value="29.4050355547571" ns6:value-type="float">
+            <ns7:p>29,4050355547571</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E18];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="ne" ns6:value-type="string">
+            <ns7:p>ne</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="18" ns6:value-type="float">
+            <ns7:p>18</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>muž</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="182.7" ns6:value-type="float">
+            <ns7:p>182,7</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="104.5" ns6:value-type="float">
+            <ns7:p>104,5</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D19]/([.C19]/100)^2" ns0:value-type="float" ns0:value="31.3068372634649" ns6:value-type="float">
+            <ns7:p>31,3068372634649</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E19];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="více" ns6:value-type="string">
+            <ns7:p>více</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="19" ns6:value-type="float">
+            <ns7:p>19</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="164.8" ns6:value-type="float">
+            <ns7:p>164,8</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="122.4" ns6:value-type="float">
+            <ns7:p>122,4</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D20]/([.C20]/100)^2" ns0:value-type="float" ns0:value="45.0678669054576" ns6:value-type="float">
+            <ns7:p>45,0678669054576</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E20];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="více" ns6:value-type="string">
+            <ns7:p>více</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="20" ns6:value-type="float">
+            <ns7:p>20</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>muž</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="173.3" ns6:value-type="float">
+            <ns7:p>173,3</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="74.7" ns6:value-type="float">
+            <ns7:p>74,7</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D21]/([.C21]/100)^2" ns0:value-type="float" ns0:value="24.8727311956991" ns6:value-type="float">
+            <ns7:p>24,8727311956991</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E21];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="ne" ns6:value-type="string">
+            <ns7:p>ne</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="21" ns6:value-type="float">
+            <ns7:p>21</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>muž</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="158.1" ns6:value-type="float">
+            <ns7:p>158,1</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="76.9" ns6:value-type="float">
+            <ns7:p>76,9</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D22]/([.C22]/100)^2" ns0:value-type="float" ns0:value="30.7654024046623" ns6:value-type="float">
+            <ns7:p>30,7654024046623</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E22];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="ne" ns6:value-type="string">
+            <ns7:p>ne</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="float" ns0:value="22" ns6:value-type="float">
+            <ns7:p>22</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>žena</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="174.5" ns6:value-type="float">
+            <ns7:p>174,5</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="float" ns0:value="126.9" ns6:value-type="float">
+            <ns7:p>126,9</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=[.D23]/([.C23]/100)^2" ns0:value-type="float" ns0:value="41.6745346918334" ns6:value-type="float">
+            <ns7:p>41,6745346918334</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:formula="of:=IF([.E$30]&gt;[.E23];&quot;ne&quot;;&quot;více&quot;)" ns0:value-type="string" ns0:string-value="více" ns6:value-type="string">
+            <ns7:p>více</ns7:p>
+          </ns4:table-cell>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro2" ns4:number-rows-repeated="3">
+          <ns4:table-cell ns4:style-name="Default" ns4:number-columns-repeated="6"/>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell/>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>Minimum</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>Maximum</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce2" ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>Průměr</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce2" ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>Střední hodnota</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="Default"/>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>Výška</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce3" ns4:formula="of:=MIN([.C2:.C23])" ns0:value-type="float" ns0:value="158.1" ns6:value-type="float">
+            <ns7:p>158,1</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce3" ns4:formula="of:=MAX([.C2:.C23])" ns0:value-type="float" ns0:value="189.6" ns6:value-type="float">
+            <ns7:p>189,6</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce3" ns4:formula="of:=AVERAGE([.C2:.C23])" ns0:value-type="float" ns0:value="171.554545454545" ns6:value-type="float">
+            <ns7:p>171,554545454545</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce3" ns4:formula="of:=MEDIAN([.C2:.C23])" ns0:value-type="float" ns0:value="171.75" ns6:value-type="float">
+            <ns7:p>171,75</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="Default"/>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>Váha</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce3" ns4:formula="of:=MIN([.D2:.D23])" ns0:value-type="float" ns0:value="55.1" ns6:value-type="float">
+            <ns7:p>55,1</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="Default" ns4:formula="of:=MAX([.D2:.D23])" ns0:value-type="float" ns0:value="126.9" ns6:value-type="float">
+            <ns7:p>126,9</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce3" ns4:formula="of:=AVERAGE([.D2:.D23])" ns0:value-type="float" ns0:value="91.9545454545455" ns6:value-type="float">
+            <ns7:p>91,9545454545455</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="Default" ns4:formula="of:=MEDIAN([.D2:.D23])" ns0:value-type="float" ns0:value="94.45" ns6:value-type="float">
+            <ns7:p>94,45</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="Default"/>
+        </ns4:table-row>
+        <ns4:table-row ns4:style-name="ro1">
+          <ns4:table-cell ns0:value-type="string" ns6:value-type="string">
+            <ns7:p>BMI</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce3" ns4:formula="of:=MIN([.E2:.E23])" ns0:value-type="float" ns0:value="18.9986307883328" ns6:value-type="float">
+            <ns7:p>18,9986307883328</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce3" ns4:formula="of:=MAX([.E2:.E23])" ns0:value-type="float" ns0:value="45.0678669054576" ns6:value-type="float">
+            <ns7:p>45,0678669054576</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce3" ns4:formula="of:=AVERAGE([.E2:.E23])" ns0:value-type="float" ns0:value="31.406253362372" ns6:value-type="float">
+            <ns7:p>31,406253362372</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="ce3" ns4:formula="of:=MEDIAN([.E2:.E23])" ns0:value-type="float" ns0:value="31.0361198340636" ns6:value-type="float">
+            <ns7:p>31,0361198340636</ns7:p>
+          </ns4:table-cell>
+          <ns4:table-cell ns4:style-name="Default"/>
+        </ns4:table-row>
+        <ns6:conditional-formats>
+          <ns6:conditional-format ns6:target-range-address="data.D2:data.D23">
+            <ns6:condition ns6:apply-style-name="Bad" ns6:value="&gt;25" ns6:base-cell-address="data.E2"/>
+          </ns6:conditional-format>
+          <ns6:conditional-format ns6:target-range-address="data.E2:data.E23">
+            <ns6:condition ns6:apply-style-name="Accent 1" ns6:value="&lt;18.5" ns6:base-cell-address="data.E2"/>
+          </ns6:conditional-format>
+        </ns6:conditional-formats>
+      </ns4:table>
+      <ns4:named-expressions>
+        <ns4:named-range ns4:name="hod" ns4:base-cell-address="$data.$E$30" ns4:cell-range-address="$data.$E$30"/>
+      </ns4:named-expressions>
+    </ns0:spreadsheet>
+  </ns0:body>
+</ns0:document-content>

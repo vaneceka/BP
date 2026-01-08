@@ -1,5 +1,7 @@
 from checks.base_check import BaseCheck, CheckResult
 
+
+# NOTE predelat i pro ods libre
 class RedundantAbsoluteReferenceCheck(BaseCheck):
     name = "Nadbytečné použití absolutních adres"
     penalty = -10

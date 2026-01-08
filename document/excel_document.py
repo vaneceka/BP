@@ -1,10 +1,11 @@
+import re
 import zipfile
 from pathlib import Path
 import xml.dom.minidom as minidom
 import xml.etree.ElementTree as ET
 from openpyxl import load_workbook
-from openpyxl.worksheet.worksheet import Worksheet
-from openpyxl.chart.bar_chart import BarChart
+from openpyxl.utils import range_boundaries
+from openpyxl.utils import range_boundaries, column_index_from_string
 
 NS = {
     "main": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
@@ -118,8 +119,9 @@ class ExcelDocument:
             col == min_col or col == max_col
         )
 
-    def defined_names(self) -> set[str]:
-        return {name.upper() for name in self.wb.defined_names.keys()}
+    # def defined_names(self) -> set[str]:
+    #     return {name.upper() for name in self.wb.defined_names.keys()}
+    
 
     def save_xml(self, out_dir: str | Path = "debug_excel_xml"):
         out_dir = Path(out_dir)
@@ -143,3 +145,141 @@ class ExcelDocument:
                 target = out_dir / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(pretty)
+
+
+#------------
+    def get_array_formula_cells(self) -> list[str]:
+        cells = []
+
+        for sheet_name, data in self.sheets.items():
+            xml = data["xml"]
+
+            for c in xml.findall(".//main:c", self.NS):
+                f = c.find("main:f", self.NS)
+                if f is not None and f.attrib.get("t") == "array":
+                    addr = c.attrib.get("r")
+                    cells.append(f"{sheet_name}!{addr}")
+
+        return cells
+    
+    # def get_cell_info(self, sheet: str, addr: str):
+    #     cell = self.get_cell(f"{sheet}!{addr}")
+    #     if cell is None:
+    #         return None
+
+    #     return {
+    #         "has_formula": bool(cell["formula"]),
+    #         "has_cached_value": cell["value_cached"] is not None,
+    #     }
+
+    def get_cell_info(self, sheet: str, addr: str):
+        cell = self.get_cell(f"{sheet}!{addr}")
+        if cell is None:
+            return None
+
+        formula = cell.get("formula")
+        value = cell.get("value_cached")
+
+        return {
+            "exists": True,
+            "formula": formula,
+            "value_cached": value,
+            "is_error": isinstance(value, str) and value.startswith("#"),
+        }
+    
+    def iter_formulas(self):
+        for ws in self.wb.worksheets:
+            for row in ws.iter_rows():
+                for cell in row:
+                    if cell.data_type == "f" and isinstance(cell.value, str):
+                        yield {
+                            "sheet": ws.title,
+                            "formula": cell.value,
+                        }
+
+    def normalize_formula(self, f: str | None) -> str:
+        if not f:
+            return ""
+        return re.sub(r"\s+", "", f).upper()
+    
+    def get_defined_names(self) -> set[str]:
+        return {name.upper() for name in self.wb.defined_names.keys()}
+
+    def cells_with_formulas(self):
+        cells = []
+
+        for ws in self.wb.worksheets:
+            for row in ws.iter_rows():
+                for cell in row:
+                    if cell.data_type == "f":
+                        cells.append({
+                            "sheet": ws.title,
+                            "address": cell.coordinate,
+                            "formula": cell.value,
+                        })
+
+        return cells
+    
+    def iter_used_rows(self, sheet: str) -> list[int]:
+        ws = self.wb[sheet]
+        rows = set()
+
+        for row in ws.iter_rows():
+            for cell in row:
+                if cell.value not in (None, ""):
+                    rows.add(cell.row)
+
+        return sorted(rows)
+    
+    def merged_ranges(self, sheet: str):
+        ws = self.wb[sheet]
+        ranges = []
+
+        for r in ws.merged_cells.ranges:
+            ranges.append(range_boundaries(str(r)))
+
+        return ranges
+    
+    def has_conditional_formatting(self, sheet: str) -> bool:
+        if sheet not in self.wb.sheetnames:
+            return False
+
+        ws = self.wb[sheet]
+        return bool(ws.conditional_formatting._cf_rules)
+    
+    def check_conditional_formatting(self, sheet: str, expected: list[dict]) -> list[str]:
+        ws = self.wb[sheet]
+        found = [False] * len(expected)
+
+        for cf, rules in ws.conditional_formatting._cf_rules.items():
+            range_str = str(cf.sqref)
+
+            for r in rules:
+                if r.type != "cellIs" or not r.formula:
+                    continue
+
+                try:
+                    value = float(r.formula[0])
+                except Exception:
+                    continue
+
+                for i, exp in enumerate(expected):
+                    if found[i]:
+                        continue
+
+                    if exp["column"] not in range_str:
+                        continue
+                    if r.operator != exp["operator"]:
+                        continue
+                    if abs(value - exp["value"]) > 0.01:
+                        continue
+
+                    found[i] = True
+
+        return [
+            f'{expected[i]["operator"]} {expected[i]["value"]} (sloupec {expected[i]["column"]})'
+            for i in range(len(expected)) if not found[i]
+        ]
+
+    
+    

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ns0:document-settings xmlns:ns0="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:ns1="urn:oasis:names:tc:opendocument:xmlns:config:1.0" ns0:version="1.4">
+  <ns0:settings>
+    <ns1:config-item-set ns1:name="ooo:view-settings">
+      <ns1:config-item ns1:name="VisibleAreaTop" ns1:type="int">0</ns1:config-item>
+      <ns1:config-item ns1:name="VisibleAreaLeft" ns1:type="int">0</ns1:config-item>
+      <ns1:config-item ns1:name="VisibleAreaWidth" ns1:type="int">16907</ns1:config-item>
+      <ns1:config-item ns1:name="VisibleAreaHeight" ns1:type="int">14499</ns1:config-item>
+      <ns1:config-item-map-indexed ns1:name="Views">
+        <ns1:config-item-map-entry>
+          <ns1:config-item ns1:name="ViewId" ns1:type="string">view1</ns1:config-item>
+          <ns1:config-item-map-named ns1:name="Tables">
+            <ns1:config-item-map-entry ns1:name="data">
+              <ns1:config-item ns1:name="CursorPositionX" ns1:type="int">4</ns1:config-item>
+              <ns1:config-item ns1:name="CursorPositionY" ns1:type="int">3</ns1:config-item>
+              <ns1:config-item ns1:name="ActiveSplitRange" ns1:type="short">2</ns1:config-item>
+              <ns1:config-item ns1:name="PositionLeft" ns1:type="int">0</ns1:config-item>
+              <ns1:config-item ns1:name="PositionRight" ns1:type="int">0</ns1:config-item>
+              <ns1:config-item ns1:name="PositionTop" ns1:type="int">0</ns1:config-item>
+              <ns1:config-item ns1:name="PositionBottom" ns1:type="int">0</ns1:config-item>
+              <ns1:config-item ns1:name="ZoomType" ns1:type="short">0</ns1:config-item>
+              <ns1:config-item ns1:name="ZoomValue" ns1:type="int">100</ns1:config-item>
+              <ns1:config-item ns1:name="PageViewZoomValue" ns1:type="int">60</ns1:config-item>
+              <ns1:config-item ns1:name="ShowGrid" ns1:type="boolean">true</ns1:config-item>
+              <ns1:config-item ns1:name="AnchoredTextOverflowLegacy" ns1:type="boolean">false</ns1:config-item>
+              <ns1:config-item ns1:name="LegacySingleLineFontwork" ns1:type="boolean">false</ns1:config-item>
+              <ns1:config-item ns1:name="ConnectorUseSnapRect" ns1:type="boolean">false</ns1:config-item>
+              <ns1:config-item ns1:name="IgnoreBreakAfterMultilineField" ns1:type="boolean">false</ns1:config-item>
+              <ns1:config-item ns1:name="UseTrailingEmptyLinesInLayout" ns1:type="boolean">false</ns1:config-item>
+            </ns1:config-item-map-entry>
+          </ns1:config-item-map-named>
+          <ns1:config-item ns1:name="ActiveTable" ns1:type="string">data</ns1:config-item>
+          <ns1:config-item ns1:name="HorizontalScrollbarWidth" ns1:type="int">1648</ns1:config-item>
+          <ns1:config-item ns1:name="ZoomType" ns1:type="short">0</ns1:config-item>
+          <ns1:config-item ns1:name="ZoomValue" ns1:type="int">100</ns1:config-item>
+          <ns1:config-item ns1:name="PageViewZoomValue" ns1:type="int">60</ns1:config-item>
+          <ns1:config-item ns1:name="ShowPageBreakPreview" ns1:type="boolean">false</ns1:config-item>
+          <ns1:config-item ns1:name="ShowZeroValues" ns1:type="boolean">true</ns1:config-item>
+          <ns1:config-item ns1:name="ShowNotes" ns1:type="boolean">true</ns1:config-item>
+          <ns1:config-item ns1:name="ShowNoteAuthor" ns1:type="boolean">true</ns1:config-item>
+          <ns1:config-item ns1:name="ShowFormulasMarks" ns1:type="boolean">false</ns1:config-item>
+          <ns1:config-item ns1:name="ShowGrid" ns1:type="boolean">true</ns1:config-item>
+          <ns1:config-item ns1:name="GridColor" ns1:type="int">12632256</ns1:config-item>
+          <ns1:config-item ns1:name="ShowPageBreaks" ns1:type="boolean">true</ns1:config-item>
+          <ns1:config-item ns1:name="HasColumnRowHeaders" ns1:type="boolean">true</ns1:config-item>
+          <ns1:config-item ns1:name="HasSheetTabs" ns1:type="boolean">true</ns1:config-item>
+          <ns1:config-item ns1:name="IsOutlineSymbolsSet" ns1:type="boolean">true</ns1:config-item>
+          <ns1:config-item ns1:name="IsValueHighlightingEnabled" ns1:type="boolean">false</ns1:config-item>
+          <ns1:config-item ns1:name="IsSnapToRaster" ns1:type="boolean">false</ns1:config-item>
+          <ns1:config-item ns1:name="RasterIsVisible" ns1:type="boolean">false</ns1:config-item>
+          <ns1:config-item ns1:name="RasterResolutionX" ns1:type="int">1000</ns1:config-item>
+          <ns1:config-item ns1:name="RasterResolutionY" ns1:type="int">1000</ns1:config-item>
+          <ns1:config-item ns1:name="RasterSubdivisionX" ns1:type="int">1</ns1:config-item>
+          <ns1:config-item ns1:name="RasterSubdivisionY" ns1:type="int">1</ns1:config-item>
+          <ns1:config-item ns1:name="IsRasterAxisSynchronized" ns1:type="boolean">true</ns1:config-item>
+          <ns1:config-item ns1:name="FormulaBarHeight" ns1:type="short">1</ns1:config-item>
+          <ns1:config-item ns1:name="AnchoredTextOverflowLegacy" ns1:type="boolean">false</ns1:config-item>
+          <ns1:config-item ns1:name="LegacySingleLineFontwork" ns1:type="boolean">false</ns1:config-item>
+          <ns1:config-item ns1:name="ConnectorUseSnapRect" ns1:type="boolean">false</ns1:config-item>
+          <ns1:config-item ns1:name="IgnoreBreakAfterMultilineField" ns1:type="boolean">false</ns1:config-item>
+          <ns1:config-item ns1:name="UseTrailingEmptyLinesInLayout" ns1:type="boolean">false</ns1:config-item>
+        </ns1:config-item-map-entry>
+      </ns1:config-item-map-indexed>
+    </ns1:config-item-set>
+    <ns1:config-item-set ns1:name="ooo:configuration-settings">
+      <ns1:config-item ns1:name="AllowPrintJobCancel" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="ApplyUserData" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="AutoCalculate" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="CharacterCompressionType" ns1:type="short">0</ns1:config-item>
+      <ns1:config-item ns1:name="EmbedAsianScriptFonts" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="EmbedComplexScriptFonts" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="EmbedFonts" ns1:type="boolean">false</ns1:config-item>
+      <ns1:config-item ns1:name="EmbedLatinScriptFonts" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="EmbedOnlyUsedFonts" ns1:type="boolean">false</ns1:config-item>
+      <ns1:config-item ns1:name="GridColor" ns1:type="int">12632256</ns1:config-item>
+      <ns1:config-item ns1:name="HasColumnRowHeaders" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="HasSheetTabs" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="ImagePreferredDPI" ns1:type="int">0</ns1:config-item>
+      <ns1:config-item ns1:name="IsDocumentShared" ns1:type="boolean">false</ns1:config-item>
+      <ns1:config-item ns1:name="IsKernAsianPunctuation" ns1:type="boolean">false</ns1:config-item>
+      <ns1:config-item ns1:name="IsOutlineSymbolsSet" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="IsRasterAxisSynchronized" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="IsSnapToRaster" ns1:type="boolean">false</ns1:config-item>
+      <ns1:config-item ns1:name="LinkUpdateMode" ns1:type="short">3</ns1:config-item>
+      <ns1:config-item ns1:name="LoadReadonly" ns1:type="boolean">false</ns1:config-item>
+      <ns1:config-item ns1:name="PrinterName" ns1:type="string">Default printer</ns1:config-item>
+      <ns1:config-item ns1:name="PrinterPaperFromSetup" ns1:type="boolean">false</ns1:config-item>
+      <ns1:config-item ns1:name="PrinterSetup" ns1:type="base64Binary">FQH+/0RlZmF1bHQgcHJpbnRlcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWAAQABAAAAAAAAAAEAAhSAAAEdAAAAAAAABIAQ09NUEFUX0RVUExFWF9NT0RFEwBEdXBsZXhNb2RlOjpVbmtub3duDABQUklOVEVSX05BTUUPAERlZmF1bHQgcHJpbnRlcgsARFJJVkVSX05BTUUAAA==</ns1:config-item>
+      <ns1:config-item ns1:name="RasterIsVisible" ns1:type="boolean">false</ns1:config-item>
+      <ns1:config-item ns1:name="RasterResolutionX" ns1:type="int">1000</ns1:config-item>
+      <ns1:config-item ns1:name="RasterResolutionY" ns1:type="int">1000</ns1:config-item>
+      <ns1:config-item ns1:name="RasterSubdivisionX" ns1:type="int">1</ns1:config-item>
+      <ns1:config-item ns1:name="RasterSubdivisionY" ns1:type="int">1</ns1:config-item>
+      <ns1:config-item ns1:name="SaveThumbnail" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="SaveVersionOnClose" ns1:type="boolean">false</ns1:config-item>
+      <ns1:config-item ns1:name="ShowFormulasMarks" ns1:type="boolean">false</ns1:config-item>
+      <ns1:config-item ns1:name="ShowGrid" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="ShowNoteAuthor" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="ShowNotes" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="ShowPageBreaks" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="ShowZeroValues" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item ns1:name="SyntaxStringRef" ns1:type="short">7</ns1:config-item>
+      <ns1:config-item ns1:name="UpdateFromTemplate" ns1:type="boolean">true</ns1:config-item>
+      <ns1:config-item-map-named ns1:name="ScriptConfiguration">
+        <ns1:config-item-map-entry ns1:name="data">
+          <ns1:config-item ns1:name="CodeName" ns1:type="string">Sheet1</ns1:config-item>
+        </ns1:config-item-map-entry>
+      </ns1:config-item-map-named>
+    </ns1:config-item-set>
+  </ns0:settings>
+</ns0:document-settings>

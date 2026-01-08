@@ -5,6 +5,7 @@ from checks.excel.chart.chart_type_check import ChartTypeCheck
 from checks.excel.chart.missing_chart_check import MissingChartCheck
 from checks.excel.data_process.array_formula_check import ArrayFormulaCheck
 from checks.excel.data_process.descriptive_statistic_check import DescriptiveStatisticsCheck
+from checks.excel.data_process.missing_desciptive_statistic_check import MissingDescriptiveStatisticsCheck
 from checks.excel.data_process.missing_wrong_formula_check import MissingOrWrongFormulaOrNotCalculatedCheck
 from checks.excel.data_process.named_range_usage_check import NamedRangeUsageCheck
 from checks.excel.data_process.redundant_absolute_reference_check import RedundantAbsoluteReferenceCheck
@@ -62,6 +63,7 @@ from checks.word.structure.toc_first_section_check import TOCFirstSectionContent
 from checks.word.structure.toc_heading_levels_check import TOCHeadingLevelsCheck
 from checks.word.structure.toc_illegal_content_check import TOCIllegalContentCheck
 from checks.word.structure.toc_up_to_date_check import TOCUpToDateCheck
+from document.calc_document import CalcDocument
 from document.excel_document import ExcelDocument
 from document.word_document import WordDocument
 from core.runner import Runner
@@ -152,8 +154,10 @@ def main():
     ]
 
     excel = ExcelDocument("23_fb750.xlsx")
+    # excel = CalcDocument("23_fb750.ods")
     excel_assignment = load_excel_assignment("assignment/excel/assignment.json")
-    excel.save_xml()
+    # excel.save_xml()
+    # excel.save_debug_xml()
 
     excel_checks = [
         # RequiredSourceWorksheetCheck(),
@@ -164,6 +168,7 @@ def main():
         # NamedRangeUsageCheck(),
         # RedundantAbsoluteReferenceCheck(),
         # DescriptiveStatisticsCheck(),
+        # MissingDescriptiveStatisticsCheck()
 
         # formatovani
         # NumberFormattingCheck(),
@@ -171,12 +176,12 @@ def main():
         # MergedCellsCheck(),
         # HeaderFormattingCheck(),
         # ConditionalFormattingExistsCheck(),
-        # ConditionalFormattingCorrectnessCheck(),
+        ConditionalFormattingCorrectnessCheck(),
         # MissingChartCheck(),
         # ChartFormattingCheck(),
         # ChartTypeCheck(),
         # ThreeDChartCheck(),
-        WrapTextCheck()
+        # WrapTextCheck()
 
     ]
 
