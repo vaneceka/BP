@@ -153,8 +153,8 @@ def main():
         # SectionFooterHasPageNumberCheck(3),
     ]
 
-    excel = ExcelDocument("23_fb750.xlsx")
-    # excel = CalcDocument("23_fb750.ods")
+    # excel = ExcelDocument("23_fb750.xlsx")
+    excel = CalcDocument("23_fb750.ods")
     excel_assignment = load_excel_assignment("assignment/excel/assignment.json")
     # excel.save_xml()
     # excel.save_debug_xml()
@@ -176,11 +176,11 @@ def main():
         # MergedCellsCheck(),
         # HeaderFormattingCheck(),
         # ConditionalFormattingExistsCheck(),
-        ConditionalFormattingCorrectnessCheck(),
+        # ConditionalFormattingCorrectnessCheck(),
         # MissingChartCheck(),
         # ChartFormattingCheck(),
         # ChartTypeCheck(),
-        # ThreeDChartCheck(),
+        ThreeDChartCheck(),
         # WrapTextCheck()
 
     ]

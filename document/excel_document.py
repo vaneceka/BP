@@ -58,29 +58,29 @@ class ExcelDocument:
     def sheet_names(self) -> list[str]:
         return self.wb.sheetnames
 
-    def has_formula(self) -> bool:
-        return any(
-            cell.data_type == "f"
-            for ws in self.wb.worksheets
-            for row in ws.iter_rows()
-            for cell in row
-        )
+    # def has_formula(self) -> bool:
+    #     return any(
+    #         cell.data_type == "f"
+    #         for ws in self.wb.worksheets
+    #         for row in ws.iter_rows()
+    #         for cell in row
+    #     )
 
-    def cells_with_formulas(self):
-        cells = []
+    # def cells_with_formulas(self):
+    #     cells = []
 
-        for ws in self.wb.worksheets:
-            for row in ws.iter_rows():
-                for cell in row:
-                    if cell.data_type == "f":
-                        cells.append({
-                            "sheet": ws.title,
-                            "address": cell.coordinate,
-                            "formula": cell.value,
-                            "raw_cell": cell,
-                        })
+    #     for ws in self.wb.worksheets:
+    #         for row in ws.iter_rows():
+    #             for cell in row:
+    #                 if cell.data_type == "f":
+    #                     cells.append({
+    #                         "sheet": ws.title,
+    #                         "address": cell.coordinate,
+    #                         "formula": cell.value,
+    #                         "raw_cell": cell,
+    #                     })
 
-        return cells
+    #     return cells
 
     def get_cell(self, address: str, *, include_value=False):
         if "!" not in address:
@@ -110,18 +110,12 @@ class ExcelDocument:
 
         return data
 
-    def has_chart(self) -> bool:
-        return any(ws._charts for ws in self.wb.worksheets)
     
     def is_outer_cell(row, col, min_row, max_row, min_col, max_col):
         return (
             row == min_row or row == max_row or
             col == min_col or col == max_col
         )
-
-    # def defined_names(self) -> set[str]:
-    #     return {name.upper() for name in self.wb.defined_names.keys()}
-    
 
     def save_xml(self, out_dir: str | Path = "debug_excel_xml"):
         out_dir = Path(out_dir)
@@ -162,16 +156,6 @@ class ExcelDocument:
 
         return cells
     
-    # def get_cell_info(self, sheet: str, addr: str):
-    #     cell = self.get_cell(f"{sheet}!{addr}")
-    #     if cell is None:
-    #         return None
-
-    #     return {
-    #         "has_formula": bool(cell["formula"]),
-    #         "has_cached_value": cell["value_cached"] is not None,
-    #     }
-
     def get_cell_info(self, sheet: str, addr: str):
         cell = self.get_cell(f"{sheet}!{addr}")
         if cell is None:
@@ -255,7 +239,7 @@ class ExcelDocument:
             range_str = str(cf.sqref)
 
             for r in rules:
-                if r.type != "cellIs" or not r.formula:
+                if r.type != "cellIs" or not r.operator or not r.formula:
                     continue
 
                 try:
@@ -267,19 +251,147 @@ class ExcelDocument:
                     if found[i]:
                         continue
 
-                    if exp["column"] not in range_str:
-                        continue
-                    if r.operator != exp["operator"]:
-                        continue
-                    if abs(value - exp["value"]) > 0.01:
+                    cell_addr = exp.get("cell")
+                    if not cell_addr:
                         continue
 
-                    found[i] = True
+                    # CF se musí týkat buňky (nebo alespoň sloupce)
+                    if cell_addr not in range_str:
+                        col = "".join(ch for ch in cell_addr if ch.isalpha()).upper()
+                        if col not in range_str:
+                            continue
 
-        return [
-            f'{expected[i]["operator"]} {expected[i]["value"]} (sloupec {expected[i]["column"]})'
-            for i in range(len(expected)) if not found[i]
-        ]
+                    want_op = exp.get("operator")
+                    want_val = float(exp.get("value"))
 
+                    # mapování assignment -> openpyxl operator
+                    op_map = {
+                        "greaterThan": "greaterThan",
+                        "lessThan": "lessThan",
+                        "greaterThanOrEqual": "greaterThanOrEqual",
+                        "lessThanOrEqual": "lessThanOrEqual",
+                        "equal": "equal",
+                        "notEqual": "notEqual",
+                    }
+
+                    if op_map.get(want_op) == r.operator and abs(value - want_val) < 0.01:
+                        found[i] = True
+
+        missing = []
+        for i, exp in enumerate(expected):
+            if not found[i]:
+                missing.append(f'{exp["operator"]} {exp["value"]} (XLSX)')
+
+        return missing
+
+    def get_cell_style(self, sheet: str, addr: str) -> dict | None:        
+        try:
+            ws = self.wb[sheet]
+        except KeyError:
+            return None
+
+        cell = ws[addr]
+        if cell is None:
+            return None
+
+
+        return {
+            "number_format": cell.number_format,
+            "align_h": cell.alignment.horizontal,
+            "bold": bool(cell.font and cell.font.bold),
+        }
+        
+    def is_wrap_text(self, sheet: str, addr: str) -> bool | None:
+        if sheet not in self.wb.sheetnames:
+            return None
+
+        cell = self.wb[sheet][addr]
+        return cell.alignment.wrap_text
     
+    def iter_cells(self, sheet: str):
+        try:
+            ws = self.wb[sheet]
+        except KeyError:
+            return
+        for row in ws.iter_rows():
+            for cell in row:
+                yield cell.coordinate
+
+    def get_cell_value(self, sheet: str, addr: str):
+        ws = self.wb[sheet]
+        return ws[addr].value
     
+    def has_formula(self, sheet: str, addr: str) -> bool:
+        ws = self.wb[sheet]
+        cell = ws[addr]
+        return isinstance(cell.value, str) and cell.value.startswith("=")
+    
+    def has_chart(self, sheet: str) -> bool:
+        try:
+            ws = self.wb[sheet]
+        except KeyError:
+            return False
+        return bool(ws._charts)
+
+    def _chart(self, sheet: str):
+        ws = self.wb[sheet]
+        return ws._charts[0] if ws._charts else None
+
+    def chart_title(self, sheet: str) -> str | None:
+        c = self._chart(sheet)
+        if not c or not c.title or not c.title.tx:
+            return None
+        return c.title.tx.rich.p[0].r[0].t.strip()
+
+    def chart_x_label(self, sheet: str) -> str | None:
+        c = self._chart(sheet)
+        if c and c.x_axis and c.x_axis.title:
+            return c.x_axis.title.tx.rich.p[0].r[0].t
+        return None
+
+    def chart_y_label(self, sheet: str) -> str | None:
+        c = self._chart(sheet)
+        if c and c.y_axis and c.y_axis.title:
+            return c.y_axis.title.tx.rich.p[0].r[0].t
+        return None
+
+    def chart_has_data_labels(self, sheet: str) -> bool:
+        c = self._chart(sheet)
+        if not c:
+            return False
+        return any(s.dLbls and s.dLbls.showVal for s in c.series)
+    
+    def chart_type(self, sheet: str) -> str | None:
+        if sheet not in self.wb.sheetnames:
+            return None
+
+        ws = self.wb[sheet]
+        if not ws._charts:
+            return None
+
+        chart = ws._charts[0]
+
+        # openpyxl typy
+        tag = chart.tagname.lower()
+
+        if "bar" in tag:
+            return "bar"
+        if "line" in tag:
+            return "line"
+        if "pie" in tag:
+            return "pie"
+
+        return tag
+    
+    def has_3d_chart(self, sheet: str) -> bool:
+        if sheet not in self.wb.sheetnames:
+            return False
+
+        ws = self.wb[sheet]
+
+        for chart in ws._charts:
+            tag = chart.tagname.lower()
+            if "3d" in tag:
+                return True
+
+        return False

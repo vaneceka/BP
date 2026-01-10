@@ -25,6 +25,48 @@
     <ns6:number-style ns1:name="N0">
       <ns6:number ns6:min-integer-digits="1"/>
     </ns6:number-style>
+    <ns6:number-style ns1:name="N114">
+      <ns6:number ns6:decimal-places="14" ns6:min-decimal-places="14" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N115">
+      <ns6:number ns6:decimal-places="15" ns6:min-decimal-places="15" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N116">
+      <ns6:number ns6:decimal-places="13" ns6:min-decimal-places="13" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N117">
+      <ns6:number ns6:decimal-places="12" ns6:min-decimal-places="12" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N118">
+      <ns6:number ns6:decimal-places="11" ns6:min-decimal-places="11" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N119">
+      <ns6:number ns6:decimal-places="10" ns6:min-decimal-places="10" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N120">
+      <ns6:number ns6:decimal-places="9" ns6:min-decimal-places="9" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N121">
+      <ns6:number ns6:decimal-places="8" ns6:min-decimal-places="8" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N122">
+      <ns6:number ns6:decimal-places="7" ns6:min-decimal-places="7" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N123">
+      <ns6:number ns6:decimal-places="6" ns6:min-decimal-places="6" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N124">
+      <ns6:number ns6:decimal-places="5" ns6:min-decimal-places="5" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N125">
+      <ns6:number ns6:decimal-places="4" ns6:min-decimal-places="4" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N126">
+      <ns6:number ns6:decimal-places="3" ns6:min-decimal-places="3" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
+    <ns6:number-style ns1:name="N127">
+      <ns6:number ns6:decimal-places="1" ns6:min-decimal-places="1" ns6:min-integer-digits="1"/>
+    </ns6:number-style>
     <ns1:style ns1:name="Default" ns1:family="table-cell"/>
     <ns1:style ns1:name="Heading" ns1:family="table-cell" ns1:parent-style-name="Default">
       <ns1:table-cell-properties ns3:wrap-option="no-wrap" ns1:shrink-to-fit="false"/>
@@ -153,7 +195,7 @@
         </ns1:region-left>
         <ns1:region-right>
           <ns7:p>
-            <ns7:date ns1:data-style-name="N2" ns7:date-value="2026-01-07">00.00.0000</ns7:date>
+            <ns7:date ns1:data-style-name="N2" ns7:date-value="2026-01-10">00.00.0000</ns7:date>
             , 
             <ns7:time ns1:data-style-name="N2" ns7:time-value="12:02:49.163428000">00:00:00</ns7:time>
           </ns7:p>

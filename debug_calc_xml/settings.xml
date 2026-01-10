@@ -4,17 +4,17 @@
     <ns1:config-item-set ns1:name="ooo:view-settings">
       <ns1:config-item ns1:name="VisibleAreaTop" ns1:type="int">0</ns1:config-item>
       <ns1:config-item ns1:name="VisibleAreaLeft" ns1:type="int">0</ns1:config-item>
-      <ns1:config-item ns1:name="VisibleAreaWidth" ns1:type="int">16907</ns1:config-item>
-      <ns1:config-item ns1:name="VisibleAreaHeight" ns1:type="int">14499</ns1:config-item>
+      <ns1:config-item ns1:name="VisibleAreaWidth" ns1:type="int">14515</ns1:config-item>
+      <ns1:config-item ns1:name="VisibleAreaHeight" ns1:type="int">14817</ns1:config-item>
       <ns1:config-item-map-indexed ns1:name="Views">
         <ns1:config-item-map-entry>
           <ns1:config-item ns1:name="ViewId" ns1:type="string">view1</ns1:config-item>
           <ns1:config-item-map-named ns1:name="Tables">
             <ns1:config-item-map-entry ns1:name="data">
-              <ns1:config-item ns1:name="CursorPositionX" ns1:type="int">4</ns1:config-item>
-              <ns1:config-item ns1:name="CursorPositionY" ns1:type="int">3</ns1:config-item>
+              <ns1:config-item ns1:name="CursorPositionX" ns1:type="int">6</ns1:config-item>
+              <ns1:config-item ns1:name="CursorPositionY" ns1:type="int">5</ns1:config-item>
               <ns1:config-item ns1:name="ActiveSplitRange" ns1:type="short">2</ns1:config-item>
-              <ns1:config-item ns1:name="PositionLeft" ns1:type="int">0</ns1:config-item>
+              <ns1:config-item ns1:name="PositionLeft" ns1:type="int">3</ns1:config-item>
               <ns1:config-item ns1:name="PositionRight" ns1:type="int">0</ns1:config-item>
               <ns1:config-item ns1:name="PositionTop" ns1:type="int">0</ns1:config-item>
               <ns1:config-item ns1:name="PositionBottom" ns1:type="int">0</ns1:config-item>
@@ -72,6 +72,15 @@
       <ns1:config-item ns1:name="EmbedFonts" ns1:type="boolean">false</ns1:config-item>
       <ns1:config-item ns1:name="EmbedLatinScriptFonts" ns1:type="boolean">true</ns1:config-item>
       <ns1:config-item ns1:name="EmbedOnlyUsedFonts" ns1:type="boolean">false</ns1:config-item>
+      <ns1:config-item-map-indexed ns1:name="ForbiddenCharacters">
+        <ns1:config-item-map-entry>
+          <ns1:config-item ns1:name="Language" ns1:type="string">cs</ns1:config-item>
+          <ns1:config-item ns1:name="Country" ns1:type="string">CZ</ns1:config-item>
+          <ns1:config-item ns1:name="Variant" ns1:type="string"/>
+          <ns1:config-item ns1:name="BeginLine" ns1:type="string"/>
+          <ns1:config-item ns1:name="EndLine" ns1:type="string"/>
+        </ns1:config-item-map-entry>
+      </ns1:config-item-map-indexed>
       <ns1:config-item ns1:name="GridColor" ns1:type="int">12632256</ns1:config-item>
       <ns1:config-item ns1:name="HasColumnRowHeaders" ns1:type="boolean">true</ns1:config-item>
       <ns1:config-item ns1:name="HasSheetTabs" ns1:type="boolean">true</ns1:config-item>

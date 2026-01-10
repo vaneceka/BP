@@ -1,6 +1,26 @@
 from pathlib import Path
-
+from assignment.excel.excel_assignment_loader import load_excel_assignment
 from assignment.word.word_assignment_loader import load_assignment
+from checks.excel.chart.chart_formatting_check import ChartFormattingCheck
+from checks.excel.chart.chart_type_check import ChartTypeCheck
+from checks.excel.chart.missing_chart_check import MissingChartCheck
+from checks.excel.chart.threeD_chart_check import ThreeDChartCheck
+from checks.excel.data_process.array_formula_check import ArrayFormulaCheck
+from checks.excel.data_process.descriptive_statistic_check import DescriptiveStatisticsCheck
+from checks.excel.data_process.missing_desciptive_statistic_check import MissingDescriptiveStatisticsCheck
+from checks.excel.data_process.missing_wrong_formula_check import MissingOrWrongFormulaOrNotCalculatedCheck
+from checks.excel.data_process.named_range_usage_check import NamedRangeUsageCheck
+from checks.excel.data_process.non_copyable_formula_check import NonCopyableFormulasCheck
+from checks.excel.data_process.redundant_absolute_reference_check import RedundantAbsoluteReferenceCheck
+from checks.excel.data_process.required_data_worksheet_check import RequiredDataWorksheetCheck
+from checks.excel.data_process.required_source_worksheet_check import RequiredSourceWorksheetCheck
+from checks.excel.formatting.cells_merge_check import MergedCellsCheck
+from checks.excel.formatting.conditional_formatting_check import ConditionalFormattingExistsCheck
+from checks.excel.formatting.conditional_formatting_is_correct_check import ConditionalFormattingCorrectnessCheck
+from checks.excel.formatting.header_formatting_check import HeaderFormattingCheck
+from checks.excel.formatting.number_formatting_check import NumberFormattingCheck
+from checks.excel.formatting.table_border_check import TableBorderCheck
+from checks.excel.formatting.wrap_text_check import WrapTextCheck
 from checks.word.formatting.bibliography_style_check import BibliographyStyleCheck
 from checks.word.formatting.caption_style_check import CaptionStyleCheck
 from checks.word.formatting.content_style_check import ContentHeadingStyleCheck
@@ -52,108 +72,114 @@ from checks.word.structure.toc_illegal_content_check import TOCIllegalContentChe
 from checks.word.structure.toc_up_to_date_check import TOCUpToDateCheck
 from core.report import Report
 from core.runner import Runner
+from document.excel_document import ExcelDocument
 from document.word_document import WordDocument
 
-def run_checks(word_path: str | Path,
-               word_assignment_path: str | Path = "assignment/word/assignment.json",
-               run_excel: bool = False,
-               excel_path: str | Path = "23_fb750.xlsx",
-               excel_assignment_path: str | Path = "assignment/excel/assignment.json"):
-    word_path = Path(word_path)
-    word_assignment_path = Path(word_assignment_path)
 
-    doc = WordDocument(str(word_path))
-    assignment = load_assignment(str(word_assignment_path))
-    doc.save_xml()
+def run_checks(
+    path: str | Path,
+    run_excel: bool = False,
+    word_assignment_path: str | Path = "assignment/word/assignment.json",
+    excel_assignment_path: str | Path = "assignment/excel/assignment.json",
+):
+    path = Path(path)
 
-    checks = [
-        SectionCountCheck(),
-        Section1TOCCheck(),
-        Section2TextCheck(),
-        Section3FigureListCheck(),
-        Section3TableListCheck(),
-        Section3BibliographyCheck(),
-        NormalStyleCheck(),
-        HeadingStyleCheck(1),
-        HeadingStyleCheck(2),
-        HeadingStyleCheck(3),
-        HeadingHierarchicalNumberingCheck(),
-        TocHeadingNumberingCheck(),
-        UnnumberedSpecialHeadingsCheck(),
-        CoverStylesCheck(),
-        FrontpageStylesCheck(),
-        BibliographyStyleCheck(),
-        CaptionStyleCheck(),
-        ContentHeadingStyleCheck(),
-        HeadingsUsedCorrectlyCheck(),
-        OriginalFormattingCheck(),
-        CustomStyleInheritanceCheck(),
-        RequiredCustomStylesUsageCheck(),
-        CustomStyleWithTabsCheck(),
-        MainChapterStartsOnNewPageCheck(),
-        ManualHorizontalSpacingCheck(),
-        ManualVerticalSpacingCheck(),
-        ListLevel2UsedCheck(),
-        InconsistentFormattingCheck(),
-        TOCExistsCheck(),
-        TOCUpToDateCheck(),
-        DocumentStructureCheck(),
-        TOCHeadingLevelsCheck(),
-        TOCFirstSectionContentCheck(),
-        TOCIllegalContentCheck(),
-        FirstChapterStartsOnPageOneCheck(),
-        ChapterNumberingContinuityCheck(),
-        MissingListOfFiguresCheck(),
-        ListOfFiguresNotUpdatedCheck(),
-        ImageLowQualityCheck(),
-        ObjectCaptionCheck(),
-        ObjectCaptionDescriptionCheck(),
-        ObjectCrossReferenceCheck(),
-        ObjectCaptionBindingCheck(),
-        HeaderFooterMissingCheck(),
-        SecondSectionHeaderHasTextCheck(),
-        SecondSectionPageNumberStartsAtOneCheck(),
-        HeaderNotLinkedToPreviousCheck(2),
-        HeaderNotLinkedToPreviousCheck(3),
-        FooterLinkedToPreviousCheck(2),
-        FooterLinkedToPreviousCheck(3),
-        SectionHeaderEmptyCheck(1),
-        SectionHeaderEmptyCheck(3),
-        SectionFooterEmptyCheck(1),
-        SectionFooterHasPageNumberCheck(2),
-        SectionFooterHasPageNumberCheck(3),
-    ]
+    if run_excel:
+        # ✅ EXCEL
+        document = ExcelDocument(str(path))
+        assignment = load_excel_assignment(str(excel_assignment_path))
+
+        checks = [
+            RequiredSourceWorksheetCheck(),
+            RequiredDataWorksheetCheck(),
+            NonCopyableFormulasCheck(),
+            MissingOrWrongFormulaOrNotCalculatedCheck(),
+            ArrayFormulaCheck(),
+            NamedRangeUsageCheck(),
+            RedundantAbsoluteReferenceCheck(),
+            DescriptiveStatisticsCheck(),
+            MissingDescriptiveStatisticsCheck(),
+            NumberFormattingCheck(),
+            TableBorderCheck(),
+            MergedCellsCheck(),
+            HeaderFormattingCheck(),
+            ConditionalFormattingExistsCheck(),
+            ConditionalFormattingCorrectnessCheck(),
+            MissingChartCheck(),
+            ChartFormattingCheck(),
+            ChartTypeCheck(),
+            ThreeDChartCheck(),
+            WrapTextCheck(),
+        ]
+
+    else:
+        # # ✅ WORD
+        document = WordDocument(str(path))
+        assignment = load_assignment(str(word_assignment_path))
+
+        checks = [
+            SectionCountCheck(),
+            Section1TOCCheck(),
+            Section2TextCheck(),
+            Section3FigureListCheck(),
+            Section3TableListCheck(),
+            Section3BibliographyCheck(),
+            NormalStyleCheck(),
+            HeadingStyleCheck(1),
+            HeadingStyleCheck(2),
+            HeadingStyleCheck(3),
+            HeadingHierarchicalNumberingCheck(),
+            TocHeadingNumberingCheck(),
+            UnnumberedSpecialHeadingsCheck(),
+            CoverStylesCheck(),
+            FrontpageStylesCheck(),
+            BibliographyStyleCheck(),
+            CaptionStyleCheck(),
+            ContentHeadingStyleCheck(),
+            HeadingsUsedCorrectlyCheck(),
+            OriginalFormattingCheck(),
+            CustomStyleInheritanceCheck(),
+            RequiredCustomStylesUsageCheck(),
+            CustomStyleWithTabsCheck(),
+            MainChapterStartsOnNewPageCheck(),
+            ManualHorizontalSpacingCheck(),
+            ManualVerticalSpacingCheck(),
+            ListLevel2UsedCheck(),
+            InconsistentFormattingCheck(),
+            TOCExistsCheck(),
+            TOCUpToDateCheck(),
+            DocumentStructureCheck(),
+            TOCHeadingLevelsCheck(),
+            TOCFirstSectionContentCheck(),
+            TOCIllegalContentCheck(),
+            FirstChapterStartsOnPageOneCheck(),
+            ChapterNumberingContinuityCheck(),
+            MissingListOfFiguresCheck(),
+            ListOfFiguresNotUpdatedCheck(),
+            ImageLowQualityCheck(),
+            ObjectCaptionCheck(),
+            ObjectCaptionDescriptionCheck(),
+            ObjectCrossReferenceCheck(),
+            ObjectCaptionBindingCheck(),
+            HeaderFooterMissingCheck(),
+            SecondSectionHeaderHasTextCheck(),
+            SecondSectionPageNumberStartsAtOneCheck(),
+            HeaderNotLinkedToPreviousCheck(2),
+            HeaderNotLinkedToPreviousCheck(3),
+            FooterLinkedToPreviousCheck(2),
+            FooterLinkedToPreviousCheck(3),
+            SectionHeaderEmptyCheck(1),
+            SectionHeaderEmptyCheck(3),
+            SectionFooterEmptyCheck(1),
+            SectionFooterHasPageNumberCheck(2),
+            SectionFooterHasPageNumberCheck(3),
+        ]
+
 
     runner = Runner(checks)
     report = Report()
 
-    results = runner.run(doc, assignment)
-    for check, result in results:
+    for check, result in runner.run(document, assignment):
         report.add(check.name, result)
 
     return report
-
-
-from pathlib import Path
-
-def run_folder(docs_dir: str | Path = "docs",
-               pattern: str = "*.docx",
-               assignment_path: str | Path = "assignment/word/assignment.json"):
-    docs_dir = Path(docs_dir)
-    files = sorted(docs_dir.glob(pattern))
-
-    if not files:
-        raise FileNotFoundError(f"Žádné soubory {pattern} ve složce {docs_dir}")
-
-    for f in files:
-        print(f"\n===== Kontroluji: {f.name} =====")
-        report = run_checks(f, word_assignment_path=assignment_path, run_excel=False)
-        report.print()
-
-def main():
-    report = run_checks("student.docx", run_excel=True)
-    report.print()
-
-
-if __name__ == "__main__":
-    main()
