@@ -7,13 +7,15 @@ from openpyxl import load_workbook
 from openpyxl.utils import range_boundaries
 from openpyxl.utils import range_boundaries, column_index_from_string
 
+from document.spreadsheet_document import SpreadsheetDocument
+
 NS = {
     "main": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
     "rel": "http://schemas.openxmlformats.org/package/2006/relationships",
 }
 
 
-class ExcelDocument:
+class ExcelDocument(SpreadsheetDocument):
     def __init__(self, path: str):
         self.path = path
         self.wb = load_workbook(path, data_only=False)
@@ -86,7 +88,7 @@ class ExcelDocument:
 
         return data
 
-    def save_xml(self, out_dir: str | Path = "debug_excel_xml"):
+    def save_debug_xml(self, out_dir: str | Path = "debug_excel_xml"):
         out_dir = Path(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -242,7 +244,7 @@ class ExcelDocument:
 
         return missing
 
-    def get_cell_style(self, sheet: str, addr: str) -> dict | None:        
+    def get_cell_style(self, sheet: str, addr: str) -> dict | None:
         try:
             ws = self.wb[sheet]
         except KeyError:
@@ -252,11 +254,11 @@ class ExcelDocument:
         if cell is None:
             return None
 
-
         return {
             "number_format": cell.number_format,
             "align_h": cell.alignment.horizontal,
             "bold": bool(cell.font and cell.font.bold),
+            "wrap": bool(cell.alignment and cell.alignment.wrap_text),  # ✅ DŮLEŽITÉ
         }
     
     def iter_cells(self, sheet: str):

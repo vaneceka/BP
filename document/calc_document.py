@@ -8,7 +8,9 @@ import xml.etree.ElementTree as ET
 import re
 import xml.dom.minidom as minidom
 
-class CalcDocument:
+from document.spreadsheet_document import SpreadsheetDocument
+
+class CalcDocument(SpreadsheetDocument):
     NS = {
         "table": "urn:oasis:names:tc:opendocument:xmlns:table:1.0",
         "calcext": "urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0",
@@ -735,22 +737,23 @@ class CalcDocument:
 
         return False
     
-    # def get_cell(self, ref: str) -> dict | None:
-    #     if "!" not in ref:
-    #         return None
 
-    #     sheet, addr = ref.split("!", 1)
+    def get_cell(self, ref: str) -> dict | None:
+        if "!" not in ref:
+            return None
 
-    #     info = self.get_cell_info(sheet, addr)
-    #     if not info:
-    #         return None
+        sheet, addr = ref.split("!", 1)
 
-    #     return {
-    #         "exists": True,
-    #         "formula": info.get("formula"),
-    #         "value_cached": info.get("value_cached"),
-    #         "is_error": info.get("is_error", False),
-    #     }
-    
+        info = self.get_cell_info(sheet, addr)
+        if not info:
+            return None
+
+        return {
+            "exists": True,
+            "formula": info.get("formula"),
+            "value_cached": info.get("value_cached"),
+            "is_error": info.get("is_error", False),
+        }
+       
     def has_sheet(self, name: str) -> bool:
         return name in self.sheet_names()

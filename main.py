@@ -65,6 +65,7 @@ from checks.word.structure.toc_illegal_content_check import TOCIllegalContentChe
 from checks.word.structure.toc_up_to_date_check import TOCUpToDateCheck
 from document.calc_document import CalcDocument
 from document.excel_document import ExcelDocument
+from document.spreadsheet_document import SpreadsheetDocument
 from document.word_document import WordDocument
 from core.runner import Runner
 from core.report import Report
@@ -153,26 +154,29 @@ def main():
         # SectionFooterHasPageNumberCheck(3),
     ]
 
-    # excel = ExcelDocument("23_fb750.xlsx")
-    excel = CalcDocument("23_fb750.ods")
+    # # excel = ExcelDocument("23_fb750.xlsx")
+    # excel = CalcDocument("23_fb750.ods")
     excel_assignment = load_excel_assignment("assignment/excel/assignment.json")
-    # excel.save_xml()
-    # excel.save_debug_xml()
+    
+    # spreadsheet = SpreadsheetDocument.from_path("23_fb750.ods")
+    spreadsheet = SpreadsheetDocument.from_path("23_fb750.xlsx")
+    spreadsheet.save_debug_xml()
+
 
     excel_checks = [
         # RequiredSourceWorksheetCheck(),
         # RequiredDataWorksheetCheck(),
-        # NonCopyableFormulasCheck(),
+        # NonCopyableFormulasCheck(), - neni pro ODS
         # MissingOrWrongFormulaOrNotCalculatedCheck(),
         # ArrayFormulaCheck(),
         # NamedRangeUsageCheck(),
         # RedundantAbsoluteReferenceCheck(),
         # DescriptiveStatisticsCheck(),
-        # MissingDescriptiveStatisticsCheck()
+        # MissingDescriptiveStatisticsCheck(),
 
         # formatovani
-        NumberFormattingCheck(),
-        # TableBorderCheck(),
+        # NumberFormattingCheck(),
+        # TableBorderCheck(), - neni pro ODS
         # MergedCellsCheck(),
         # HeaderFormattingCheck(),
         # ConditionalFormattingExistsCheck(),
@@ -181,7 +185,7 @@ def main():
         # ChartFormattingCheck(),
         # ChartTypeCheck(),
         # ThreeDChartCheck(),
-        # WrapTextCheck()
+        WrapTextCheck()
 
     ]
 
@@ -194,7 +198,8 @@ def main():
         report.add(check.name, result)
 
     excel_runner = Runner(excel_checks)
-    excel_results = excel_runner.run(excel, excel_assignment)
+    # excel_results = excel_runner.run(excel, excel_assignment)
+    excel_results = excel_runner.run(spreadsheet, excel_assignment)
 
     for check, result in excel_results:
         report.add(check.name, result)
