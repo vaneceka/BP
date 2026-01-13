@@ -72,6 +72,7 @@ from checks.word.structure.toc_illegal_content_check import TOCIllegalContentChe
 from checks.word.structure.toc_up_to_date_check import TOCUpToDateCheck
 from core.report import Report
 from core.runner import Runner
+from document.calc_document import CalcDocument
 from document.excel_document import ExcelDocument
 from document.word_document import WordDocument
 
@@ -85,8 +86,17 @@ def run_checks(
     path = Path(path)
 
     if run_excel:
-        # ✅ EXCEL
-        document = ExcelDocument(str(path))
+        suffix = path.suffix.lower()
+
+        if suffix == ".xlsx":
+            document = ExcelDocument(str(path))
+
+        elif suffix == ".ods":
+            document = CalcDocument(str(path))
+
+        else:
+            raise ValueError(f"Nepodporovaný typ tabulkového souboru: {path}")
+
         assignment = load_excel_assignment(str(excel_assignment_path))
 
         checks = [
@@ -96,11 +106,11 @@ def run_checks(
             MissingOrWrongFormulaOrNotCalculatedCheck(),
             ArrayFormulaCheck(),
             NamedRangeUsageCheck(),
-            RedundantAbsoluteReferenceCheck(),
+            # RedundantAbsoluteReferenceCheck(),
             DescriptiveStatisticsCheck(),
             MissingDescriptiveStatisticsCheck(),
             NumberFormattingCheck(),
-            TableBorderCheck(),
+            # TableBorderCheck(),
             MergedCellsCheck(),
             HeaderFormattingCheck(),
             ConditionalFormattingExistsCheck(),
@@ -113,7 +123,6 @@ def run_checks(
         ]
 
     else:
-        # # ✅ WORD
         document = WordDocument(str(path))
         assignment = load_assignment(str(word_assignment_path))
 

@@ -171,7 +171,7 @@ def main():
         # MissingDescriptiveStatisticsCheck()
 
         # formatovani
-        # NumberFormattingCheck(),
+        NumberFormattingCheck(),
         # TableBorderCheck(),
         # MergedCellsCheck(),
         # HeaderFormattingCheck(),
@@ -180,7 +180,7 @@ def main():
         # MissingChartCheck(),
         # ChartFormattingCheck(),
         # ChartTypeCheck(),
-        ThreeDChartCheck(),
+        # ThreeDChartCheck(),
         # WrapTextCheck()
 
     ]

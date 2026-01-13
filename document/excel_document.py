@@ -58,30 +58,6 @@ class ExcelDocument:
     def sheet_names(self) -> list[str]:
         return self.wb.sheetnames
 
-    # def has_formula(self) -> bool:
-    #     return any(
-    #         cell.data_type == "f"
-    #         for ws in self.wb.worksheets
-    #         for row in ws.iter_rows()
-    #         for cell in row
-    #     )
-
-    # def cells_with_formulas(self):
-    #     cells = []
-
-    #     for ws in self.wb.worksheets:
-    #         for row in ws.iter_rows():
-    #             for cell in row:
-    #                 if cell.data_type == "f":
-    #                     cells.append({
-    #                         "sheet": ws.title,
-    #                         "address": cell.coordinate,
-    #                         "formula": cell.value,
-    #                         "raw_cell": cell,
-    #                     })
-
-    #     return cells
-
     def get_cell(self, address: str, *, include_value=False):
         if "!" not in address:
             raise ValueError("Cell address must be in format 'sheet!A1'")
@@ -109,13 +85,6 @@ class ExcelDocument:
             data["value"] = cell.value
 
         return data
-
-    
-    def is_outer_cell(row, col, min_row, max_row, min_col, max_col):
-        return (
-            row == min_row or row == max_row or
-            col == min_col or col == max_col
-        )
 
     def save_xml(self, out_dir: str | Path = "debug_excel_xml"):
         out_dir = Path(out_dir)
@@ -203,18 +172,7 @@ class ExcelDocument:
                         })
 
         return cells
-    
-    def iter_used_rows(self, sheet: str) -> list[int]:
-        ws = self.wb[sheet]
-        rows = set()
-
-        for row in ws.iter_rows():
-            for cell in row:
-                if cell.value not in (None, ""):
-                    rows.add(cell.row)
-
-        return sorted(rows)
-    
+        
     def merged_ranges(self, sheet: str):
         ws = self.wb[sheet]
         ranges = []
@@ -300,13 +258,6 @@ class ExcelDocument:
             "align_h": cell.alignment.horizontal,
             "bold": bool(cell.font and cell.font.bold),
         }
-        
-    def is_wrap_text(self, sheet: str, addr: str) -> bool | None:
-        if sheet not in self.wb.sheetnames:
-            return None
-
-        cell = self.wb[sheet][addr]
-        return cell.alignment.wrap_text
     
     def iter_cells(self, sheet: str):
         try:
@@ -395,3 +346,6 @@ class ExcelDocument:
                 return True
 
         return False
+    
+    def has_sheet(self, name: str) -> bool:
+        return name in self.wb.sheetnames

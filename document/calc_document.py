@@ -245,23 +245,21 @@ class CalcDocument:
 
         f = f.strip()
 
-        # ODF prefix
         if f.startswith("of:="):
             f = "=" + f[4:]
 
-        # [.E2] → E2
+        # [.E2] -> E2
         f = re.sub(r"\[\.(\w+\$?\d+)\]", r"\1", f)
 
-        # [.C2:.C23] → C2:C23
+        # [.C2:.C23] -> C2:C23
         f = re.sub(r"\[\.(\w+):\.(\w+)\]", r"\1:\2", f)
 
-        # ; → ,
+        # ; -> ,
         f = f.replace(";", ",")
 
         # sjednotit uvozovky a texty
         f = re.sub(r'"([^"]+)"', lambda m: f'"{m.group(1).upper()}"', f)
 
-        # pryč s mezerami
         f = re.sub(r"\s+", "", f)
 
         return f.upper()
@@ -313,34 +311,34 @@ class CalcDocument:
             s = chr(65 + r) + s
         return s
     
-    def iter_used_rows(self, sheet: str) -> list[int]:
-        rows = set()
+    # def iter_used_rows(self, sheet: str) -> list[int]:
+    #     rows = set()
 
-        for table in self.content.findall(".//table:table", self.NS):
-            name = table.attrib.get(f"{{{self.NS['table']}}}name")
-            if name != sheet:
-                continue
+    #     for table in self.content.findall(".//table:table", self.NS):
+    #         name = table.attrib.get(f"{{{self.NS['table']}}}name")
+    #         if name != sheet:
+    #             continue
 
-            row_idx = 0
-            for row in table.findall("table:table-row", self.NS):
-                repeat = int(
-                    row.attrib.get(
-                        "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}number-rows-repeated",
-                        "1"
-                    )
-                )
+    #         row_idx = 0
+    #         for row in table.findall("table:table-row", self.NS):
+    #             repeat = int(
+    #                 row.attrib.get(
+    #                     "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}number-rows-repeated",
+    #                     "1"
+    #                 )
+    #             )
 
-                for _ in range(repeat):
-                    row_idx += 1
-                    for cell in row.findall("table:table-cell", self.NS):
-                        if (
-                            cell.attrib.get("{urn:oasis:names:tc:opendocument:xmlns:table:1.0}formula")
-                            or cell.attrib.get("{urn:oasis:names:tc:opendocument:xmlns:office:1.0}value")
-                        ):
-                            rows.add(row_idx)
-                            break
+    #             for _ in range(repeat):
+    #                 row_idx += 1
+    #                 for cell in row.findall("table:table-cell", self.NS):
+    #                     if (
+    #                         cell.attrib.get("{urn:oasis:names:tc:opendocument:xmlns:table:1.0}formula")
+    #                         or cell.attrib.get("{urn:oasis:names:tc:opendocument:xmlns:office:1.0}value")
+    #                     ):
+    #                         rows.add(row_idx)
+    #                         break
 
-        return sorted(rows)
+    #     return sorted(rows)
     
     def merged_ranges(self, sheet: str):
         ranges = []
@@ -541,28 +539,28 @@ class CalcDocument:
 
         return defaults
     
-    def is_wrap_text(self, sheet: str, addr: str) -> bool:
-        cell = self._find_cell(sheet, addr)
-        if not cell:
-            return False
+    # def is_wrap_text(self, sheet: str, addr: str) -> bool:
+    #     cell = self._find_cell(sheet, addr)
+    #     if not cell:
+    #         return False
 
-        raw = cell["raw_cell"]
-        style_name = raw.attrib.get(
-            "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}style-name"
-        )
+    #     raw = cell["raw_cell"]
+    #     style_name = raw.attrib.get(
+    #         "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}style-name"
+    #     )
 
-        style_el = self._find_style_element(style_name)
-        if style_el is None:
-            return False
+    #     style_el = self._find_style_element(style_name)
+    #     if style_el is None:
+    #         return False
 
-        for el in style_el.iter():
-            if el.tag.endswith("table-cell-properties"):
-                wrap = el.attrib.get(
-                    "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}wrap-option"
-                )
-                return wrap != "no-wrap"
+    #     for el in style_el.iter():
+    #         if el.tag.endswith("table-cell-properties"):
+    #             wrap = el.attrib.get(
+    #                 "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}wrap-option"
+    #             )
+    #             return wrap != "no-wrap"
 
-        return True
+    #     return True
     
     def iter_cells(self, sheet: str):
         for table in self.content.findall(".//table:table", self.NS):
@@ -736,3 +734,23 @@ class CalcDocument:
                     return True
 
         return False
+    
+    # def get_cell(self, ref: str) -> dict | None:
+    #     if "!" not in ref:
+    #         return None
+
+    #     sheet, addr = ref.split("!", 1)
+
+    #     info = self.get_cell_info(sheet, addr)
+    #     if not info:
+    #         return None
+
+    #     return {
+    #         "exists": True,
+    #         "formula": info.get("formula"),
+    #         "value_cached": info.get("value_cached"),
+    #         "is_error": info.get("is_error", False),
+    #     }
+    
+    def has_sheet(self, name: str) -> bool:
+        return name in self.sheet_names()
