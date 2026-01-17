@@ -258,7 +258,7 @@ class ExcelDocument(SpreadsheetDocument):
             "number_format": cell.number_format,
             "align_h": cell.alignment.horizontal,
             "bold": bool(cell.font and cell.font.bold),
-            "wrap": bool(cell.alignment and cell.alignment.wrap_text),  # ✅ DŮLEŽITÉ
+            "wrap": bool(cell.alignment and cell.alignment.wrap_text), 
         }
     
     def iter_cells(self, sheet: str):

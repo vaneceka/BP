@@ -7,6 +7,8 @@ from assignment.word.word_assignment_model import StyleSpec
 from pathlib import Path
 import xml.dom.minidom as minidom
 
+from document.text_document import TextDocument
+
 NS = {
     "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
     "m": "http://schemas.openxmlformats.org/officeDocument/2006/math",
@@ -15,21 +17,21 @@ NS = {
     "rel": "http://schemas.openxmlformats.org/package/2006/relationships",
     }
 
-BUILTIN_STYLE_NAMES = {
-    "normal",
-    "heading 1",
-    "heading 2",
-    "heading 3",
-    "heading 4",
-    "caption",
-    "bibliography",
-    "toc heading",
-    "table of contents",
-    "content heading",
-}
+# BUILTIN_STYLE_NAMES = {
+#     "normal",
+#     "heading 1",
+#     "heading 2",
+#     "heading 3",
+#     "heading 4",
+#     "caption",
+#     "bibliography",
+#     "toc heading",
+#     "table of contents",
+#     "content heading",
+# }
 
 
-class WordDocument:
+class WordDocument(TextDocument):
     def __init__(self, path: str):
         self.path = path
         self.NS = NS  
@@ -38,7 +40,7 @@ class WordDocument:
         self._styles_xml = self._load("word/styles.xml")
         self._sections = self._split_into_sections()
 
-    def save_xml(self, out_dir: str | Path = "debug_xml"):
+    def save_xml(self, out_dir: str | Path = "debug_word_xml"):
         out_dir = Path(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -63,17 +65,17 @@ class WordDocument:
     def _is_builtin_style_name(self, name: str) -> bool:
         return name.strip().lower() in BUILTIN_STYLE_NAMES
     
-    def split_assignment_styles(self, assignment):
-        custom = {}
-        builtin = {}
+    # def split_assignment_styles(self, assignment):
+    #     custom = {}
+    #     builtin = {}
 
-        for name, spec in assignment.styles.items():
-            if self._is_builtin_style_name(name):
-                builtin[name] = spec
-            else:
-                custom[name] = spec
+    #     for name, spec in assignment.styles.items():
+    #         if self._is_builtin_style_name(name):
+    #             builtin[name] = spec
+    #         else:
+    #             custom[name] = spec
 
-        return custom, builtin
+    #     return custom, builtin
 
     # oddíly
     def _split_into_sections(self):
@@ -1224,3 +1226,53 @@ class WordDocument:
             if el.tag.endswith("}p"):
                 yield el
             yield from el.findall(".//w:p", self.NS)
+#_______________________________________
+    def get_style_parent(self, style_name: str) -> str | None:
+        style_el = self._find_style(name=style_name)
+        if style_el is None:
+            return None
+
+        based_el = style_el.find("w:basedOn", self.NS)
+        if based_el is None:
+            return None
+
+        parent_id = based_el.attrib.get(f"{{{self.NS['w']}}}val")
+        if not parent_id:
+            return None
+
+        parent_style = self._find_style_by_id(parent_id)
+        if parent_style is None:
+            return None
+
+        name_el = parent_style.find("w:name", self.NS)
+        if name_el is None:
+            return None
+
+        return name_el.attrib.get(f"{{{self.NS['w']}}}val")
+    
+    def get_used_paragraph_styles(self) -> set[str]:
+        used = set()
+
+        for p in self.iter_paragraphs():
+            ppr = p.find("w:pPr", self.NS)
+            if ppr is None:
+                continue
+
+            ps = ppr.find("w:pStyle", self.NS)
+            if ps is None:
+                continue
+
+            style_id = ps.attrib.get(f"{{{self.NS['w']}}}val")
+            style_el = self._find_style_by_id(style_id)
+            if style_el is None:
+                continue
+
+            name_el = style_el.find("w:name", self.NS)
+            if name_el is not None:
+                used.add(name_el.attrib.get(f"{{{self.NS['w']}}}val"))
+
+        return used
+
+
+    def style_exists(self, style_name: str) -> bool:
+        return self._find_style(name=style_name) is not None

@@ -23,7 +23,6 @@ class SpreadsheetDocument(ABC):
     def save_debug_xml(self, out_dir: str):
         ...
 
-    # --- struktura ---
     @abstractmethod
     def has_sheet(self, name: str) -> bool:
         ...
@@ -32,7 +31,6 @@ class SpreadsheetDocument(ABC):
     def sheet_names(self) -> list[str]:
         ...
 
-    # --- buňky ---
     @abstractmethod
     def get_cell(self, ref: str) -> dict | None:
         ...
@@ -53,7 +51,6 @@ class SpreadsheetDocument(ABC):
     def iter_cells(self, sheet: str) -> Iterable[str]:
         ...
 
-    # --- vzorce ---
     @abstractmethod
     def iter_formulas(self):
         ...
@@ -66,7 +63,6 @@ class SpreadsheetDocument(ABC):
     def get_defined_names(self) -> set[str]:
         ...
 
-    # --- grafy ---
     @abstractmethod
     def has_chart(self, sheet: str) -> bool:
         ...

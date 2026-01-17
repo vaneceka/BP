@@ -80,9 +80,11 @@ from checks.word.sections.section3_bibliography_check import Section3Bibliograph
 from assignment.word.word_assignment_loader import load_assignment
 
 from checks.word.formatting.normal_style_check import NormalStyleCheck
+from document.writer_document import WriterDocument
 
 def main():
-    doc = WordDocument("student.docx")
+    # doc = WordDocument("student.docx")
+    doc = WriterDocument("23_4e5c5.odt")
     assignment = load_assignment("assignment/word/assignment.json")
     doc.save_xml()
 
@@ -111,7 +113,7 @@ def main():
         # HeadingsUsedCorrectlyCheck(),
         # OriginalFormattingCheck(),
         # CustomStyleInheritanceCheck(),
-        # RequiredCustomStylesUsageCheck(),
+        RequiredCustomStylesUsageCheck(),
         # CustomStyleWithTabsCheck(),
         # MainChapterStartsOnNewPageCheck(),
         # ManualHorizontalSpacingCheck(),
@@ -185,7 +187,7 @@ def main():
         # ChartFormattingCheck(),
         # ChartTypeCheck(),
         # ThreeDChartCheck(),
-        WrapTextCheck()
+        # WrapTextCheck()
 
     ]
 
