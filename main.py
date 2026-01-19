@@ -83,8 +83,8 @@ from checks.word.formatting.normal_style_check import NormalStyleCheck
 from document.writer_document import WriterDocument
 
 def main():
-    # doc = WordDocument("student.docx")
-    doc = WriterDocument("23_4e5c5.odt")
+    doc = WordDocument("student.docx")
+    # doc = WriterDocument("24_f3ea2.odt")
     assignment = load_assignment("assignment/word/assignment.json")
     doc.save_xml()
 
@@ -110,10 +110,10 @@ def main():
         # BibliographyStyleCheck(),
         # CaptionStyleCheck(),
         # ContentHeadingStyleCheck(),
-        # HeadingsUsedCorrectlyCheck(),
+        HeadingsUsedCorrectlyCheck(),
         # OriginalFormattingCheck(),
         # CustomStyleInheritanceCheck(),
-        RequiredCustomStylesUsageCheck(),
+        # RequiredCustomStylesUsageCheck(),
         # CustomStyleWithTabsCheck(),
         # MainChapterStartsOnNewPageCheck(),
         # ManualHorizontalSpacingCheck(),

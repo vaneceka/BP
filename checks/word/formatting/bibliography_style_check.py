@@ -1,5 +1,6 @@
 from checks.base_check import BaseCheck, CheckResult
 
+# NOTE dodelat pro odt
 class BibliographyStyleCheck(BaseCheck):
     name = "Styl Bibliografie není změněn."
     penalty = -5

@@ -8,6 +8,36 @@ BAD_PATTERNS = [
     r"_{4,}",   # 4+ podtržítek
 ]
 
+# class ManualHorizontalSpacingCheck(BaseCheck):
+#     name = "Ruční horizontální zarovnání pomocí mezer/znaků"
+#     penalty = -5 
+
+#     def run(self, document, assignment=None):
+#         found = 0
+
+#         for p in document.iter_paragraphs():
+#             raw = document.paragraph_text_raw(p)
+#             if not raw:
+#                 continue
+
+#             style_id = document._paragraph_style_id(p)
+#             if style_id and "toc" in style_id.lower():
+#                 continue
+
+#             for pat in BAD_PATTERNS:
+#                 if re.search(pat, raw):
+#                     found += 1
+#                     break
+
+#         if found > 0:
+#             return CheckResult(
+#                 False,
+#                 "Nalezeno ruční horizontální formátování.",
+#                 found * self.penalty,
+#             )
+
+#         return CheckResult(True, "Nenalezeno ruční horizontální formátování.", 0)
+
 class ManualHorizontalSpacingCheck(BaseCheck):
     name = "Ruční horizontální zarovnání pomocí mezer/znaků"
     penalty = -5 
@@ -16,12 +46,12 @@ class ManualHorizontalSpacingCheck(BaseCheck):
         found = 0
 
         for p in document.iter_paragraphs():
-            raw = document.paragraph_text_raw(p)
-            if not raw:
+
+            if document.paragraph_is_toc(p):
                 continue
 
-            style_id = document._paragraph_style_id(p)
-            if style_id and "toc" in style_id.lower():
+            raw = document.paragraph_text_raw(p)
+            if not raw:
                 continue
 
             for pat in BAD_PATTERNS:
@@ -29,11 +59,15 @@ class ManualHorizontalSpacingCheck(BaseCheck):
                     found += 1
                     break
 
-        if found > 0:
+        if found:
             return CheckResult(
                 False,
                 "Nalezeno ruční horizontální formátování.",
                 found * self.penalty,
             )
 
-        return CheckResult(True, "Nenalezeno ruční horizontální formátování.", 0)
+        return CheckResult(
+            True,
+            "Nenalezeno ruční horizontální formátování.",
+            0,
+        )

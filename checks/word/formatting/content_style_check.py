@@ -1,6 +1,6 @@
 from checks.base_check import BaseCheck, CheckResult
 
-
+# NOTE dodelat pro odt
 class ContentHeadingStyleCheck(BaseCheck):
     name = "Styl Nadpis obsahu není změněn dle zadání"
     penalty = -5

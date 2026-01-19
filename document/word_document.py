@@ -1276,3 +1276,211 @@ class WordDocument(TextDocument):
 
     def style_exists(self, style_name: str) -> bool:
         return self._find_style(name=style_name) is not None
+    
+    def get_heading_numbering_info(self, level: int):
+        style = self._find_style(name=f"heading {level}")
+        if style is None:
+            return False, False, None
+
+        ppr = style.find("w:pPr", self.NS)
+        if ppr is None:
+            return False, False, None
+
+        numpr = ppr.find("w:numPr", self.NS)
+        if numpr is None:
+            return False, False, None
+
+        # úroveň (ilvl)
+        ilvl_el = numpr.find("w:ilvl", self.NS)
+        num_level = int(ilvl_el.attrib[f"{{{self.NS['w']}}}val"]) if ilvl_el is not None else 0
+
+        # numId
+        numid_el = numpr.find("w:numId", self.NS)
+        if numid_el is None:
+            return False, False, None
+
+        num_id = numid_el.attrib.get(f"{{{self.NS['w']}}}val")
+        if not num_id:
+            return False, False, None
+
+        # 👉 najdi numbering.xml
+        numbering = self._load("word/numbering.xml")
+
+        abstract_id = None
+        for num in numbering.findall(".//w:num", self.NS):
+            if num.attrib.get(f"{{{self.NS['w']}}}numId") == num_id:
+                abs_el = num.find("w:abstractNumId", self.NS)
+                if abs_el is not None:
+                    abstract_id = abs_el.attrib.get(f"{{{self.NS['w']}}}val")
+                    break
+
+        if abstract_id is None:
+            return True, False, num_level
+
+        lvl_text = None
+        for absn in numbering.findall(".//w:abstractNum", self.NS):
+            if absn.attrib.get(f"{{{self.NS['w']}}}abstractNumId") == abstract_id:
+                for lvl in absn.findall("w:lvl", self.NS):
+                    if lvl.attrib.get(f"{{{self.NS['w']}}}ilvl") == str(num_level):
+                        txt = lvl.find("w:lvlText", self.NS)
+                        if txt is not None:
+                            lvl_text = txt.attrib.get(f"{{{self.NS['w']}}}val")
+                        break
+
+        if not lvl_text:
+            return True, False, num_level
+
+        # kontrola hierarchie 1.1.1
+        required = [f"%{i}" for i in range(1, level + 1)]
+        is_hierarchical = all(r in lvl_text for r in required)
+
+        return True, is_hierarchical, num_level
+    
+
+    def find_inline_formatting(self) -> list[dict]:
+        results = []
+
+        for p in self.iter_paragraphs():
+
+            if self._paragraph_is_toc_or_object_list(p):
+                continue
+
+            for r in p.findall(".//w:r", self.NS):
+
+                rpr = r.find("w:rPr", self.NS)
+                if rpr is None:
+                    continue
+
+                run_text = "".join(
+                    t.text for t in r.findall("w:t", self.NS)
+                    if t.text
+                ).strip()
+
+                if not run_text:
+                    continue
+
+                problems = []
+
+                if self._is_enabled(rpr.find("w:b", self.NS)) \
+                or self._is_enabled(rpr.find("w:bCs", self.NS)):
+                    problems.append("tučné písmo")
+
+                if self._is_enabled(rpr.find("w:i", self.NS)) \
+                or self._is_enabled(rpr.find("w:iCs", self.NS)):
+                    problems.append("kurzíva")
+
+                if rpr.find("w:sz", self.NS) is not None:
+                    problems.append("změna velikosti písma")
+
+                if rpr.find("w:rFonts", self.NS) is not None:
+                    problems.append("změna fontu")
+
+                if rpr.find("w:color", self.NS) is not None:
+                    problems.append("změna barvy")
+
+                for problem in problems:
+                    results.append({
+                        "text": run_text,
+                        "problem": problem,
+                    })
+
+        return results
+    
+    def _is_enabled(self, el):
+        if el is None:
+            return False
+
+        val = el.attrib.get(f"{{{self.NS['w']}}}val")
+        return val is None or val not in ("0", "false", "False")
+    
+
+    def iter_main_headings(self):
+        for p in self.iter_paragraphs():
+            text = self._paragraph_text(p)
+            if not text:
+                continue
+
+            style_id = self._paragraph_style_id(p)
+            if not style_id:
+                continue
+
+            level = self._style_level_from_styles_xml(style_id)
+            if level == 1:
+                yield p
+
+
+    def heading_starts_on_new_page(self, p) -> bool:
+        style_id = self._paragraph_style_id(p)
+
+        if self.paragraph_has_page_break(p):
+            return True
+
+        if style_id and self.style_has_page_break(style_id):
+            return True
+
+        return False
+    
+    def get_visible_text(self, element) -> str:
+        return self._paragraph_text(element)
+    
+
+    def paragraph_is_toc(self, p) -> bool:
+        ppr = p.find("w:pPr", self.NS)
+        if ppr is None:
+            return False
+
+        ps = ppr.find("w:pStyle", self.NS)
+        if ps is not None:
+            val = ps.attrib.get(f"{{{self.NS['w']}}}val", "").lower()
+            if "toc" in val or "obsah" in val:
+                return True
+
+        for instr in p.findall(".//w:instrText", self.NS):
+            if instr.text and instr.text.upper().startswith("TOC"):
+                return True
+
+        return False
+    
+    def paragraph_is_empty(self, p) -> bool:
+        for t in p.findall(".//w:t", self.NS):
+            if t.text and t.text.strip():
+                return False
+        return True
+
+
+    def paragraph_has_text(self, p) -> bool:
+        return not self.paragraph_is_empty(p)
+
+
+    def paragraph_text(self, p) -> str:
+        return self._paragraph_text(p)
+
+
+    def paragraph_style_name(self, p) -> str:
+        ppr = p.find("w:pPr", self.NS)
+        if ppr is None:
+            return "bez stylu"
+        ps = ppr.find("w:pStyle", self.NS)
+        return ps.attrib.get(f"{{{self.NS['w']}}}val", "bez stylu") if ps else "bez stylu"
+
+
+    def paragraph_has_spacing_before(self, p) -> bool:
+        ppr = p.find("w:pPr", self.NS)
+        if ppr is None:
+            return False
+        spacing = ppr.find("w:spacing", self.NS)
+        if spacing is None:
+            return False
+        before = spacing.attrib.get(f"{{{self.NS['w']}}}before")
+        return before is not None and int(before) > 0
+    
+    def paragraph_is_generated(self, p) -> bool:
+        # pole (TOC, REF, atd.)
+        if self.paragraph_is_generated_by_field(p):
+            return True
+
+        # automatické seznamy, obsahy
+        if self._paragraph_is_toc_or_object_list(p):
+            return True
+
+        return False

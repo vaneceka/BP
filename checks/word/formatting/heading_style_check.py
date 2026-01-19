@@ -1,6 +1,6 @@
 from checks.base_check import BaseCheck, CheckResult
 
-
+#NOTE funguje pro word i writer
 class HeadingStyleCheck(BaseCheck):
     def __init__(self, level: int):
         self.level = level
@@ -22,6 +22,22 @@ class HeadingStyleCheck(BaseCheck):
             )
 
         diffs = actual.diff(expected)
+
+        is_numbered, is_hierarchical, actual_num_level = \
+            document.get_heading_numbering_info(self.level)
+
+        expected_num_level = getattr(expected, "numLevel", None)
+
+        if expected_num_level is not None:
+            if not is_numbered:
+                diffs.append("numLevel: nadpis není číslovaný")
+            elif not is_hierarchical:
+                diffs.append("numLevel: číslování není hierarchické")
+            elif actual_num_level != expected_num_level:
+                diffs.append(
+                    f"numLevel: očekáváno {expected_num_level}, nalezeno {actual_num_level}"
+                )
+
         if diffs:
             message = (
                 f"Styl Heading {self.level} neodpovídá zadání:\n"

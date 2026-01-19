@@ -1,6 +1,6 @@
 from checks.base_check import BaseCheck, CheckResult
 
-
+#NOTE funguje pro word i odt
 class FrontpageStylesCheck(BaseCheck):
     name = "Styly pro úvodní list"
     penalty = -5
@@ -38,3 +38,4 @@ class FrontpageStylesCheck(BaseCheck):
             )
 
         return CheckResult(True, "Styly úvodního listu odpovídají zadání.", 0)
+

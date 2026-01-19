@@ -1,6 +1,6 @@
 from checks.base_check import BaseCheck, CheckResult
 
-
+#NOTE predelat pro ODT
 class ListLevel2UsedCheck(BaseCheck):
     name = "Použití seznamu 2. úrovně"
     penalty = -1 

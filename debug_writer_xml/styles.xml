@@ -5,13 +5,11 @@
     <ns1:font-face ns1:name="Arial Unicode MS" ns2:font-family="'Arial Unicode MS'" ns1:font-family-generic="system" ns1:font-pitch="variable"/>
     <ns1:font-face ns1:name="Liberation Sans" ns2:font-family="'Liberation Sans'" ns1:font-family-generic="swiss" ns1:font-pitch="variable"/>
     <ns1:font-face ns1:name="Tahoma" ns2:font-family="Tahoma" ns1:font-family-generic="system" ns1:font-pitch="variable"/>
-    <ns1:font-face ns1:name="Times New Roman" ns2:font-family="'Times New Roman'" ns1:font-adornments="Bold" ns1:font-family-generic="roman" ns1:font-pitch="variable"/>
-    <ns1:font-face ns1:name="Times New Roman1" ns2:font-family="'Times New Roman'" ns1:font-adornments="Regular" ns1:font-family-generic="roman" ns1:font-pitch="variable"/>
   </ns0:font-face-decls>
   <ns0:styles>
     <ns1:default-style ns1:family="graphic">
-      <ns1:graphic-properties ns2:stroke-color="#3465a4" ns3:fill-color="#729fcf" ns4:wrap-option="no-wrap" ns3:shadow-offset-x="0.3cm" ns3:shadow-offset-y="0.3cm" ns3:start-line-spacing-horizontal="0.283cm" ns3:start-line-spacing-vertical="0.283cm" ns3:end-line-spacing-horizontal="0.283cm" ns3:end-line-spacing-vertical="0.283cm" ns1:writing-mode="lr-tb" ns1:flow-with-text="false"/>
-      <ns1:paragraph-properties ns1:text-autospace="ideograph-alpha" ns1:line-break="strict" ns5:tab-stop-distance="0cm" ns1:font-independent-line-spacing="false">
+      <ns1:graphic-properties ns2:stroke-color="#3465a4" ns3:fill-color="#729fcf" ns4:wrap-option="no-wrap" ns3:shadow-offset-x="0.3cm" ns3:shadow-offset-y="0.3cm" ns3:start-line-spacing-horizontal="0.283cm" ns3:start-line-spacing-vertical="0.283cm" ns3:end-line-spacing-horizontal="0.283cm" ns3:end-line-spacing-vertical="0.283cm" ns1:flow-with-text="false"/>
+      <ns1:paragraph-properties ns1:text-autospace="ideograph-alpha" ns1:line-break="strict" ns5:tab-stop-distance="0cm" ns1:writing-mode="lr-tb" ns1:font-independent-line-spacing="false">
         <ns1:tab-stops/>
       </ns1:paragraph-properties>
       <ns1:text-properties ns1:use-window-font-color="true" ns5:opacity="0%" ns1:font-name="Arial" ns4:font-size="10pt" ns4:language="fr" ns4:country="FR" ns1:letter-kerning="true" ns1:font-name-asian="Tahoma" ns1:font-size-asian="10pt" ns1:language-asian="zh" ns1:country-asian="CN" ns1:font-name-complex="Tahoma" ns1:font-size-complex="10pt" ns1:language-complex="hi" ns1:country-complex="IN"/>
@@ -34,91 +32,60 @@
     <ns1:style ns1:name="Text_20_body" ns1:display-name="Text body" ns1:family="paragraph" ns1:parent-style-name="Standard" ns1:class="text">
       <ns1:paragraph-properties ns4:margin-top="0cm" ns4:margin-bottom="0.247cm" ns1:contextual-spacing="false" ns4:line-height="115%"/>
     </ns1:style>
-    <ns1:style ns1:name="Heading_20_1" ns1:display-name="Heading 1" ns1:family="paragraph" ns1:parent-style-name="Heading" ns1:next-style-name="Text_20_body" ns1:default-outline-level="1" ns1:class="chapter">
-      <ns1:paragraph-properties ns4:margin-top="0.423cm" ns4:margin-bottom="0.212cm" ns1:contextual-spacing="false"/>
+    <ns1:style ns1:name="Heading_20_1" ns1:display-name="Heading 1" ns1:family="paragraph" ns1:parent-style-name="Heading" ns1:next-style-name="Text_20_body" ns1:default-outline-level="1" ns1:class="chapter" ns1:master-page-name="">
+      <ns1:paragraph-properties ns4:margin-top="0.423cm" ns4:margin-bottom="0.212cm" ns1:contextual-spacing="false" ns1:page-number="auto" ns4:break-before="page">
+        <ns1:tab-stops/>
+      </ns1:paragraph-properties>
       <ns1:text-properties ns4:font-size="18pt" ns4:font-weight="bold" ns1:font-size-asian="18pt" ns1:font-weight-asian="bold" ns1:font-size-complex="18pt" ns1:font-weight-complex="bold"/>
     </ns1:style>
-    <ns1:style ns1:name="Caption" ns1:family="paragraph" ns1:parent-style-name="Standard" ns1:class="extra">
-      <ns1:paragraph-properties ns4:margin-top="0.212cm" ns4:margin-bottom="0.212cm" ns1:contextual-spacing="false" ns7:number-lines="false" ns7:line-number="0"/>
-      <ns1:text-properties ns1:use-window-font-color="true" ns5:opacity="0%" ns4:font-size="10pt" ns4:font-style="italic" ns1:font-size-asian="10pt" ns1:font-style-asian="italic" ns1:font-size-complex="10pt" ns1:font-style-complex="italic"/>
-    </ns1:style>
-    <ns1:style ns1:name="Figure" ns1:family="paragraph" ns1:parent-style-name="Caption" ns1:class="extra"/>
-    <ns1:style ns1:name="Table_20_Contents" ns1:display-name="Table Contents" ns1:family="paragraph" ns1:parent-style-name="Standard" ns1:class="extra">
-      <ns1:paragraph-properties ns4:orphans="0" ns4:widows="0" ns7:number-lines="false" ns7:line-number="0"/>
-      <ns1:text-properties ns1:font-name="Times New Roman1" ns4:font-family="'Times New Roman'" ns1:font-style-name="Regular" ns1:font-family-generic="roman" ns1:font-pitch="variable"/>
-    </ns1:style>
-    <ns1:style ns1:name="Table_20_Heading" ns1:display-name="Table Heading" ns1:family="paragraph" ns1:parent-style-name="Table_20_Contents" ns1:class="extra">
-      <ns1:paragraph-properties ns4:text-align="center" ns1:justify-single-word="false" ns7:number-lines="false" ns7:line-number="0"/>
-      <ns1:text-properties ns4:font-weight="bold" ns1:font-weight-asian="bold" ns1:font-weight-complex="bold"/>
-    </ns1:style>
-    <ns1:style ns1:name="desky-fakulta" ns1:family="paragraph" ns1:parent-style-name="Heading_20_1" ns1:master-page-name="">
-      <ns1:paragraph-properties ns1:page-number="auto">
-        <ns1:tab-stops/>
-        <ns1:drop-cap/>
-      </ns1:paragraph-properties>
-      <ns1:text-properties ns4:text-transform="uppercase" ns1:font-name="Times New Roman" ns4:font-family="'Times New Roman'" ns1:font-style-name="Bold" ns1:font-family-generic="roman" ns1:font-pitch="variable" ns4:font-size="18pt"/>
-    </ns1:style>
-    <ns1:style ns1:name="desky-nazev-prace" ns1:family="paragraph" ns1:parent-style-name="desky-fakulta">
-      <ns1:paragraph-properties ns4:margin-left="0cm" ns4:margin-top="7.05cm" ns4:margin-bottom="0.21cm" ns1:contextual-spacing="false"/>
-    </ns1:style>
-    <ns1:style ns1:name="desky-rok-a-jmeno" ns1:family="paragraph" ns1:parent-style-name="desky-nazev-prace" ns1:master-page-name="">
-      <ns1:paragraph-properties ns4:margin-top="10.58cm" ns4:margin-bottom="0.21cm" ns1:contextual-spacing="false" ns1:page-number="auto">
-        <ns1:tab-stops>
-          <ns1:tab-stop ns1:position="2cm"/>
-          <ns1:tab-stop ns1:position="14cm" ns1:type="right"/>
-        </ns1:tab-stops>
-      </ns1:paragraph-properties>
-      <ns1:text-properties ns4:font-size="14pt"/>
-    </ns1:style>
-    <ns1:style ns1:name="uvodni-tema" ns1:family="paragraph" ns1:parent-style-name="desky-fakulta"/>
     <ns1:style ns1:name="Line_20_numbering" ns1:display-name="Line numbering" ns1:family="text"/>
     <ns7:outline-style ns1:name="Outline">
-      <ns7:outline-level-style ns7:level="1" ns5:num-list-format="%1%" ns1:num-format="">
+      <ns7:outline-level-style ns7:level="1" ns1:num-format="">
         <ns1:list-level-properties ns7:list-level-position-and-space-mode="label-alignment">
           <ns1:list-level-label-alignment ns7:label-followed-by="listtab"/>
         </ns1:list-level-properties>
       </ns7:outline-level-style>
-      <ns7:outline-level-style ns7:level="2" ns5:num-list-format="%2%" ns1:num-format="">
+      <ns7:outline-level-style ns7:level="2" ns1:num-format="">
         <ns1:list-level-properties ns7:list-level-position-and-space-mode="label-alignment">
           <ns1:list-level-label-alignment ns7:label-followed-by="listtab"/>
         </ns1:list-level-properties>
       </ns7:outline-level-style>
-      <ns7:outline-level-style ns7:level="3" ns5:num-list-format="%3%" ns1:num-format="">
+      <ns7:outline-level-style ns7:level="3" ns1:num-format="">
         <ns1:list-level-properties ns7:list-level-position-and-space-mode="label-alignment">
           <ns1:list-level-label-alignment ns7:label-followed-by="listtab"/>
         </ns1:list-level-properties>
       </ns7:outline-level-style>
-      <ns7:outline-level-style ns7:level="4" ns5:num-list-format="%4%" ns1:num-format="">
+      <ns7:outline-level-style ns7:level="4" ns1:num-format="">
         <ns1:list-level-properties ns7:list-level-position-and-space-mode="label-alignment">
           <ns1:list-level-label-alignment ns7:label-followed-by="listtab"/>
         </ns1:list-level-properties>
       </ns7:outline-level-style>
-      <ns7:outline-level-style ns7:level="5" ns5:num-list-format="%5%" ns1:num-format="">
+      <ns7:outline-level-style ns7:level="5" ns1:num-format="">
         <ns1:list-level-properties ns7:list-level-position-and-space-mode="label-alignment">
           <ns1:list-level-label-alignment ns7:label-followed-by="listtab"/>
         </ns1:list-level-properties>
       </ns7:outline-level-style>
-      <ns7:outline-level-style ns7:level="6" ns5:num-list-format="%6%" ns1:num-format="">
+      <ns7:outline-level-style ns7:level="6" ns1:num-format="">
         <ns1:list-level-properties ns7:list-level-position-and-space-mode="label-alignment">
           <ns1:list-level-label-alignment ns7:label-followed-by="listtab"/>
         </ns1:list-level-properties>
       </ns7:outline-level-style>
-      <ns7:outline-level-style ns7:level="7" ns5:num-list-format="%7%" ns1:num-format="">
+      <ns7:outline-level-style ns7:level="7" ns1:num-format="">
         <ns1:list-level-properties ns7:list-level-position-and-space-mode="label-alignment">
           <ns1:list-level-label-alignment ns7:label-followed-by="listtab"/>
         </ns1:list-level-properties>
       </ns7:outline-level-style>
-      <ns7:outline-level-style ns7:level="8" ns5:num-list-format="%8%" ns1:num-format="">
+      <ns7:outline-level-style ns7:level="8" ns1:num-format="">
         <ns1:list-level-properties ns7:list-level-position-and-space-mode="label-alignment">
           <ns1:list-level-label-alignment ns7:label-followed-by="listtab"/>
         </ns1:list-level-properties>
       </ns7:outline-level-style>
-      <ns7:outline-level-style ns7:level="9" ns5:num-list-format="%9%" ns1:num-format="">
+      <ns7:outline-level-style ns7:level="9" ns1:num-format="">
         <ns1:list-level-properties ns7:list-level-position-and-space-mode="label-alignment">
           <ns1:list-level-label-alignment ns7:label-followed-by="listtab"/>
         </ns1:list-level-properties>
       </ns7:outline-level-style>
-      <ns7:outline-level-style ns7:level="10" ns5:num-list-format="%10%" ns1:num-format="">
+      <ns7:outline-level-style ns7:level="10" ns1:num-format="">
         <ns1:list-level-properties ns7:list-level-position-and-space-mode="label-alignment">
           <ns1:list-level-label-alignment ns7:label-followed-by="listtab"/>
         </ns1:list-level-properties>
@@ -146,7 +113,7 @@
   </ns0:styles>
   <ns0:automatic-styles>
     <ns1:page-layout ns1:name="Mpm1">
-      <ns1:page-layout-properties ns4:page-width="21.001cm" ns4:page-height="29.7cm" ns1:num-format="1" ns1:print-orientation="portrait" ns4:margin-top="2cm" ns4:margin-bottom="2cm" ns4:margin-left="2cm" ns4:margin-right="2cm" ns1:writing-mode="lr-tb" ns1:layout-grid-color="#c0c0c0" ns1:layout-grid-lines="20" ns1:layout-grid-base-height="0.706cm" ns1:layout-grid-ruby-height="0.353cm" ns1:layout-grid-mode="none" ns1:layout-grid-ruby-below="false" ns1:layout-grid-print="false" ns1:layout-grid-display="false" ns1:footnote-max-height="0cm" ns5:margin-gutter="0cm">
+      <ns1:page-layout-properties ns4:page-width="21.001cm" ns4:page-height="29.7cm" ns1:num-format="1" ns1:print-orientation="portrait" ns4:margin-top="2cm" ns4:margin-bottom="2cm" ns4:margin-left="2cm" ns4:margin-right="2cm" ns1:writing-mode="lr-tb" ns1:footnote-max-height="0cm" ns5:margin-gutter="0cm">
         <ns1:footnote-sep ns1:width="0.018cm" ns1:distance-before-sep="0.101cm" ns1:distance-after-sep="0.101cm" ns1:line-style="solid" ns1:adjustment="left" ns1:rel-width="25%" ns1:color="#000000"/>
       </ns1:page-layout-properties>
       <ns1:header-style/>
@@ -164,7 +131,7 @@
     </ns1:style>
   </ns0:automatic-styles>
   <ns0:master-styles>
-    <ns1:master-page ns1:name="Standard" ns1:page-layout-name="Mpm1" ns3:style-name="Mdp1"/>
+    <ns1:master-page ns1:name="Standard" ns1:page-layout-name="Mpm1"/>
     <ns1:master-page ns1:name="Standard1" ns1:page-layout-name="Mpm2" ns3:style-name="Mdp1"/>
   </ns0:master-styles>
 </ns0:document-styles>

@@ -1,5 +1,6 @@
 from checks.base_check import BaseCheck, CheckResult
 
+#NOTE funguje pro word i writer
 class HeadingsUsedCorrectlyCheck(BaseCheck):
     name = "Nadpisy nejsou použity správně dle seznamu"
     penalty = -5
