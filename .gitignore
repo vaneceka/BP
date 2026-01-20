@@ -1,12 +1,9 @@
-# --- Python ---
 __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
 *.so
 
-# --- Virtual environments ---
 .venv/
 venv/
 env/
@@ -15,7 +12,6 @@ ENV/
 pip-wheel-metadata/
 pyvenv.cfg
 
-# --- Packaging / build ---
 build/
 dist/
 *.egg-info/
@@ -24,7 +20,6 @@ wheels/
 pip-wheel-metadata/
 MANIFEST
 
-# --- Test / coverage ---
 .pytest_cache/
 .coverage
 .coverage.*
@@ -36,45 +31,36 @@ coverage.xml
 .nox/
 hypothesis/
 
-# --- Type checkers ---
 .mypy_cache/
 .pyre/
 .pytype/
 .ruff_cache/
 
-# --- Logs ---
 *.log
 
-# --- Jupyter ---
 .ipynb_checkpoints/
 
-# --- IDEs ---
 .vscode/
 .idea/
 *.iml
 
-# --- macOS ---
 .DS_Store
 .AppleDouble
 .LSOverride
 
-# --- Windows ---
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 
-# --- Temporary / swap files ---
 *.swp
 *.swo
 *~
 *.tmp
 
-# --- Local configs / secrets (optional) ---
 .env
 .env.*
 *.local
 
-# --- Your project debug outputs (optional) ---
 zip/
 zip2/
 *.xml
