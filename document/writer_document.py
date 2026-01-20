@@ -13,23 +13,18 @@ NS = {
     "fo": "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
     "loext": "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
 }
-COVER_STYLE_ALIASES = {
+COVER_STYLES = {
             "desky-fakulta": [
                 "desky-fakulta",
-                "Faculty",
-                "University",
-                "Title",
             ],
             "desky-nazev-prace": [
                 "desky-nazev-prace",
-                "Title",
             ],
             "desky-rok-a-jmeno": [
                 "desky-rok-a-jmeno",
-                "Subtitle",
-                "Author",
             ],
         }
+
 
 class WriterDocument(TextDocument):
     def __init__(self, path: str):
@@ -86,19 +81,16 @@ class WriterDocument(TextDocument):
         if fs is not None:
             italic = (fs.lower() == "italic")
 
-        # alignment (tady zatím bez dědičnosti; kdyby bylo potřeba, uděláme stejně)
         alignment = default_alignment
         if para_props is not None:
             alignment = para_props.attrib.get(f"{{{NS['fo']}}}text-align", default_alignment)
 
-        # color: pokud není, ber černou (správně)
         color_val = self._resolve_text_prop(style, f"{{{NS['fo']}}}color")
         if color_val is None:
             color = "000000"
         else:
             color = color_val.lstrip("#").upper()
 
-        # ALL CAPS (fo:text-transform="uppercase")
         text_transform = self._resolve_text_prop(
             style,
             f"{{{NS['fo']}}}text-transform"
@@ -124,7 +116,6 @@ class WriterDocument(TextDocument):
             elif br is not None:
                 page_break_before = False
 
-        # === OUTLINE LEVEL (ODT experiment) ===
         outline_level = style.attrib.get(
             f"{{{NS['style']}}}default-outline-level"
         )
@@ -174,14 +165,13 @@ class WriterDocument(TextDocument):
         return None
     
     def get_cover_style(self, key: str) -> StyleSpec | None:
-        names = COVER_STYLE_ALIASES.get(key, [])
+        names = COVER_STYLES.get(key, [])
         return self.get_style_by_any_name(
             names,
             default_alignment="center"
         )
     
     def _get_parent_style_name(self, style_el: ET.Element) -> str | None:
-        # atribut style:parent-style-name
         return style_el.attrib.get(f"{{{NS['style']}}}parent-style-name")
     
     def _resolve_text_prop(self, style_el: ET.Element, attr_qname: str) -> str | None:
@@ -212,12 +202,10 @@ class WriterDocument(TextDocument):
 
             tp = style_el.find("style:text-properties", NS)
             if tp is not None:
-                # klasika
                 fw = tp.attrib.get(f"{{{NS['fo']}}}font-weight")
                 if fw is not None:
                     return fw.lower() == "bold"
 
-                # LibreOffice často: style:font-style-name="Bold"
                 fsn = tp.attrib.get(f"{{{NS['style']}}}font-style-name")
                 if fsn is not None and "bold" in fsn.lower():
                     return True
@@ -357,7 +345,7 @@ class WriterDocument(TextDocument):
                 return outline
 
             outline = root.find(
-                ".//{urn:oasis:names:tc:opendocument:xmlns:text:1.0}outline-style"
+                f"{{{NS['text']}}}outline-style"
             )
             if outline is not None:
                 return outline

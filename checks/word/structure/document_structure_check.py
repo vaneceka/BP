@@ -6,8 +6,6 @@ class DocumentStructureCheck(BaseCheck):
 
     def run(self, document, assignment=None):
         headings = document.iter_headings()
-        for h in headings:
-            print(h)
         if not headings:
             return CheckResult(True, "Dokument neobsahuje nadpisy.", 0)
 

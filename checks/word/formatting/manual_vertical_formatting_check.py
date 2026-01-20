@@ -119,6 +119,7 @@ class ManualVerticalSpacingCheck(BaseCheck):
                 i = j
                 continue
 
+
             if document._paragraph_is_toc_or_object_list(next_p):
                 i = j
                 continue
@@ -132,6 +133,10 @@ class ManualVerticalSpacingCheck(BaseCheck):
                 continue
 
             if document.paragraph_has_spacing_before(next_p):
+                i = j
+                continue
+
+            if document.paragraph_is_heading(next_p):
                 i = j
                 continue
 
@@ -150,7 +155,6 @@ class ManualVerticalSpacingCheck(BaseCheck):
             for e in errors[:5]:
                 lines.append(
                     f"- {e['count']} prázdné řádky (odstavce {e['empty_from']}–{e['empty_to']}) "
-                    f"před odstavcem (styl: {e['style']}):\n"
                     f"  „{e['text'][:80]}…“"
                 )
 

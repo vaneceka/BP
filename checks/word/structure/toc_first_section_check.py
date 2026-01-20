@@ -17,11 +17,13 @@ class TOCFirstSectionContentCheck(BaseCheck):
         toc_items = []
         for p in document.iter_section_paragraphs(toc_section):
             sid = (document._paragraph_style_id(p) or "").strip().lower()
-            if not (
+            is_toc = (
                 (sid.startswith("toc") and sid[3:].isdigit()) or
                 (sid.startswith("obsah") and sid[5:].isdigit())
-            ):
-                continue
+            )
+
+            if not is_toc:
+                break
 
             txt = document._paragraph_text(p)
             if txt:

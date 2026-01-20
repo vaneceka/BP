@@ -15,9 +15,6 @@ class TextDocument:
     def _norm(self, name: str) -> str:
         return name.strip().lower()
 
-    # -------------------------
-    # STYLY ZE ZADÁNÍ
-    # -------------------------
     def split_assignment_styles(self, assignment):
         custom = {}
         builtin = {}

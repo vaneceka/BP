@@ -1,4 +1,3 @@
-# document/calc_document.py
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -14,6 +13,16 @@ class CalcDocument(SpreadsheetDocument):
     NS = {
         "table": "urn:oasis:names:tc:opendocument:xmlns:table:1.0",
         "calcext": "urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0",
+        "number": "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0",
+
+        "office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+        "style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
+        "fo": "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
+
+        "text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+
+        "chart": "urn:oasis:names:tc:opendocument:xmlns:chart:1.0",
+        "dr3d": "urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0",
     }
 
     def __init__(self, path: str):
@@ -22,28 +31,24 @@ class CalcDocument(SpreadsheetDocument):
         self.content = self._load_xml("content.xml")
         self.styles = self._load_xml("styles.xml")
 
-        STYLE_NS = "urn:oasis:names:tc:opendocument:xmlns:style:1.0"
-        NUMBER_NS = "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
-
         self.number_styles = {}
 
         def collect_number_styles(root):
             if root is None:
                 return
 
-            for ns in root.findall(f".//{{{NUMBER_NS}}}number-style"):
-                name = ns.attrib.get(f"{{{STYLE_NS}}}name")
+            for ns in root.findall(f".//{{{self.NS["number"]}}}number-style"):
+                name = ns.attrib.get(f"{{{self.NS["style"]}}}name")
                 if not name:
                     continue
 
-                for child in ns.findall(f"{{{NUMBER_NS}}}number"):
-                    dp = child.attrib.get(f"{{{NUMBER_NS}}}decimal-places")
+                for child in ns.findall(f"{{{self.NS["number"]}}}number"):
+                    dp = child.attrib.get(f"{{{self.NS["number"]}}}decimal-places")
                     if dp is not None:
                         self.number_styles[name] = int(dp)
 
         collect_number_styles(self.content)
         collect_number_styles(self.styles)
-        print(self.number_styles)
 
         self.objects = {}
 
@@ -69,7 +74,6 @@ class CalcDocument(SpreadsheetDocument):
                     raw = z.read(name)
                     root = ET.fromstring(raw)
                 except Exception:
-                    # nevalidní XML → přeskočíme
                     continue
 
                 pretty = minidom.parseString(
@@ -118,7 +122,7 @@ class CalcDocument(SpreadsheetDocument):
             for row in sheet.findall("table:table-row", self.NS):
                 row_repeat = int(
                     row.attrib.get(
-                        "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}number-rows-repeated",
+                        f"{{{self.NS["table"]}}}number-rows-repeated",
                         "1",
                     )
                 )
@@ -132,7 +136,7 @@ class CalcDocument(SpreadsheetDocument):
                     for cell in row.findall("table:table-cell", self.NS):
                         repeat = int(
                             cell.attrib.get(
-                                "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}number-columns-repeated",
+                                f"{{{self.NS["table"]}}}number-columns-repeated",
                                 "1",
                             )
                         )
@@ -141,14 +145,13 @@ class CalcDocument(SpreadsheetDocument):
                             col_idx += 1
                             if col_idx == col_target:
                                 formula = cell.attrib.get(
-                                    "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}formula"
+                                   f"{{{self.NS["table"]}}}formula"
                                 )
 
                                 value = cell.attrib.get(
-                                    "{urn:oasis:names:tc:opendocument:xmlns:office:1.0}value"
+                                   f"{{{self.NS["office"]}}}value"
                                 )
 
-                                # 🔑 default styl sloupce
                                 col_defaults = self._column_default_styles(sheet)
                                 col_default = (
                                     col_defaults[col_target - 1]
@@ -208,11 +211,11 @@ class CalcDocument(SpreadsheetDocument):
         raw = cell["raw_cell"]
 
         formula = raw.attrib.get(
-            "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}formula"
+            f"{{{self.NS['table']}}}formula"
         )
 
         value = raw.attrib.get(
-            "{urn:oasis:names:tc:opendocument:xmlns:office:1.0}value"
+            f"{{{self.NS['office']}}}value"
         )
 
         if formula and formula.startswith("of:="):
@@ -231,7 +234,7 @@ class CalcDocument(SpreadsheetDocument):
 
             for cell in sheet.findall(".//table:table-cell", self.NS):
                 formula = cell.attrib.get(
-                    "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}formula"
+                    f"{{{self.NS['table']}}}formula"
                 )
                 if formula:
                     formula = formula.replace("of:=", "=")
@@ -256,10 +259,8 @@ class CalcDocument(SpreadsheetDocument):
         # [.C2:.C23] -> C2:C23
         f = re.sub(r"\[\.(\w+):\.(\w+)\]", r"\1:\2", f)
 
-        # ; -> ,
         f = f.replace(";", ",")
 
-        # sjednotit uvozovky a texty
         f = re.sub(r'"([^"]+)"', lambda m: f'"{m.group(1).upper()}"', f)
 
         f = re.sub(r"\s+", "", f)
@@ -312,42 +313,13 @@ class CalcDocument(SpreadsheetDocument):
             col, r = divmod(col - 1, 26)
             s = chr(65 + r) + s
         return s
-    
-    # def iter_used_rows(self, sheet: str) -> list[int]:
-    #     rows = set()
-
-    #     for table in self.content.findall(".//table:table", self.NS):
-    #         name = table.attrib.get(f"{{{self.NS['table']}}}name")
-    #         if name != sheet:
-    #             continue
-
-    #         row_idx = 0
-    #         for row in table.findall("table:table-row", self.NS):
-    #             repeat = int(
-    #                 row.attrib.get(
-    #                     "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}number-rows-repeated",
-    #                     "1"
-    #                 )
-    #             )
-
-    #             for _ in range(repeat):
-    #                 row_idx += 1
-    #                 for cell in row.findall("table:table-cell", self.NS):
-    #                     if (
-    #                         cell.attrib.get("{urn:oasis:names:tc:opendocument:xmlns:table:1.0}formula")
-    #                         or cell.attrib.get("{urn:oasis:names:tc:opendocument:xmlns:office:1.0}value")
-    #                     ):
-    #                         rows.add(row_idx)
-    #                         break
-
-    #     return sorted(rows)
-    
+        
     def merged_ranges(self, sheet: str):
         ranges = []
 
         for table in self.content.findall(".//table:table", self.NS):
             name = table.attrib.get(
-                "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}name"
+                f"{{{self.NS['table']}}}name"
             )
             if name != sheet:
                 continue
@@ -361,11 +333,11 @@ class CalcDocument(SpreadsheetDocument):
                     col_idx += 1
 
                     rows = int(cell.attrib.get(
-                        "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}number-rows-spanned",
+                        f"{{{self.NS['table']}}}number-rows-spanned",
                         "1"
                     ))
                     cols = int(cell.attrib.get(
-                        "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}number-columns-spanned",
+                       f"{{{self.NS['table']}}}number-columns-spanned",
                         "1"
                     ))
 
@@ -379,16 +351,11 @@ class CalcDocument(SpreadsheetDocument):
 
         return ranges
     
+    
     def has_conditional_formatting(self, sheet: str) -> bool:
         return bool(
-            self.content.findall(
-                ".//style:map",
-                {
-                    "style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
-                },
-            )
+            self.content.findall(".//style:map", self.NS)
         )
-    
    
     def ods_cf_values(self, sheet: str) -> set[tuple[str, float]]:
         values = set()
@@ -442,10 +409,8 @@ class CalcDocument(SpreadsheetDocument):
 
         raw = cell["raw_cell"]
 
-        STYLE_ATTR = "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}style-name"
-        style_name = raw.attrib.get(STYLE_ATTR)
+        style_name = raw.attrib.get(f"{{{self.NS['table']}}}style-name")
 
-        # 🔁 fallback na default sloupce
         if not style_name:
             style_name = cell.get("col_default_style")
 
@@ -456,7 +421,7 @@ class CalcDocument(SpreadsheetDocument):
             "decimal_places": style.get("decimal_places"),
             "align_h": style.get("align_h"),
             "bold": style.get("bold", False),
-            "wrap": style.get("wrap"),          # ← JEDINÉ, co přidáváš
+            "wrap": style.get("wrap"),        
         }
         
     def _find_style(self, style_name: str) -> dict:
@@ -470,32 +435,28 @@ class CalcDocument(SpreadsheetDocument):
                 "wrap": None,
             }
 
-        FO_NS = "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
-        STYLE_NS = "urn:oasis:names:tc:opendocument:xmlns:style:1.0"
-
         bold = False
         align_h = None
         wrap = None
 
-        number_format = style_el.attrib.get(f"{{{STYLE_NS}}}data-style-name")
+        number_format = style_el.attrib.get(f"{{{self.NS["style"]}}}data-style-name")
         decimal_places = self.number_styles.get(number_format)
 
         for el in style_el.iter():
 
             if el.tag.endswith("text-properties"):
-                if el.attrib.get(f"{{{FO_NS}}}font-weight") == "bold":
+                if el.attrib.get(f"{{{self.NS["fo"]}}}font-weight") == "bold":
                     bold = True
 
             if el.tag.endswith("paragraph-properties"):
-                align_h = el.attrib.get(f"{{{FO_NS}}}text-align")
+                align_h = el.attrib.get(f"{{{self.NS["fo"]}}}text-align")
 
             if el.tag.endswith("table-cell-properties"):
-                wo = el.attrib.get(f"{{{FO_NS}}}wrap-option")
+                wo = el.attrib.get(f"{{{self.NS["fo"]}}}wrap-option")
                 if wo is not None:
                     wrap = (wo != "no-wrap")
 
-        # 🔁 DĚDĚNÍ
-        parent = style_el.attrib.get(f"{{{STYLE_NS}}}parent-style-name")
+        parent = style_el.attrib.get(f"{{{self.NS["style"]}}}parent-style-name")
         if parent:
             p = self._find_style(parent)
             bold = bold or p["bold"]
@@ -513,8 +474,7 @@ class CalcDocument(SpreadsheetDocument):
         }
     
     def _find_style_element(self, name: str):
-        STYLE_NS = "urn:oasis:names:tc:opendocument:xmlns:style:1.0"
-        STYLE_NAME_ATTR = f"{{{STYLE_NS}}}name"
+        STYLE_NAME_ATTR = f"{{{self.NS["style"]}}}name"
         for s in self.content.iter():
             if s.attrib.get(STYLE_NAME_ATTR) == name:
                 return s
@@ -531,39 +491,16 @@ class CalcDocument(SpreadsheetDocument):
 
         for col in sheet.findall("table:table-column", self.NS):
             rep = int(col.attrib.get(
-                "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}number-columns-repeated",
+                f"{{{self.NS["table"]}}}number-columns-repeated",
                 "1"
             ))
             style = col.attrib.get(
-                "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}default-cell-style-name"
+                f"{{{self.NS["table"]}}}default-cell-style-name"
             )
             defaults.extend([style] * rep)
 
         return defaults
-    
-    # def is_wrap_text(self, sheet: str, addr: str) -> bool:
-    #     cell = self._find_cell(sheet, addr)
-    #     if not cell:
-    #         return False
-
-    #     raw = cell["raw_cell"]
-    #     style_name = raw.attrib.get(
-    #         "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}style-name"
-    #     )
-
-    #     style_el = self._find_style_element(style_name)
-    #     if style_el is None:
-    #         return False
-
-    #     for el in style_el.iter():
-    #         if el.tag.endswith("table-cell-properties"):
-    #             wrap = el.attrib.get(
-    #                 "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}wrap-option"
-    #             )
-    #             return wrap != "no-wrap"
-
-    #     return True
-    
+        
     def iter_cells(self, sheet: str):
         for table in self.content.findall(".//table:table", self.NS):
             if table.attrib.get(f"{{{self.NS['table']}}}name") != sheet:
@@ -572,7 +509,7 @@ class CalcDocument(SpreadsheetDocument):
             row_idx = 0
             for row in table.findall("table:table-row", self.NS):
                 repeat_row = int(row.attrib.get(
-                    "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}number-rows-repeated",
+                    f"{{{self.NS["table"]}}}number-rows-repeated",
                     "1"
                 ))
 
@@ -582,7 +519,7 @@ class CalcDocument(SpreadsheetDocument):
 
                     for cell in row.findall("table:table-cell", self.NS):
                         repeat_col = int(cell.attrib.get(
-                            "{urn:oasis:names:tc:opendocument:xmlns:table:1.0}number-columns-repeated",
+                            f"{{{self.NS["table"]}}}number-columns-repeated",
                             "1"
                         ))
 
@@ -591,7 +528,7 @@ class CalcDocument(SpreadsheetDocument):
 
                             text = "".join(cell.itertext()).strip()
                             value = cell.attrib.get(
-                                "{urn:oasis:names:tc:opendocument:xmlns:office:1.0}value"
+                                f"{{{self.NS["office"]}}}value"
                             )
 
                             if not text and value is None:
@@ -606,14 +543,12 @@ class CalcDocument(SpreadsheetDocument):
 
         raw = cell["raw_cell"]
 
-        # text v <text:p>
         text = "".join(raw.itertext()).strip()
         if text:
             return text
 
-        # fallback na value atribut
         return raw.attrib.get(
-            "{urn:oasis:names:tc:opendocument:xmlns:office:1.0}value"
+            f"{{{self.NS["office"]}}}value"
         )
     
     def has_formula(self, sheet: str, addr: str) -> bool:
@@ -623,28 +558,19 @@ class CalcDocument(SpreadsheetDocument):
         return cell["formula"] is not None
     
     def iter_charts(self):
-        CHART_NS = self.CHART_NS
-
-        # inline grafy
-        for ch in self.content.findall(".//chart:chart", CHART_NS):
+        for ch in self.content.findall(".//chart:chart", self.NS):
             yield ch, self.content
 
-        # grafy v ObjectX
         for obj in self.objects.values():
-            for ch in obj.findall(".//chart:chart", CHART_NS):
+            for ch in obj.findall(".//chart:chart", self.NS):
                 yield ch, obj
-
-    CHART_NS = {
-        "chart": "urn:oasis:names:tc:opendocument:xmlns:chart:1.0",
-        "text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
-    }
 
     def has_chart(self, sheet: str) -> bool:
         return any(True for _ in self.iter_charts())
 
     def chart_title(self, sheet: str) -> str | None:
         for chart, _root in self.iter_charts():
-            p = chart.find(".//chart:title//text:p", self.CHART_NS)
+            p = chart.find(".//chart:title//text:p", self.NS)
             if p is not None:
                 return "".join(p.itertext()).strip()
         return None
@@ -653,7 +579,7 @@ class CalcDocument(SpreadsheetDocument):
         for chart, _root in self.iter_charts():
             p = chart.find(
                 ".//chart:axis[@chart:dimension='x']//chart:title//text:p",
-                self.CHART_NS,
+                self.NS,
             )
             if p is not None:
                 return "".join(p.itertext()).strip()
@@ -663,45 +589,36 @@ class CalcDocument(SpreadsheetDocument):
         for chart, _root in self.iter_charts():
             p = chart.find(
                 ".//chart:axis[@chart:dimension='y']//chart:title//text:p",
-                self.CHART_NS,
+                self.NS,
             )
             if p is not None:
                 return "".join(p.itertext()).strip()
         return None
 
     def chart_has_data_labels(self, sheet: str) -> bool:
-        STYLE_NS = {
-            "style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
-        }
-
-        CHART_NS = self.CHART_NS
-
-        # 🔁 projdi grafy + jejich XML root
         for chart, root in self.iter_charts():
 
-            for series in chart.findall(".//chart:series", CHART_NS):
+            for series in chart.findall(".//chart:series", self.NS):
                 style_name = series.attrib.get(
-                    f"{{{CHART_NS['chart']}}}style-name"
+                    f"{{{self.NS['chart']}}}style-name"
                 )
                 if not style_name:
                     continue
 
-                # 🔑 hledej styl VE STEJNÉM XML
                 style = root.find(
                     f".//style:style[@style:name='{style_name}']",
-                    STYLE_NS,
+                    self.NS,
                 )
                 if style is None:
                     continue
 
-                props = style.find("style:chart-properties", STYLE_NS)
+                props = style.find("style:chart-properties", self.NS)
                 if props is None:
                     continue
 
-                # ✅ POPISKY DAT
                 if (
-                    props.attrib.get(f"{{{CHART_NS['chart']}}}data-label-number") == "value"
-                    or props.attrib.get(f"{{{CHART_NS['chart']}}}display-label") == "true"
+                    props.attrib.get(f"{{{self.NS['chart']}}}data-label-number") == "value"
+                    or props.attrib.get(f"{{{self.NS['chart']}}}display-label") == "true"
                 ):
                     return True
 
@@ -710,12 +627,11 @@ class CalcDocument(SpreadsheetDocument):
     def chart_type(self, sheet: str) -> str | None:
         for chart, _root in self.iter_charts():
             chart_class = chart.attrib.get(
-                "{urn:oasis:names:tc:opendocument:xmlns:chart:1.0}class"
+                f"{{{self.NS['chart']}}}class"
             )
             if not chart_class:
                 continue
 
-            # chart:bar → bar
             if ":" in chart_class:
                 return chart_class.split(":")[1]
 
@@ -724,15 +640,15 @@ class CalcDocument(SpreadsheetDocument):
         return None
     
     def has_3d_chart(self, sheet: str) -> bool:
-        CHART_NS = "urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
-        DR3D_NS = "urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"
-
         for chart, _source in self.iter_charts():
-            if chart.attrib.get(f"{{{CHART_NS}}}three-dimensional") == "true":
+
+            if chart.attrib.get(
+                f"{{{self.NS['chart']}}}three-dimensional"
+            ) == "true":
                 return True
 
             for el in chart.iter():
-                if el.tag.startswith(f"{{{DR3D_NS}}}"):
+                if el.tag.startswith(f"{{{self.NS['dr3d']}}}"):
                     return True
 
         return False

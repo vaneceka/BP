@@ -72,7 +72,6 @@ class HeaderFormattingCheck(BaseCheck):
             if not style_req:
                 continue
 
-            # jen buňky označené jako záhlaví
             if not style_req.get("bold"):
                 continue
 
@@ -84,7 +83,6 @@ class HeaderFormattingCheck(BaseCheck):
             if not style["bold"]:
                 problems.append(f"{addr}: záhlaví není tučné")
 
-            # 🔹 JEN HORIZONTÁLNÍ STŘED
             if style_req.get("alignment"):
                 if style["align_h"] != "center":
                     problems.append(

@@ -83,92 +83,93 @@ from checks.word.formatting.normal_style_check import NormalStyleCheck
 from document.writer_document import WriterDocument
 
 def main():
-    doc = WordDocument("student.docx")
+    # doc = WordDocument("studentG.docx")
+    doc = WordDocument("studentF.docx")
     # doc = WriterDocument("24_f3ea2.odt")
     assignment = load_assignment("assignment/word/assignment.json")
     doc.save_xml()
 
     checks = [
-        # # Části / oddíly 
-        # SectionCountCheck(),
-        # Section1TOCCheck(),
-        # Section2TextCheck(),
-        # Section3FigureListCheck(),
-        # Section3TableListCheck(),
-        # Section3BibliographyCheck(),
+        # Části / oddíly 
+        SectionCountCheck(),
+        Section1TOCCheck(),
+        Section2TextCheck(),
+        Section3FigureListCheck(),
+        Section3TableListCheck(),
+        Section3BibliographyCheck(),
 
-        # # Formátování 
-        # NormalStyleCheck(),
-        # HeadingStyleCheck(1),
-        # HeadingStyleCheck(2),
-        # HeadingStyleCheck(3),
-        # HeadingHierarchicalNumberingCheck(),
-        # TocHeadingNumberingCheck(),
-        # UnnumberedSpecialHeadingsCheck(),
-        # CoverStylesCheck(),
-        # FrontpageStylesCheck(),
-        # BibliographyStyleCheck(),
-        # CaptionStyleCheck(),
-        # ContentHeadingStyleCheck(),
+        # Formátování 
+        NormalStyleCheck(),
+        HeadingStyleCheck(1),
+        HeadingStyleCheck(2),
+        HeadingStyleCheck(3),
+        HeadingHierarchicalNumberingCheck(),
+        TocHeadingNumberingCheck(),
+        UnnumberedSpecialHeadingsCheck(),
+        CoverStylesCheck(),
+        FrontpageStylesCheck(),
+        BibliographyStyleCheck(),
+        CaptionStyleCheck(),
+        ContentHeadingStyleCheck(),
         HeadingsUsedCorrectlyCheck(),
-        # OriginalFormattingCheck(),
-        # CustomStyleInheritanceCheck(),
-        # RequiredCustomStylesUsageCheck(),
-        # CustomStyleWithTabsCheck(),
-        # MainChapterStartsOnNewPageCheck(),
-        # ManualHorizontalSpacingCheck(),
-        # ManualVerticalSpacingCheck(),
-        # ListLevel2UsedCheck(),
-        # InconsistentFormattingCheck(),
-        # # Obsah
-        # TOCExistsCheck(),
-        # TOCUpToDateCheck(),
-        # DocumentStructureCheck(),
-        # TOCHeadingLevelsCheck(),
-        # TOCFirstSectionContentCheck(),
-        # TOCIllegalContentCheck(),
-        # FirstChapterStartsOnPageOneCheck(),
-        # ChapterNumberingContinuityCheck(),
-        # # Objekty
-        # MissingListOfFiguresCheck(),
-        # ListOfFiguresNotUpdatedCheck(),
-        # ImageLowQualityCheck(),
-        # ObjectCaptionCheck(),
-        # ObjectCaptionDescriptionCheck(),
-        # ObjectCrossReferenceCheck(),
-        # ObjectCaptionBindingCheck(),
-        # # Liteatura
-        # MissingBibliographyCheck(),
-        # BibliographyNotUpdatedCheck(),
+        OriginalFormattingCheck(),
+        CustomStyleInheritanceCheck(),
+        RequiredCustomStylesUsageCheck(),
+        CustomStyleWithTabsCheck(),
+        MainChapterStartsOnNewPageCheck(),
+        ManualHorizontalSpacingCheck(),
+        ManualVerticalSpacingCheck(),
+        ListLevel2UsedCheck(),
+        InconsistentFormattingCheck(),
+        # Obsah
+        TOCExistsCheck(),
+        TOCUpToDateCheck(),
+        DocumentStructureCheck(),
+        TOCHeadingLevelsCheck(),
+        TOCFirstSectionContentCheck(),
+        TOCIllegalContentCheck(),
+        FirstChapterStartsOnPageOneCheck(),
+        ChapterNumberingContinuityCheck(),
+        # Objekty
+        MissingListOfFiguresCheck(),
+        ListOfFiguresNotUpdatedCheck(),
+        ImageLowQualityCheck(),
+        ObjectCaptionCheck(),
+        ObjectCaptionDescriptionCheck(),
+        ObjectCrossReferenceCheck(),
+        ObjectCaptionBindingCheck(),
+        # Liteatura
+        MissingBibliographyCheck(),
+        BibliographyNotUpdatedCheck(),
 
-        # # Header-Foooter
-        # HeaderFooterMissingCheck(),
-        # SecondSectionHeaderHasTextCheck(),
-        # SecondSectionPageNumberStartsAtOneCheck(),
-        # HeaderNotLinkedToPreviousCheck(2),
-        # HeaderNotLinkedToPreviousCheck(3),
-        # FooterLinkedToPreviousCheck(2),
-        # FooterLinkedToPreviousCheck(3),
-        # SectionHeaderEmptyCheck(1),
-        # SectionHeaderEmptyCheck(3),
-        # SectionFooterEmptyCheck(1),
-        # SectionFooterHasPageNumberCheck(2),
-        # SectionFooterHasPageNumberCheck(3),
+        # Header-Foooter
+        HeaderFooterMissingCheck(),
+        SecondSectionHeaderHasTextCheck(),
+        SecondSectionPageNumberStartsAtOneCheck(),
+        HeaderNotLinkedToPreviousCheck(2),
+        HeaderNotLinkedToPreviousCheck(3),
+        FooterLinkedToPreviousCheck(2),
+        FooterLinkedToPreviousCheck(3),
+        SectionHeaderEmptyCheck(1),
+        SectionHeaderEmptyCheck(3),
+        SectionFooterEmptyCheck(1),
+        SectionFooterHasPageNumberCheck(2),
+        SectionFooterHasPageNumberCheck(3),
     ]
 
-    # # excel = ExcelDocument("23_fb750.xlsx")
-    # excel = CalcDocument("23_fb750.ods")
     excel_assignment = load_excel_assignment("assignment/excel/assignment.json")
     
-    # spreadsheet = SpreadsheetDocument.from_path("23_fb750.ods")
-    spreadsheet = SpreadsheetDocument.from_path("23_fb750.xlsx")
+    # spreadsheet = SpreadsheetDocument.from_path("23_fb750G.ods")
+    # spreadsheet = SpreadsheetDocument.from_path("23_fb750F.ods")
+    # spreadsheet = SpreadsheetDocument.from_path("23_fb750G.xlsx")
+    spreadsheet = SpreadsheetDocument.from_path("23_fb750F.xlsx")
     spreadsheet.save_debug_xml()
 
 
     excel_checks = [
         # RequiredSourceWorksheetCheck(),
         # RequiredDataWorksheetCheck(),
-        # NonCopyableFormulasCheck(), - neni pro ODS
+        # # NonCopyableFormulasCheck(), #- neni pro ODS
         # MissingOrWrongFormulaOrNotCalculatedCheck(),
         # ArrayFormulaCheck(),
         # NamedRangeUsageCheck(),
@@ -176,9 +177,9 @@ def main():
         # DescriptiveStatisticsCheck(),
         # MissingDescriptiveStatisticsCheck(),
 
-        # formatovani
+        # # formatovani
         # NumberFormattingCheck(),
-        # TableBorderCheck(), - neni pro ODS
+        # TableBorderCheck(), #- neni pro ODS
         # MergedCellsCheck(),
         # HeaderFormattingCheck(),
         # ConditionalFormattingExistsCheck(),

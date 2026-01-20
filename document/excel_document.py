@@ -37,20 +37,30 @@ class ExcelDocument(SpreadsheetDocument):
         rels = self._load_xml("xl/_rels/workbook.xml.rels")
         rel_map = {
             r.attrib["Id"]: r.attrib["Target"]
-            for r in rels.findall("rel:Relationship", self.NS)
+            for r in rels.findall(".//{*}Relationship")
         }
 
-        for sheet in self.workbook_xml.findall(".//main:sheet", self.NS):
-            name = sheet.attrib["name"]
-            r_id = sheet.attrib.get(
-                "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
-            )
+        for sheet in self.workbook_xml.findall(".//{*}sheet"):
+            name = sheet.attrib.get("name")
+
+            r_id = None
+            for k, v in sheet.attrib.items():
+                if k.endswith("}id"):
+                    r_id = v
+                    break
+
+            if not r_id:
+                continue
+
             target = rel_map.get(r_id)
             if not target:
                 continue
 
             xml = self._load_xml(f"xl/{target}")
-            sheets[name] = {"xml": xml, "path": target}
+            sheets[name] = {
+                "xml": xml,
+                "path": target,
+            }
 
         return sheets
 
@@ -62,7 +72,7 @@ class ExcelDocument(SpreadsheetDocument):
 
     def get_cell(self, address: str, *, include_value=False):
         if "!" not in address:
-            raise ValueError("Cell address must be in format 'sheet!A1'")
+            raise ValueError("Musí být formát 'sheet!A1'")
 
         sheet, addr = address.split("!", 1)
 
@@ -114,19 +124,34 @@ class ExcelDocument(SpreadsheetDocument):
 
 #------------
     def get_array_formula_cells(self) -> list[str]:
-        cells = []
+        cells: list[str] = []
 
         for sheet_name, data in self.sheets.items():
-            xml = data["xml"]
+            xml = data["xml"] 
 
-            for c in xml.findall(".//main:c", self.NS):
-                f = c.find("main:f", self.NS)
-                if f is not None and f.attrib.get("t") == "array":
-                    addr = c.attrib.get("r")
-                    cells.append(f"{sheet_name}!{addr}")
+            for c in xml.iter():
+                if not c.tag.endswith("}c"):
+                    continue
+
+                f = None
+                for ch in list(c):
+                    if ch.tag.endswith("}f"):
+                        f = ch
+                        break
+
+                if f is None:
+                    continue
+
+                if f.get("t") == "array":
+                    addr = c.get("r")
+                    ref = f.get("ref") 
+                    if ref:
+                        cells.append(f"{sheet_name}!{ref} (anchor {addr})")
+                    else:
+                        cells.append(f"{sheet_name}!{addr}")
 
         return cells
-    
+        
     def get_cell_info(self, sheet: str, addr: str):
         cell = self.get_cell(f"{sheet}!{addr}")
         if cell is None:
@@ -152,11 +177,19 @@ class ExcelDocument(SpreadsheetDocument):
                             "formula": cell.value,
                         }
 
-    def normalize_formula(self, f: str | None) -> str:
-        if not f:
+    def normalize_formula(self, f) -> str:
+        if f is None:
             return ""
-        return re.sub(r"\s+", "", f).upper()
-    
+
+        if hasattr(f, "text"):  
+            f = f.text
+
+        if not isinstance(f, str):
+            return ""
+
+        f = re.sub(r"\s+", "", f)
+        return f.upper()
+        
     def get_defined_names(self) -> set[str]:
         return {name.upper() for name in self.wb.defined_names.keys()}
 
@@ -215,7 +248,6 @@ class ExcelDocument(SpreadsheetDocument):
                     if not cell_addr:
                         continue
 
-                    # CF se musí týkat buňky (nebo alespoň sloupce)
                     if cell_addr not in range_str:
                         col = "".join(ch for ch in cell_addr if ch.isalpha()).upper()
                         if col not in range_str:
@@ -224,7 +256,6 @@ class ExcelDocument(SpreadsheetDocument):
                     want_op = exp.get("operator")
                     want_val = float(exp.get("value"))
 
-                    # mapování assignment -> openpyxl operator
                     op_map = {
                         "greaterThan": "greaterThan",
                         "lessThan": "lessThan",
@@ -324,7 +355,6 @@ class ExcelDocument(SpreadsheetDocument):
 
         chart = ws._charts[0]
 
-        # openpyxl typy
         tag = chart.tagname.lower()
 
         if "bar" in tag:

@@ -17,19 +17,17 @@ NS = {
     "rel": "http://schemas.openxmlformats.org/package/2006/relationships",
     }
 
-# BUILTIN_STYLE_NAMES = {
-#     "normal",
-#     "heading 1",
-#     "heading 2",
-#     "heading 3",
-#     "heading 4",
-#     "caption",
-#     "bibliography",
-#     "toc heading",
-#     "table of contents",
-#     "content heading",
-# }
-
+COVER_STYLES = {
+            "desky-fakulta": [
+                "desky-fakulta",
+            ],
+            "desky-nazev-prace": [
+                "desky-nazev-prace",
+            ],
+            "desky-rok-a-jmeno": [
+                "desky-rok-a-jmeno",
+            ],
+        }
 
 class WordDocument(TextDocument):
     def __init__(self, path: str):
@@ -61,22 +59,7 @@ class WordDocument(TextDocument):
         
     def iter_paragraphs(self) -> Iterable[ET.Element]:
         return self._xml.findall(".//w:p", self.NS)
-
-    def _is_builtin_style_name(self, name: str) -> bool:
-        return name.strip().lower() in BUILTIN_STYLE_NAMES
     
-    # def split_assignment_styles(self, assignment):
-    #     custom = {}
-    #     builtin = {}
-
-    #     for name, spec in assignment.styles.items():
-    #         if self._is_builtin_style_name(name):
-    #             builtin[name] = spec
-    #         else:
-    #             custom[name] = spec
-
-    #     return custom, builtin
-
     # oddíly
     def _split_into_sections(self):
         sections = []
@@ -977,8 +960,7 @@ class WordDocument(TextDocument):
             rels = self._load("word/_rels/document.xml.rels")
         except KeyError:
             return None
-
-        for rel in rels.findall(".//{http://schemas.openxmlformats.org/package/2006/relationships}Relationship"):
+        for rel in rels.findall(".//rel:Relationship", NS):
             if rel.attrib.get("Id") == r_id:
                 target = rel.attrib.get("Target")
 
@@ -1053,7 +1035,24 @@ class WordDocument(TextDocument):
         return self.paragraph_has_seq_caption(p) is not None
 
     
-    def _paragraph_is_toc_or_object_list(self, p):
+    # def _paragraph_is_toc_or_object_list(self, p):
+    #     ppr = p.find("w:pPr", self.NS)
+    #     if ppr is not None:
+    #         ps = ppr.find("w:pStyle", self.NS)
+    #         if ps is not None:
+    #             style = (ps.attrib.get(f"{{{self.NS['w']}}}val") or "").lower()
+    #             if any(x in style for x in ("toc", "obsah", "seznam")):
+    #                 return True
+
+    #     for instr in p.findall(".//w:instrText", self.NS):
+    #         if instr.text:
+    #             txt = instr.text.upper()
+    #             if txt.startswith("TOC") or "PAGEREF" in txt:
+    #                 return True
+
+    #     return False
+
+    def _paragraph_is_toc_or_object_list(self, p) -> bool:
         ppr = p.find("w:pPr", self.NS)
         if ppr is not None:
             ps = ppr.find("w:pStyle", self.NS)
@@ -1062,11 +1061,20 @@ class WordDocument(TextDocument):
                 if any(x in style for x in ("toc", "obsah", "seznam")):
                     return True
 
+        instr_parts = []
         for instr in p.findall(".//w:instrText", self.NS):
             if instr.text:
-                txt = instr.text.upper()
-                if txt.startswith("TOC") or "PAGEREF" in txt:
-                    return True
+                instr_parts.append(instr.text)
+
+        instr_joined = "".join(instr_parts).strip().upper()
+
+        if "TOC" in instr_joined or "PAGEREF" in instr_joined:
+            return True
+
+        for fld in p.findall(".//w:fldSimple", self.NS):
+            instr = (fld.attrib.get(f"{{{self.NS['w']}}}instr") or "").strip().upper()
+            if "TOC" in instr or "PAGEREF" in instr:
+                return True
 
         return False
     
@@ -1142,9 +1150,7 @@ class WordDocument(TextDocument):
         except KeyError:
             return None
 
-        for rel in rels.findall(
-            ".//{http://schemas.openxmlformats.org/package/2006/relationships}Relationship"
-        ):
+        for rel in rels.findall(".//rel:Relationship", self.NS):
             if rel.attrib.get("Id") == r_id:
                 target = rel.attrib.get("Target")
                 if not target:
@@ -1303,7 +1309,6 @@ class WordDocument(TextDocument):
         if not num_id:
             return False, False, None
 
-        # 👉 najdi numbering.xml
         numbering = self._load("word/numbering.xml")
 
         abstract_id = None
@@ -1475,12 +1480,29 @@ class WordDocument(TextDocument):
         return before is not None and int(before) > 0
     
     def paragraph_is_generated(self, p) -> bool:
-        # pole (TOC, REF, atd.)
         if self.paragraph_is_generated_by_field(p):
             return True
 
-        # automatické seznamy, obsahy
         if self._paragraph_is_toc_or_object_list(p):
             return True
 
         return False
+    
+    def get_cover_style(self, key: str):
+        names = COVER_STYLES.get(key, [])
+        return self.get_style_by_any_name(
+            names,
+            default_alignment="center"
+        )
+    
+    def paragraph_is_heading(self, p) -> bool:
+        ppr = p.find("w:pPr", self.NS)
+        if ppr is None:
+            return False
+
+        ps = ppr.find("w:pStyle", self.NS)
+        if ps is None:
+            return False
+
+        style = (ps.attrib.get(f"{{{self.NS['w']}}}val") or "").lower()
+        return style.startswith("heading") or style.startswith("nadpis")

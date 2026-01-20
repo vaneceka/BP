@@ -54,7 +54,6 @@ class NumberFormattingCheck(BaseCheck):
         if assignment is None or not hasattr(assignment, "cells"):
             return CheckResult(True, "Chybí assignment – check přeskočen.", 0)
 
-        # ✅ univerzální kontrola listu
         if hasattr(document, "has_sheet") and not document.has_sheet(self.SHEET):
             return CheckResult(
                 True,
@@ -75,7 +74,6 @@ class NumberFormattingCheck(BaseCheck):
             if not style:
                 continue
 
-            # 🔹 CALC
             if isinstance(document, CalcDocument):
                 expected_dp = self.expected_decimal_places(expected_fmt)
                 found_dp = style.get("decimal_places")
@@ -99,7 +97,6 @@ class NumberFormattingCheck(BaseCheck):
                         f"(oček. {expected_dp}, nalezen {found_dp})"
                     )
 
-            # 🔹 EXCEL
             else:
                 number_fmt = style.get("number_format")
                 if number_fmt != expected_fmt:
