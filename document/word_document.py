@@ -17,7 +17,11 @@ NS = {
     "rel": "http://schemas.openxmlformats.org/package/2006/relationships",
     }
 
-COVER_STYLES = {
+
+
+class WordDocument(TextDocument):
+
+    COVER_STYLES = {
             "desky-fakulta": [
                 "desky-fakulta",
             ],
@@ -29,7 +33,24 @@ COVER_STYLES = {
             ],
         }
 
-class WordDocument(TextDocument):
+    LIST_LEVEL2_STYLE_IDS = {
+            "slovanseznam2",
+            "seznamsodrkami2",
+            "cislovanyseznam2",
+            "numberlist2",
+            "bulletlist2",
+            "seznam2",
+        }
+    
+    # SPECIAL_HEADING_STYLES = [
+    #     "Obsah",
+    #     "NadpisObsahu",
+    #     "SeznamObrazku",
+    #     "SeznamTabulek",
+    #     "Bibliografie",
+    #     "Zdroje",
+    # ]
+
     def __init__(self, path: str):
         self.path = path
         self.NS = NS  
@@ -1506,3 +1527,63 @@ class WordDocument(TextDocument):
 
         style = (ps.attrib.get(f"{{{self.NS['w']}}}val") or "").lower()
         return style.startswith("heading") or style.startswith("nadpis")
+    
+
+    def has_list_level(self, level: int) -> bool:
+        if level != 2:
+            return False
+
+        for p in self.iter_paragraphs():
+            ppr = p.find("w:pPr", self.NS)
+            if ppr is None:
+                continue
+
+            ps = ppr.find("w:pStyle", self.NS)
+            if ps is None:
+                continue
+
+            style_id = ps.attrib.get(f"{{{self.NS['w']}}}val")
+            if not style_id:
+                continue
+
+            if style_id.strip().lower() in self.LIST_LEVEL2_STYLE_IDS:
+                return True
+
+        return False
+    
+    def toc_level_contains_numbers(self, level: int) -> bool | None:
+        number_re = re.compile(r'^\s*\d+(\.\d+)*\.')
+
+        items = []
+        for p in self.iter_paragraphs():
+            sid = (self._paragraph_style_id(p) or "").lower()
+
+            ok = (
+                (sid == f"toc{level}") or
+                (sid == f"obsah{level}")
+            )
+            if not ok:
+                continue
+
+            txt = (self._paragraph_text(p) or "").strip()
+            if txt:
+                items.append(txt)
+
+        if not items:
+            return None
+
+        return any(number_re.match(t) for t in items)
+    
+    def heading_level_is_numbered(self, level: int) -> bool:
+        st = self.get_heading_style(level)
+        return bool(st and getattr(st, "isNumbered", False))
+    
+    def get_special_heading_styles(self) -> list[str]:
+        return self.SPECIAL_HEADING_STYLES
+    
+    def is_special_heading_numbered(self, style_name: str) -> bool:
+        style = self.get_style_by_any_name([style_name])
+        if style is None:
+            return False
+
+        return bool(style.isNumbered)

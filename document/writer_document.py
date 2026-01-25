@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 import zipfile
 import xml.etree.ElementTree as ET
 from assignment.word.word_assignment_model import StyleSpec
@@ -7,26 +8,35 @@ import xml.etree.ElementTree as ET
 
 from document.text_document import TextDocument
 
-NS = {
-    "style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
-    "text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
-    "fo": "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
-    "loext": "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
-}
-COVER_STYLES = {
-            "desky-fakulta": [
-                "desky-fakulta",
-            ],
-            "desky-nazev-prace": [
-                "desky-nazev-prace",
-            ],
-            "desky-rok-a-jmeno": [
-                "desky-rok-a-jmeno",
-            ],
-        }
-
 
 class WriterDocument(TextDocument):
+
+    NS = {
+        "text":  "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+        "style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",  
+        "fo": "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
+        "loext": "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
+    }
+    COVER_STYLES = {
+                "desky-fakulta": [
+                    "desky-fakulta",
+                ],
+                "desky-nazev-prace": [
+                    "desky-nazev-prace",
+                ],
+                "desky-rok-a-jmeno": [
+                    "desky-rok-a-jmeno",
+                ],
+            }
+    
+    SPECIAL_HEADING_STYLES = [
+        "Contents_20_Heading",
+        "Bibliography_20_Heading",
+        "List_20_of_20_Figures",
+        "List_20_of_20_Tables",
+    ]
+
+
     def __init__(self, path: str):
         self.path = path
         self._zip = zipfile.ZipFile(path)
@@ -56,20 +66,20 @@ class WriterDocument(TextDocument):
         
     def _find_style(self, name: str):
         for root in (self.styles, self.content):
-            for style in root.findall(".//style:style", NS):
+            for style in root.findall(".//style:style", self.NS):
 
-                internal = style.attrib.get(f"{{{NS['style']}}}name", "").lower()
+                internal = style.attrib.get(f"{{{self.NS['style']}}}name", "").lower()
                 if internal == name.lower():
                     return style
 
-                display = style.attrib.get(f"{{{NS['style']}}}display-name", "")
+                display = style.attrib.get(f"{{{self.NS['style']}}}display-name", "")
                 if display.lower() == name.lower():
                     return style
 
         return None
         
     def _build_style_spec(self, style, *, default_alignment=None) -> StyleSpec:
-        para_props = style.find("style:paragraph-properties", NS)
+        para_props = style.find("style:paragraph-properties", self.NS)
 
         font = self._resolve_font_name(style)
 
@@ -77,15 +87,18 @@ class WriterDocument(TextDocument):
         bold = self._resolve_bold(style)
 
         italic = False
-        fs = self._resolve_text_prop(style, f"{{{NS['fo']}}}font-style")
+        fs = self._resolve_text_prop(style, f"{{{self.NS['fo']}}}font-style")
         if fs is not None:
             italic = (fs.lower() == "italic")
 
         alignment = default_alignment
         if para_props is not None:
-            alignment = para_props.attrib.get(f"{{{NS['fo']}}}text-align", default_alignment)
+            alignment = para_props.attrib.get(f"{{{self.NS['fo']}}}text-align", default_alignment)
+        
+        if alignment and alignment.lower() == "justify":
+            alignment = "both"
 
-        color_val = self._resolve_text_prop(style, f"{{{NS['fo']}}}color")
+        color_val = self._resolve_text_prop(style, f"{{{self.NS['fo']}}}color")
         if color_val is None:
             color = "000000"
         else:
@@ -93,16 +106,16 @@ class WriterDocument(TextDocument):
 
         text_transform = self._resolve_text_prop(
             style,
-            f"{{{NS['fo']}}}text-transform"
+            f"{{{self.NS['fo']}}}text-traself.nsform"
         )
 
         all_caps = (text_transform == "uppercase")
 
-        based_on = style.attrib.get(f"{{{NS['style']}}}parent-style-name")
+        based_on = style.attrib.get(f"{{{self.NS['style']}}}parent-style-name")
 
         mt = self._resolve_paragraph_prop(
             style,
-            f"{{{NS['fo']}}}margin-top"
+            f"{{{self.NS['fo']}}}margin-top"
         )
         space_before = self._cm_to_twips(mt) if mt else None
 
@@ -110,14 +123,14 @@ class WriterDocument(TextDocument):
 
         page_break_before = None
         if para_props is not None:
-            br = para_props.attrib.get(f"{{{NS['fo']}}}break-before")
+            br = para_props.attrib.get(f"{{{self.NS['fo']}}}break-before")
             if br == "page":
                 page_break_before = True
             elif br is not None:
                 page_break_before = False
 
         outline_level = style.attrib.get(
-            f"{{{NS['style']}}}default-outline-level"
+            f"{{{self.NS['style']}}}default-outline-level"
         )
 
         num_level = None
@@ -127,8 +140,10 @@ class WriterDocument(TextDocument):
             except ValueError:
                 num_level = None
 
+        line_height = self._resolve_line_height(style)
+
         return StyleSpec(
-            name=style.attrib.get(f"{{{NS['style']}}}name"),
+            name=style.attrib.get(f"{{{self.NS['style']}}}name"),
             font=font,
             size=size,
             bold=bold,
@@ -141,7 +156,33 @@ class WriterDocument(TextDocument):
             tabs=tabs,
             pageBreakBefore=page_break_before,
             numLevel=num_level,
+            lineHeight=line_height,
         )
+    
+    def _resolve_line_height(self, style_el) -> float | None:
+        val = self._resolve_paragraph_prop(
+            style_el,
+            f"{{{self.NS['fo']}}}line-height"
+        )
+
+        if not val:
+            return None
+
+        val = val.strip().lower()
+
+        if val.endswith("%"):
+            try:
+                return float(val[:-1]) / 100
+            except ValueError:
+                return None
+
+        if val.endswith("pt"):
+            try:
+                return float(val[:-2])
+            except ValueError:
+                return None
+
+        return None
     
     def get_style_by_any_name(self, names, *, default_alignment=None):
         for name in names:
@@ -155,24 +196,24 @@ class WriterDocument(TextDocument):
     
     def get_doc_default_font_size(self) -> int | None:
         for root in (self.styles, self.content):
-            default = root.find(".//style:default-style", NS)
+            default = root.find(".//style:default-style", self.NS)
             if default is not None:
-                tp = default.find("style:text-properties", NS)
+                tp = default.find("style:text-properties", self.NS)
                 if tp is not None:
-                    fs = tp.attrib.get(f"{{{NS['fo']}}}font-size")
+                    fs = tp.attrib.get(f"{{{self.NS['fo']}}}font-size")
                     if fs and fs.endswith("pt"):
                         return int(float(fs.replace("pt", "")))
         return None
     
     def get_cover_style(self, key: str) -> StyleSpec | None:
-        names = COVER_STYLES.get(key, [])
+        names = self.COVER_STYLES.get(key, [])
         return self.get_style_by_any_name(
             names,
             default_alignment="center"
         )
     
     def _get_parent_style_name(self, style_el: ET.Element) -> str | None:
-        return style_el.attrib.get(f"{{{NS['style']}}}parent-style-name")
+        return style_el.attrib.get(f"{{{self.NS['style']}}}parent-style-name")
     
     def _resolve_text_prop(self, style_el: ET.Element, attr_qname: str) -> str | None:
         visited = set()
@@ -180,7 +221,7 @@ class WriterDocument(TextDocument):
         while style_el is not None and id(style_el) not in visited:
             visited.add(id(style_el))
 
-            tp = style_el.find("style:text-properties", NS)
+            tp = style_el.find("style:text-properties", self.NS)
             if tp is not None:
                 val = tp.attrib.get(attr_qname)
                 if val is not None:
@@ -200,13 +241,13 @@ class WriterDocument(TextDocument):
         while style_el is not None and id(style_el) not in visited:
             visited.add(id(style_el))
 
-            tp = style_el.find("style:text-properties", NS)
+            tp = style_el.find("style:text-properties", self.NS)
             if tp is not None:
-                fw = tp.attrib.get(f"{{{NS['fo']}}}font-weight")
+                fw = tp.attrib.get(f"{{{self.NS['fo']}}}font-weight")
                 if fw is not None:
                     return fw.lower() == "bold"
 
-                fsn = tp.attrib.get(f"{{{NS['style']}}}font-style-name")
+                fsn = tp.attrib.get(f"{{{self.NS['style']}}}font-style-name")
                 if fsn is not None and "bold" in fsn.lower():
                     return True
 
@@ -218,7 +259,7 @@ class WriterDocument(TextDocument):
         return False
     
     def _resolve_font_size_pt(self, style_el: ET.Element) -> int | None:
-        val = self._resolve_text_prop(style_el, f"{{{NS['fo']}}}font-size")
+        val = self._resolve_text_prop(style_el, f"{{{self.NS['fo']}}}font-size")
         if not val:
             return None
 
@@ -237,7 +278,7 @@ class WriterDocument(TextDocument):
         while style_el is not None and id(style_el) not in visited:
             visited.add(id(style_el))
 
-            pp = style_el.find("style:paragraph-properties", NS)
+            pp = style_el.find("style:paragraph-properties", self.NS)
             if pp is not None:
                 val = pp.attrib.get(attr_qname)
                 if val is not None:
@@ -259,7 +300,7 @@ class WriterDocument(TextDocument):
     def _resolve_font_name(self, style_el: ET.Element) -> str | None:
         val = self._resolve_text_prop(
             style_el,
-            f"{{{NS['style']}}}font-name"
+            f"{{{self.NS['style']}}}font-name"
         )
         return val
     
@@ -269,14 +310,14 @@ class WriterDocument(TextDocument):
         while style_el is not None and id(style_el) not in visited:
             visited.add(id(style_el))
 
-            para = style_el.find("style:paragraph-properties", NS)
+            para = style_el.find("style:paragraph-properties", self.NS)
             if para is not None:
-                tabs_el = para.find("style:tab-stops", NS)
+                tabs_el = para.find("style:tab-stops", self.NS)
                 if tabs_el is not None:
                     tabs = []
-                    for t in tabs_el.findall("style:tab-stop", NS):
-                        pos = t.attrib.get(f"{{{NS['style']}}}position")
-                        typ = t.attrib.get(f"{{{NS['style']}}}type", "left")
+                    for t in tabs_el.findall("style:tab-stop", self.NS):
+                        pos = t.attrib.get(f"{{{self.NS['style']}}}position")
+                        typ = t.attrib.get(f"{{{self.NS['style']}}}type", "left")
 
                         if pos and pos.endswith("cm"):
                             cm = float(pos.replace("cm", ""))
@@ -298,7 +339,7 @@ class WriterDocument(TextDocument):
             return None
 
         parent = style_el.attrib.get(
-            "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}parent-style-name"
+            "{urn:oasis:names:tc:opendocument:xmlself.ns:style:1.0}parent-style-name"
         )
 
         return parent
@@ -306,8 +347,8 @@ class WriterDocument(TextDocument):
     def get_used_paragraph_styles(self) -> set[str]:
         used = set()
 
-        for p in self.content.findall(".//text:p", NS):
-            style_name = p.attrib.get(f"{{{NS['text']}}}style-name")
+        for p in self.content.findall(".//text:p", self.NS):
+            style_name = p.attrib.get(f"{{{self.NS['text']}}}style-name")
             if style_name:
                 used.add(style_name)
 
@@ -340,12 +381,12 @@ class WriterDocument(TextDocument):
             if root is None:
                 continue
 
-            outline = root.find(".//text:outline-style", NS)
+            outline = root.find(".//text:outline-style", self.NS)
             if outline is not None:
                 return outline
 
             outline = root.find(
-                f"{{{NS['text']}}}outline-style"
+                f"{{{self.NS['text']}}}outline-style"
             )
             if outline is not None:
                 return outline
@@ -359,18 +400,18 @@ class WriterDocument(TextDocument):
             return False, False, None
 
         lvl = outline.find(
-            f".//{{{NS['text']}}}outline-level-style[@{{{NS['text']}}}level='{level}']"
+            f".//{{{self.NS['text']}}}outline-level-style[@{{{self.NS['text']}}}level='{level}']"
         )
         if lvl is None:
             return False, False, None
 
-        num_format = lvl.attrib.get(f"{{{NS['style']}}}num-format")
+        num_format = lvl.attrib.get(f"{{{self.NS['style']}}}num-format")
         if not num_format:
             return False, False, None
 
         num_list = (
-            lvl.attrib.get(f"{{{NS['loext']}}}num-list-format")
-            or lvl.attrib.get(f"{{{NS['text']}}}num-list-format")
+            lvl.attrib.get(f"{{{self.NS['loext']}}}num-list-format")
+            or lvl.attrib.get(f"{{{self.NS['text']}}}num-list-format")
             or ""
         )
 
@@ -387,7 +428,7 @@ class WriterDocument(TextDocument):
         if style is None:
             return None
 
-        val = style.attrib.get(f"{{{NS['style']}}}default-outline-level")
+        val = style.attrib.get(f"{{{self.NS['style']}}}default-outline-level")
         if not val:
             return None
 
@@ -400,12 +441,12 @@ class WriterDocument(TextDocument):
     def iter_headings(self) -> list[tuple[str, int]]:
         items = []
 
-        for p in self.content.findall(".//text:h", NS):
+        for p in self.content.findall(".//text:h", self.NS):
             txt = "".join(p.itertext()).strip()
             if not txt:
                 continue
 
-            lvl = p.attrib.get(f"{{{NS['text']}}}outline-level")
+            lvl = p.attrib.get(f"{{{self.NS['text']}}}outline-level")
             if not lvl:
                 continue
 
@@ -421,14 +462,14 @@ class WriterDocument(TextDocument):
     def find_inline_formatting(self) -> list[dict]:
         results = []
 
-        for p in self.content.findall(".//text:p", NS):
+        for p in self.content.findall(".//text:p", self.NS):
 
-            for span in p.findall(".//text:span", NS):
+            for span in p.findall(".//text:span", self.NS):
                 span_text = "".join(span.itertext()).strip()
                 if not span_text:
                     continue
 
-                span_style_name = span.attrib.get(f"{{{NS['text']}}}style-name")
+                span_style_name = span.attrib.get(f"{{{self.NS['text']}}}style-name")
                 if not span_style_name:
                     continue
 
@@ -436,29 +477,29 @@ class WriterDocument(TextDocument):
                 if span_style is None:
                     continue
 
-                tp = span_style.find("style:text-properties", NS)
+                tp = span_style.find("style:text-properties", self.NS)
                 if tp is None:
                     continue
 
-                if tp.attrib.get(f"{{{NS['fo']}}}font-weight") == "bold":
+                if tp.attrib.get(f"{{{self.NS['fo']}}}font-weight") == "bold":
                     results.append({
                         "text": span_text,
                         "problem": "tučné písmo",
                     })
 
-                if tp.attrib.get(f"{{{NS['fo']}}}font-style") == "italic":
+                if tp.attrib.get(f"{{{self.NS['fo']}}}font-style") == "italic":
                     results.append({
                         "text": span_text,
                         "problem": "kurzíva",
                     })
 
-                if f"{{{NS['fo']}}}font-size" in tp.attrib:
+                if f"{{{self.NS['fo']}}}font-size" in tp.attrib:
                     results.append({
                         "text": span_text,
                         "problem": "změna velikosti písma",
                     })
 
-                if f"{{{NS['fo']}}}color" in tp.attrib:
+                if f"{{{self.NS['fo']}}}color" in tp.attrib:
                     results.append({
                         "text": span_text,
                         "problem": "změna barvy",
@@ -468,14 +509,14 @@ class WriterDocument(TextDocument):
     
 
     def iter_main_headings(self):
-        for h in self.content.findall(".//text:h", NS):
-            lvl = h.attrib.get(f"{{{NS['text']}}}outline-level")
+        for h in self.content.findall(".//text:h", self.NS):
+            lvl = h.attrib.get(f"{{{self.NS['text']}}}outline-level")
             if lvl == "1":
                 yield h
 
 
     def heading_starts_on_new_page(self, h) -> bool:
-        style_name = h.attrib.get(f"{{{NS['text']}}}style-name")
+        style_name = h.attrib.get(f"{{{self.NS['text']}}}style-name")
         if not style_name:
             return False
 
@@ -483,11 +524,11 @@ class WriterDocument(TextDocument):
         if style is None:
             return False
 
-        pprops = style.find("style:paragraph-properties", NS)
+        pprops = style.find("style:paragraph-properties", self.NS)
         if pprops is None:
             return False
 
-        return pprops.attrib.get(f"{{{NS['fo']}}}break-before") == "page"
+        return pprops.attrib.get(f"{{{self.NS['fo']}}}break-before") == "page"
     
     def get_visible_text(self, element) -> str:
         return "".join(element.itertext()).strip()
@@ -503,22 +544,22 @@ class WriterDocument(TextDocument):
                 parts.append(el.text)
 
             # <text:s text:c="N"/>
-            if el.tag == f"{{{NS['text']}}}s":
-                c = el.attrib.get(f"{{{NS['text']}}}c")
+            if el.tag == f"{{{self.NS['text']}}}s":
+                c = el.attrib.get(f"{{{self.NS['text']}}}c")
                 parts.append(" " * (int(c) if c and c.isdigit() else 1))
 
             # <text:tab/>
-            elif el.tag == f"{{{NS['text']}}}tab":
+            elif el.tag == f"{{{self.NS['text']}}}tab":
                 parts.append("\t")
 
         return "".join(parts)
 
     def paragraph_is_toc(self, p) -> bool:
-        style = p.attrib.get(f"{{{NS['text']}}}style-name", "").lower()
+        style = p.attrib.get(f"{{{self.NS['text']}}}style-name", "").lower()
         return "toc" in style or "obsah" in style
     
     def iter_paragraphs(self):
-        return self.content.findall(".//text:p", NS)
+        return self.content.findall(".//text:p", self.NS)
     
     def paragraph_is_empty(self, p) -> bool:
         return not self.paragraph_text(p).strip()
@@ -533,7 +574,7 @@ class WriterDocument(TextDocument):
 
 
     def paragraph_style_name(self, p) -> str:
-        return p.attrib.get(f"{{{NS['text']}}}style-name", "bez stylu")
+        return p.attrib.get(f"{{{self.NS['text']}}}style-name", "bez stylu")
 
 
     def paragraph_has_spacing_before(self, p) -> bool:
@@ -542,11 +583,11 @@ class WriterDocument(TextDocument):
         if style is None:
             return False
 
-        pp = style.find("style:paragraph-properties", NS)
+        pp = style.find("style:paragraph-properties", self.NS)
         if pp is None:
             return False
 
-        mt = pp.attrib.get(f"{{{NS['fo']}}}margin-top")
+        mt = pp.attrib.get(f"{{{self.NS['fo']}}}margin-top")
         return mt is not None and mt != "0cm"
     
     def _odt_text_with_specials(self, el) -> str:
@@ -557,14 +598,14 @@ class WriterDocument(TextDocument):
                 out.append(node.text)
 
             for ch in list(node):
-                if ch.tag == f"{{{NS['text']}}}s":
-                    c = ch.attrib.get(f"{{{NS['text']}}}c")
+                if ch.tag == f"{{{self.NS['text']}}}s":
+                    c = ch.attrib.get(f"{{{self.NS['text']}}}c")
                     out.append(" " * (int(c) if c and c.isdigit() else 1))
 
-                elif ch.tag == f"{{{NS['text']}}}tab":
+                elif ch.tag == f"{{{self.NS['text']}}}tab":
                     out.append("\t")
 
-                elif ch.tag == f"{{{NS['text']}}}line-break":
+                elif ch.tag == f"{{{self.NS['text']}}}line-break":
                     out.append("\n")
 
                 else:
@@ -577,7 +618,7 @@ class WriterDocument(TextDocument):
         return "".join(out)
     
     def _paragraph_is_toc_or_object_list(self, p) -> bool:
-        style = p.attrib.get(f"{{{NS['text']}}}style-name", "").lower()
+        style = p.attrib.get(f"{{{self.NS['text']}}}style-name", "").lower()
 
         if any(x in style for x in ("toc", "obsah", "seznam")):
             return True
@@ -589,3 +630,106 @@ class WriterDocument(TextDocument):
     
     def paragraph_has_page_break(self, p) -> bool:
         return False
+    
+    #---------------------------
+    def get_writer_list_level(self, style_name: str) -> int | None:
+        if not style_name:
+            return None
+
+        style = style_name.lower()
+
+        # povolené prefixy
+        if not (style.startswith("list_") or style.startswith("numbering_")):
+            return None
+
+        match = re.search(r'_(\d+)$', style)
+        if not match:
+            return None
+
+        return int(match.group(1))
+
+
+    def has_list_level(self, level: int) -> bool:
+        for p in self.iter_paragraphs():
+            style = self.paragraph_style_name(p)
+            if not style:
+                continue
+           
+            lvl = self.get_writer_list_level(style)
+            if lvl == level:
+                return True
+
+        return False
+    
+    def get_normal_style(self) -> StyleSpec | None:
+        style = self._find_style("Standard")
+        if style is None:
+            return None
+
+        return self._build_style_spec(style)
+    
+    def toc_shows_numbers(self) -> bool | None:
+        toc = self.content.find(".//text:table-of-content", self.NS)
+        if toc is None:
+            return None
+
+        lvl = toc.attrib.get(f"{{{self.NS['text']}}}display-outline-level")
+        return bool(lvl)
+    
+    def toc_level_contains_numbers(self, level: int) -> bool | None:
+        """
+        True  = TOC položky této úrovně mají viditelné číslování
+        False = TOC položky této úrovně jsou bez číslování
+        None  = v TOC nejsou položky této úrovně
+        """
+        number_re = re.compile(r'^\s*\d+(\.\d+)*\s+')
+
+        toc = self.content.find(".//text:table-of-content", self.NS)
+        if toc is None:
+            return None
+
+        body = toc.find("text:index-body", self.NS)
+        if body is None:
+            return None
+
+        found_any = False
+
+        # Writer mapování: P2 = level 1, P3 = level 2, ...
+        expected_style = f"P{level + 1}"
+
+        for p in body.findall("text:p", self.NS):
+            style = p.attrib.get(f"{{{self.NS['text']}}}style-name")
+            if style != expected_style:
+                continue
+
+            found_any = True
+            txt = self.paragraph_text(p).strip()
+
+            if number_re.match(txt):
+                return True
+
+        if not found_any:
+            return None
+
+        return False
+    
+    def heading_level_is_numbered(self, level: int) -> bool:
+        exists, _, _ = self.get_heading_numbering_info(level)
+        return exists
+    
+
+    def is_special_heading_numbered(self, style_name: str) -> bool:
+        style = self._find_style(style_name)
+        if style is None:
+            return False
+
+        # outline level = potenciální číslování
+        outline = style.attrib.get(
+            f"{{{self.NS['style']}}}default-outline-level"
+        )
+        if not outline:
+            return False
+
+        # ověř, že existuje numbering pro tento level
+        exists, _, _ = self.get_heading_numbering_info(int(outline))
+        return exists

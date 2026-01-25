@@ -84,85 +84,85 @@ from document.writer_document import WriterDocument
 
 def main():
     # doc = WordDocument("studentG.docx")
-    doc = WordDocument("studentF.docx")
-    # doc = WriterDocument("24_f3ea2.odt")
+    # doc = WordDocument("studentF.docx")
+    doc = WriterDocument("24_f3ea2.odt")
     assignment = load_assignment("assignment/word/assignment.json")
     doc.save_xml()
 
     checks = [
-        # Části / oddíly 
-        SectionCountCheck(),
-        Section1TOCCheck(),
-        Section2TextCheck(),
-        Section3FigureListCheck(),
-        Section3TableListCheck(),
-        Section3BibliographyCheck(),
+        # # Části / oddíly 
+        # SectionCountCheck(),
+        # Section1TOCCheck(),
+        # Section2TextCheck(),
+        # Section3FigureListCheck(),
+        # Section3TableListCheck(),
+        # Section3BibliographyCheck(),
 
-        # Formátování 
-        NormalStyleCheck(),
-        HeadingStyleCheck(1),
-        HeadingStyleCheck(2),
-        HeadingStyleCheck(3),
-        HeadingHierarchicalNumberingCheck(),
-        TocHeadingNumberingCheck(),
+        # # Formátování 
+        # NormalStyleCheck(),
+        # HeadingStyleCheck(1),
+        # HeadingStyleCheck(2),
+        # HeadingStyleCheck(3),
+        # HeadingHierarchicalNumberingCheck(),
+        # TocHeadingNumberingCheck(),
         UnnumberedSpecialHeadingsCheck(),
-        CoverStylesCheck(),
-        FrontpageStylesCheck(),
-        BibliographyStyleCheck(),
-        CaptionStyleCheck(),
-        ContentHeadingStyleCheck(),
-        HeadingsUsedCorrectlyCheck(),
-        OriginalFormattingCheck(),
-        CustomStyleInheritanceCheck(),
-        RequiredCustomStylesUsageCheck(),
-        CustomStyleWithTabsCheck(),
-        MainChapterStartsOnNewPageCheck(),
-        ManualHorizontalSpacingCheck(),
-        ManualVerticalSpacingCheck(),
-        ListLevel2UsedCheck(),
-        InconsistentFormattingCheck(),
-        # Obsah
-        TOCExistsCheck(),
-        TOCUpToDateCheck(),
-        DocumentStructureCheck(),
-        TOCHeadingLevelsCheck(),
-        TOCFirstSectionContentCheck(),
-        TOCIllegalContentCheck(),
-        FirstChapterStartsOnPageOneCheck(),
-        ChapterNumberingContinuityCheck(),
-        # Objekty
-        MissingListOfFiguresCheck(),
-        ListOfFiguresNotUpdatedCheck(),
-        ImageLowQualityCheck(),
-        ObjectCaptionCheck(),
-        ObjectCaptionDescriptionCheck(),
-        ObjectCrossReferenceCheck(),
-        ObjectCaptionBindingCheck(),
-        # Liteatura
-        MissingBibliographyCheck(),
-        BibliographyNotUpdatedCheck(),
+        # CoverStylesCheck(),
+        # FrontpageStylesCheck(),
+        # BibliographyStyleCheck(),
+        # CaptionStyleCheck(),
+        # ContentHeadingStyleCheck(),
+        # HeadingsUsedCorrectlyCheck(),
+        # OriginalFormattingCheck(),
+        # CustomStyleInheritanceCheck(),
+        # RequiredCustomStylesUsageCheck(),
+        # CustomStyleWithTabsCheck(),
+        # MainChapterStartsOnNewPageCheck(),
+        # ManualHorizontalSpacingCheck(),
+        # ManualVerticalSpacingCheck(),
+        # ListLevel2UsedCheck(),
+        # InconsistentFormattingCheck(),
+        # # Obsah
+        # TOCExistsCheck(),
+        # TOCUpToDateCheck(),
+        # DocumentStructureCheck(),
+        # TOCHeadingLevelsCheck(),
+        # TOCFirstSectionContentCheck(),
+        # TOCIllegalContentCheck(),
+        # FirstChapterStartsOnPageOneCheck(),
+        # ChapterNumberingContinuityCheck(),
+        # # Objekty
+        # MissingListOfFiguresCheck(),
+        # ListOfFiguresNotUpdatedCheck(),
+        # ImageLowQualityCheck(),
+        # ObjectCaptionCheck(),
+        # ObjectCaptionDescriptionCheck(),
+        # ObjectCrossReferenceCheck(),
+        # ObjectCaptionBindingCheck(),
+        # # Liteatura
+        # MissingBibliographyCheck(),
+        # BibliographyNotUpdatedCheck(),
 
-        # Header-Foooter
-        HeaderFooterMissingCheck(),
-        SecondSectionHeaderHasTextCheck(),
-        SecondSectionPageNumberStartsAtOneCheck(),
-        HeaderNotLinkedToPreviousCheck(2),
-        HeaderNotLinkedToPreviousCheck(3),
-        FooterLinkedToPreviousCheck(2),
-        FooterLinkedToPreviousCheck(3),
-        SectionHeaderEmptyCheck(1),
-        SectionHeaderEmptyCheck(3),
-        SectionFooterEmptyCheck(1),
-        SectionFooterHasPageNumberCheck(2),
-        SectionFooterHasPageNumberCheck(3),
+        # # Header-Foooter
+        # HeaderFooterMissingCheck(),
+        # SecondSectionHeaderHasTextCheck(),
+        # SecondSectionPageNumberStartsAtOneCheck(),
+        # HeaderNotLinkedToPreviousCheck(2),
+        # HeaderNotLinkedToPreviousCheck(3),
+        # FooterLinkedToPreviousCheck(2),
+        # FooterLinkedToPreviousCheck(3),
+        # SectionHeaderEmptyCheck(1),
+        # SectionHeaderEmptyCheck(3),
+        # SectionFooterEmptyCheck(1),
+        # SectionFooterHasPageNumberCheck(2),
+        # SectionFooterHasPageNumberCheck(3),
     ]
 
     excel_assignment = load_excel_assignment("assignment/excel/assignment.json")
     
-    # spreadsheet = SpreadsheetDocument.from_path("23_fb750G.ods")
-    # spreadsheet = SpreadsheetDocument.from_path("23_fb750F.ods")
+    #spreadsheet = SpreadsheetDocument.from_path("23_fb750G.ods")
+    spreadsheet = SpreadsheetDocument.from_path("23_fb750F.ods")
     # spreadsheet = SpreadsheetDocument.from_path("23_fb750G.xlsx")
-    spreadsheet = SpreadsheetDocument.from_path("23_fb750F.xlsx")
+    # spreadsheet = SpreadsheetDocument.from_path("23_fb750F.xlsx")
     spreadsheet.save_debug_xml()
 
 
@@ -179,7 +179,7 @@ def main():
 
         # # formatovani
         # NumberFormattingCheck(),
-        # TableBorderCheck(), #- neni pro ODS
+        # # TableBorderCheck(), #- neni pro ODS
         # MergedCellsCheck(),
         # HeaderFormattingCheck(),
         # ConditionalFormattingExistsCheck(),
@@ -201,7 +201,6 @@ def main():
         report.add(check.name, result)
 
     excel_runner = Runner(excel_checks)
-    # excel_results = excel_runner.run(excel, excel_assignment)
     excel_results = excel_runner.run(spreadsheet, excel_assignment)
 
     for check, result in excel_results:
