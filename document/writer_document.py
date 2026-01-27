@@ -723,13 +723,175 @@ class WriterDocument(TextDocument):
         if style is None:
             return False
 
-        # outline level = potenciální číslování
         outline = style.attrib.get(
             f"{{{self.NS['style']}}}default-outline-level"
         )
         if not outline:
             return False
 
-        # ověř, že existuje numbering pro tento level
         exists, _, _ = self.get_heading_numbering_info(int(outline))
         return exists
+    
+    def section_count(self) -> int:
+        masters = self.styles.findall(
+            ".//style:master-page",
+            self.NS
+        )
+        return len(masters)
+
+    def section_has_header_or_footer_content(self, index: int) -> bool:
+        masters = self.styles.findall(
+            ".//style:master-page",
+            self.NS
+        )
+
+        if index >= len(masters):
+            return False
+
+        master = masters[index]
+
+        for tag in ("header", "footer"):
+            el = master.find(f"style:{tag}", self.NS)
+            if el is None:
+                continue
+
+            text = "".join(el.itertext()).strip()
+            if text:
+                return True
+
+        return False
+    
+    def used_page_styles_in_order(self) -> list[str]:
+        used = []
+
+        for el in self.content.iter():
+            ps = el.attrib.get(f"{{{self.NS['style']}}}master-page-name")
+            if ps and ps not in used:
+                used.append(ps)
+
+        return used
+    
+    def section_has_header_text(self, index: int) -> bool:
+        pages = self.used_page_styles_in_order()
+        if index >= len(pages):
+            return False
+
+        page_name = pages[index]
+
+        master = self.styles.find(
+            f".//style:master-page[@style:name='{page_name}']",
+            self.NS
+        )
+        if master is None:
+            return False
+
+        header = master.find("style:header", self.NS)
+        if header is None:
+            return False
+
+        return bool("".join(header.itertext()).strip())
+    
+
+    def get_page_layout_for_master(self, master_name: str) -> ET.Element | None:
+        master = self.styles.find(
+            f".//style:master-page[@style:name='{master_name}']",
+            self.NS
+        )
+        if master is None:
+            return None
+
+        layout_name = master.attrib.get(
+            f"{{{self.NS['style']}}}page-layout-name"
+        )
+        if not layout_name:
+            return None
+
+        return self.styles.find(
+            f".//style:page-layout[@style:name='{layout_name}']",
+            self.NS
+        )
+    
+    def second_section_page_number_starts_at_one(self) -> bool | None:
+        pages = self.used_page_styles_in_order()
+        if len(pages) < 2:
+            return None
+
+        second_master = pages[1]
+        layout = self.get_page_layout_for_master(second_master)
+        if layout is None:
+            return False
+
+        props = layout.find("style:page-layout-properties", self.NS)
+        if props is None:
+            return False
+
+        start = props.attrib.get(f"{{{self.NS['style']}}}page-number")
+        return start == "1"
+    
+    def section_footer_is_empty(self, index: int) -> bool | None:
+        pages = self.used_page_styles_in_order()
+        if index >= len(pages):
+            return None
+
+        page_name = pages[index]
+        master = self.styles.find(
+            f".//style:master-page[@style:name='{page_name}']",
+            self.NS
+        )
+        if master is None:
+            return None
+
+        footer = master.find("style:footer", self.NS)
+        if footer is None:
+            return True
+
+        text = "".join(footer.itertext()).strip()
+        return not bool(text)
+    
+    def section_header_is_empty(self, index: int) -> bool | None:
+        pages = self.used_page_styles_in_order()
+        if index >= len(pages):
+            return None
+
+        page_name = pages[index]
+
+        master = self.styles.find(
+            f".//style:master-page[@style:name='{page_name}']",
+            self.NS
+        )
+        if master is None:
+            return None
+
+        header = master.find("style:header", self.NS)
+        if header is None:
+            return True
+
+        text = "".join(header.itertext()).strip()
+        return not bool(text)
+    
+    def footer_is_linked_to_previous(self, index: int) -> bool | None:
+        # Writer nemá koncept "propojení s předchozím oddílem"
+        return None
+    
+    def section_footer_has_page_number(self, index: int) -> bool | None:
+        pages = self.used_page_styles_in_order()
+        if index >= len(pages):
+            return None
+
+        page_name = pages[index]
+
+        master = self.styles.find(
+            f".//style:master-page[@style:name='{page_name}']",
+            self.NS,
+        )
+        if master is None:
+            return False
+
+        footer = master.find("style:footer", self.NS)
+        if footer is None:
+            return False
+
+        return footer.find(".//text:page-number", self.NS) is not None
+    
+    def header_is_linked_to_previous(self, index: int) -> bool | None:
+        return None

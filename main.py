@@ -83,9 +83,9 @@ from checks.word.formatting.normal_style_check import NormalStyleCheck
 from document.writer_document import WriterDocument
 
 def main():
-    # doc = WordDocument("studentG.docx")
     # doc = WordDocument("studentF.docx")
-    doc = WriterDocument("24_f3ea2.odt")
+    doc = WordDocument("studentG.docx")
+    # doc = WriterDocument("24_f3ea2.odt")
     assignment = load_assignment("assignment/word/assignment.json")
     doc.save_xml()
 
@@ -105,7 +105,7 @@ def main():
         # HeadingStyleCheck(3),
         # HeadingHierarchicalNumberingCheck(),
         # TocHeadingNumberingCheck(),
-        UnnumberedSpecialHeadingsCheck(),
+        # UnnumberedSpecialHeadingsCheck(),
         # CoverStylesCheck(),
         # FrontpageStylesCheck(),
         # BibliographyStyleCheck(),
@@ -148,8 +148,8 @@ def main():
         # SecondSectionPageNumberStartsAtOneCheck(),
         # HeaderNotLinkedToPreviousCheck(2),
         # HeaderNotLinkedToPreviousCheck(3),
-        # FooterLinkedToPreviousCheck(2),
-        # FooterLinkedToPreviousCheck(3),
+        FooterLinkedToPreviousCheck(2),
+        FooterLinkedToPreviousCheck(3),
         # SectionHeaderEmptyCheck(1),
         # SectionHeaderEmptyCheck(3),
         # SectionFooterEmptyCheck(1),
@@ -210,3 +210,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

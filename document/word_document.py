@@ -42,15 +42,6 @@ class WordDocument(TextDocument):
             "seznam2",
         }
     
-    # SPECIAL_HEADING_STYLES = [
-    #     "Obsah",
-    #     "NadpisObsahu",
-    #     "SeznamObrazku",
-    #     "SeznamTabulek",
-    #     "Bibliografie",
-    #     "Zdroje",
-    # ]
-
     def __init__(self, path: str):
         self.path = path
         self.NS = NS  
@@ -1578,12 +1569,230 @@ class WordDocument(TextDocument):
         st = self.get_heading_style(level)
         return bool(st and getattr(st, "isNumbered", False))
     
-    def get_special_heading_styles(self) -> list[str]:
-        return self.SPECIAL_HEADING_STYLES
-    
     def is_special_heading_numbered(self, style_name: str) -> bool:
         style = self.get_style_by_any_name([style_name])
         if style is None:
             return False
 
         return bool(style.isNumbered)
+    
+    def section_has_header_text(self, index: int) -> bool:
+        sect_pr = self.section_properties(index)
+        if sect_pr is None:
+            return False
+
+        header_refs = sect_pr.findall("w:headerReference", self.NS)
+        for ref in header_refs:
+            r_id = ref.attrib.get(f"{{{self.NS['r']}}}id")
+            if not r_id:
+                continue
+
+            part_path = self.resolve_part_target(r_id)
+            if not part_path:
+                continue
+
+            try:
+                header_xml = self._load(part_path)
+            except KeyError:
+                continue
+
+            for t in header_xml.findall(".//w:t", self.NS):
+                if t.text and t.text.strip():
+                    return True
+
+        return False
+    
+    def second_section_page_number_starts_at_one(self) -> bool | None:
+        if self.section_count() < 2:
+            return None
+
+        sect_pr = self.section_properties(1)
+        if sect_pr is None:
+            return False
+
+        pg_num = sect_pr.find("w:pgNumType", self.NS)
+        if pg_num is None:
+            return False
+
+        start = pg_num.attrib.get(f"{{{self.NS['w']}}}start")
+        return start == "1"
+    
+    def section_footer_is_empty(self, index: int) -> bool | None:
+        sect_pr = self.section_properties(index)
+        if sect_pr is None:
+            return None
+
+        footer_refs = sect_pr.findall("w:footerReference", self.NS)
+        if not footer_refs:
+            return True
+
+        for ref in footer_refs:
+            r_id = ref.attrib.get(f"{{{self.NS['r']}}}id")
+            if not r_id:
+                continue
+
+            part = self.resolve_part_target(r_id)
+            if not part:
+                continue
+
+            try:
+                xml = self._load(part)
+            except KeyError:
+                continue
+
+            # text
+            for t in xml.findall(".//w:t", self.NS):
+                if t.text and t.text.strip():
+                    return False
+
+            # objekty
+            if (
+                xml.findall(".//w:drawing", self.NS)
+                or xml.findall(".//m:oMath", self.NS)
+                or xml.findall(".//m:oMathPara", self.NS)
+            ):
+                return False
+
+        return True
+    
+    def section_has_title_page(self, sect_pr) -> bool:
+        return sect_pr.find("w:titlePg", self.NS) is not None
+
+    def even_and_odd_headers_enabled(self) -> bool:
+        settings = getattr(self, "settings", None)
+        if settings is None:
+            return False
+        return settings.find("w:evenAndOddHeaders", self.NS) is not None
+
+    def footer_is_linked_to_previous(self, index: int) -> bool | None:
+        if index <= 0:
+            return None
+
+        sect_prev = self.section_properties(index - 1)
+        sect_curr = self.section_properties(index)
+
+        if sect_prev is None or sect_curr is None:
+            return None
+
+        footers_prev = sect_prev.findall("w:footerReference", self.NS)
+        footers_curr = sect_curr.findall("w:footerReference", self.NS)
+
+        map_prev = {}
+        for f in footers_prev:
+            f_type = f.attrib.get(f"{{{self.NS['w']}}}type", "default")
+            r_id = f.attrib.get(f"{{{self.NS['r']}}}id")
+            if r_id:
+                map_prev[f_type] = r_id
+
+        map_curr = {}
+        for f in footers_curr:
+            f_type = f.attrib.get(f"{{{self.NS['w']}}}type", "default")
+            r_id = f.attrib.get(f"{{{self.NS['r']}}}id")
+            if r_id:
+                map_curr[f_type] = r_id
+
+        # které typy zápatí MUSÍ existovat
+        required_types = {"default"}
+
+        if self.section_has_title_page(sect_curr):
+            required_types.add("first")
+
+        if self.even_and_odd_headers_enabled():
+            required_types.add("even")
+
+        for t in required_types:
+            if t not in map_curr:
+                return True
+
+        for t in required_types:
+            if t in map_prev and map_prev[t] == map_curr[t]:
+                return True
+
+        return False
+    
+    def section_footer_has_page_number(self, index: int) -> bool | None:
+        if self.section_count() <= index:
+            return None
+
+        sect_pr = self.section_properties(index)
+        if sect_pr is None:
+            return False
+
+        footer_refs = sect_pr.findall("w:footerReference", self.NS)
+        if not footer_refs:
+            return False
+
+        for ref in footer_refs:
+            r_id = ref.attrib.get(f"{{{self.NS['r']}}}id")
+            if not r_id:
+                continue
+
+            part = self.resolve_part_target(r_id)
+            if not part:
+                continue
+
+            try:
+                xml = self._load(part)
+            except KeyError:
+                continue
+
+            # fldSimple
+            for fld in xml.findall(".//w:fldSimple", self.NS):
+                instr = fld.attrib.get(f"{{{self.NS['w']}}}instr", "")
+                if "PAGE" in instr.upper():
+                    return True
+
+            # instrText
+            for instr in xml.findall(".//w:instrText", self.NS):
+                if instr.text and "PAGE" in instr.text.upper():
+                    return True
+
+        return False
+
+    def header_is_linked_to_previous(self, index: int) -> bool | None:
+        if index <= 0:
+            return None
+
+        sect_prev = self.section_properties(index - 1)
+        sect_curr = self.section_properties(index)
+
+        if sect_prev is None or sect_curr is None:
+            return None
+
+        headers_prev = sect_prev.findall("w:headerReference", self.NS)
+        headers_curr = sect_curr.findall("w:headerReference", self.NS)
+
+        map_prev = {}
+        for h in headers_prev:
+            h_type = h.attrib.get(f"{{{self.NS['w']}}}type", "default")
+            r_id = h.attrib.get(f"{{{self.NS['r']}}}id")
+            if r_id:
+                map_prev[h_type] = r_id
+
+        map_curr = {}
+        for h in headers_curr:
+            h_type = h.attrib.get(f"{{{self.NS['w']}}}type", "default")
+            r_id = h.attrib.get(f"{{{self.NS['r']}}}id")
+            if r_id:
+                map_curr[h_type] = r_id
+
+        # které typy hlaviček MUSÍ mít vlastní definici
+        required_types = {"default"}
+
+        if self.section_has_title_page(sect_curr):
+            required_types.add("first")
+
+        if self.even_and_odd_headers_enabled():
+            required_types.add("even")
+
+        # 1️⃣ chybějící headerReference = dědí z předchozího
+        for t in required_types:
+            if t not in map_curr:
+                return True
+
+        # 2️⃣ stejný r:id jako předchozí = fyzicky stejný header
+        for t in required_types:
+            if t in map_prev and map_prev[t] == map_curr[t]:
+                return True
+
+        return False
